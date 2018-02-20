@@ -1,0 +1,16 @@
+.col-level1 {
+  border: solid;
+  height: 800px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.col-border {
+  border: solid;
+  border-color: lightblue;
+}
+
+.row-inner {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
