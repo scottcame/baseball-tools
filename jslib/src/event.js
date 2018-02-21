@@ -2,27 +2,31 @@
 
 function parseEvent(eventText, baseStateBeforePlay, defensivePlayers) {
 
-  if (arguments.length != 2) {
+  if (arguments.length != 3) {
     throw new Error("parseEvent requires eventText, baseStateBeforePlay, and defensivePlayers arguments");
   }
 
   let rawEvent = parseRawEvent(eventText);
 
-  let ret = new Object();
+  if (rawEvent == null) {
+    // todo: right?
+    return null;
+  }
 
+  let ret = new Object();
+  ret.rawEvent = rawEvent;
+
+  ret.playCode = getPlayCode(rawEvent);
   ret.outs = determineOuts(rawEvent, baseStateBeforePlay, defensivePlayers);
   ret.outsRecorded = determineOutsRecorded(ret.outs);
-
   ret.runsScoredBy = determineRunsScoredBy(rawEvent, baseStateBeforePlay);
   ret.runs = ret.runsScoredBy.length;
+  ret.basesOccupiedAfterPlay = determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay);
 
-  ret.basesOccupiedAfterPlay = determineBasesOccupiedAfterPlay(rawEvent);
-
-  let playCode = getPlayCode(rawEvent);
-
+  /*
   ret.atBat = !(["W","IW","HP","C"].includes(playCode));
   ret.single = playCode === 'S';
-  ret.double = playCode === 'D';
+  ret.double = ['D','DGR'].includes(playCode);
   ret.triple = playCode === 'T';
   ret.homeRun = ["H","HR"].includes(playCode);
   ret.hit = ret.single || ret.double || ret.triple || ret.homeRun;
@@ -37,11 +41,92 @@ function parseEvent(eventText, baseStateBeforePlay, defensivePlayers) {
   ret.sacrificeBunt = getIsSacBunt(rawEvent);
   ret.fieldersChoice = playCode === 'FC';
   ret.forceOut = playCode === 'FO';
+  ret.error = ['E', 'FLE'].contains(playCode);
+  */
 
   ret.ballInPlay = getBallInPlay(rawEvent);
 
+  ret.valid = rawEvent.basicPlayError == null && rawEvent.advancesErrors.length == 0 && rawEvent.modifiersErrors.length == 0;
+
   // Cannot determine if a play is an error without knowing how many outs there are.  Have to defer this to the calling context.
   // And therefore also, because determination of an RBI requires knowing whether there is an error...we have to defer RBI determination too
+
+  return ret;
+
+}
+
+const BATTED_BALL_LOCATION_REGEX = /^(BP|BG|BGDP|BL|BP|BPDP|G|GDP|GTP|L|LDP|LTP|F|P)?([1-9]{1,2}(?:F|DF|LSF|LF|LDF|D|LS|L|LD|S|M|MD|MS|XD)?)?([+\-])?$/;
+const ADVANCE_REGEX = /^([B123])([\-X])([123H])(\((?:[1-9E]+)?(?:\/?(?:TH[123H]?|INT|RINT))?\)|(?:\((?:UR|NR|WP|PB|TUR|RBI)\)){0,2})*$/;
+
+function validateModifiers(modifiers) {
+  let errors = [];
+  modifiers.forEach(function(modifier) {
+    if (!(/^(?:AP|BINT|BOOT|BR|C|COUB|COUF|COUR|DP|E[1-9]|FDP|FINT|FL|FO|IF|INT|IPHR|MREV|NDP|OBS|PASS|R[1-9]+|RINT|SF|SH|TH|TH[123H]|TP|UINT|UREV|BF)$/.test(modifier) ||
+          BATTED_BALL_LOCATION_REGEX.test(modifier))) {
+      errors.push("Invalid modifier: " + modifier);
+    }
+  });
+  return errors;
+}
+
+function validateAdvances(advances) {
+  let errors = [];
+  advances.forEach(function(advance) {
+    if (!ADVANCE_REGEX.test(advance)) {
+      errors.push("Invalid advance: " + advance);
+    }
+  });
+  return errors;
+}
+
+function validateBasicPlay(basicPlay) {
+  let ret = null;
+  if (!(/^FC[1-9]|E[1-9]|[I]?W|SB[23H]|CS[23H]|PO[123]|POCS[23H]|DI|BK|HR[1-9]*|DGR|PB|FLE[1-9]|OA|NP|C|HP$/.test(basicPlay) ||
+        /^(?:[1-9]+(?:[\-]|\([B123]\))?)+$/.test(basicPlay) ||
+        /^[SDTH][1-9]*$/.test(basicPlay) ||
+        /^[K][1-9]*(?:\+(?:CS|SB|PO)[23H]|E[1-9]|PB|WP)?$/.test(basicPlay))) {
+    ret = "Invalid basic play: " + basicPlay;
+  }
+  return ret;
+}
+
+function parseAdvancesDetail(rawAdvances) {
+
+  let ret = [];
+
+  rawAdvances.forEach(function(rawAdvance) {
+
+    let splitAdvance = rawAdvance.match(ADVANCE_REGEX);
+
+    if (splitAdvance != null) {
+      let a = new Object;
+      a.startingBase = splitAdvance[1];
+      a.type = splitAdvance[2] === '-' ? "advance" : "out";
+      a.endingBase = splitAdvance[3];
+      a.parameters = [];
+      let params = splitAdvance[4];
+      if (params != null) {
+        while (/\(/.test(params)) {
+          params = params.replace(/\(/, "");
+        }
+        params = params.replace(/\)$/, "").split(")");
+        params.forEach(function(param) {
+          let p = new Object;
+          let splitParam = param.split("/");
+          p.parameter = splitParam[0];
+          if (/E/.test(p.parameter)) {
+            // negated out
+            a.type = "safe-on-error";
+          }
+          p.modifiers = splitParam.slice(1);
+          a.parameters.push(p);
+        })
+      }
+      a.runnerSafe = a.type != "out";
+      ret.push(a);
+    }
+
+  });
 
   return ret;
 
@@ -57,20 +142,20 @@ function getBallInPlay(rawEvent) {
     } else if (modifier === "GDP") {
       modifier = "G";
     }
-    let components = modifier.match(/^([B])?([FPGL])([0-9]*)(\+|\-)?/);
+    let components = modifier.match(BATTED_BALL_LOCATION_REGEX);
     if (components != null) {
       if (ret != null) {
         throw new Error("Multiple ball-in-play modifiers: " + rawEvent.rawText);
       }
       ret = new Object;
-      ret.bunt = components[1] != null;
-      ret.flyBall = components[2] === "F";
-      ret.popup = components[2] === "P";
-      ret.groundBall = components[2] === "G";
-      ret.lineDrive = components[2] === "L";
-      ret.location = components[3] == null || components[3] === '' ? null : components[3];
-      ret.soft = "-" === components[4];
-      ret.hard = "+" === components[4];
+      ret.bunt = ["BP","BG","BGDP","BL","BP","BPDP"].includes(components[1]);
+      ret.flyBall = components[1] === "F";
+      ret.popup = ["P","BP","BPDP"].includes(components[1]);
+      ret.groundBall = ["G","GDP","GTP","BG","BGDP"].includes(components[1]);
+      ret.lineDrive = ["L","LDP","LTP","BLDP","BL"].includes(components[1]);
+      ret.location = components[2] == null || components[2] === '' ? null : components[2];
+      ret.soft = "-" === components[3];
+      ret.hard = "+" === components[3];
     }
   });
   return ret;
@@ -85,6 +170,9 @@ function getIsSacBunt(rawEvent) {
 }
 
 function getPlayCode(rawEvent) {
+  if (rawEvent.basicPlayError != null) {
+    return null;
+  }
   let outRegex = /^([0-9]+)[\/\.$]/;
   let testRegex = outRegex;
   if (!outRegex.test(rawEvent.basicPlay)) {
@@ -100,19 +188,38 @@ function getPlayCode(rawEvent) {
 
 function parseRawEvent(eventText) {
 
-  let ret = new Object();
+  if (eventText == null || eventText.trim().length == 0) {
+    return null;
+  }
 
-  let outerRegex = /([^\.]+)\.(.+)?/;
-  let innerRegex = /([^\/]+)\/(.+)*/;
-  let modifiersRegex = /[^\/]+\//;
+  while(/[!#]/.test(eventText)) {
+    eventText = eventText.replace(/[!#]/, "");
+  }
+
+  let ret = new Object();
+  let outerRegex = /([^\.]+)(?:\.(.+))?/;
   let advancesRegex = /[^\.]+\./;
 
   let basicPlayAndModifiers = eventText.replace(outerRegex, "$1");
   ret.advances = advancesRegex.test(eventText) ? eventText.replace(outerRegex, "$2").split(";") : [];
 
+  let innerRegex = /([^\/]+)\/(.+)*/;
+  let modifiersRegex = /[^\/]+\//;
+
+  if (/\(.+\/.+\)/.test(basicPlayAndModifiers)) {
+    innerRegex = /^(.+\))(?:\/(.+))*/;
+    modifiersRegex = /\).*\//;
+  }
+
   ret.basicPlay = basicPlayAndModifiers.replace(innerRegex, "$1");
   ret.modifiers = modifiersRegex.test(basicPlayAndModifiers) ? basicPlayAndModifiers.replace(innerRegex, "$2").split("/") : [];
   ret.rawText = eventText;
+
+  ret.basicPlayError = validateBasicPlay(ret.basicPlay);
+  ret.advancesErrors = validateAdvances(ret.advances);
+  ret.modifiersErrors = validateModifiers(ret.modifiers);
+
+  ret.advances = parseAdvancesDetail(ret.advances);
 
   return ret;
 
@@ -181,6 +288,28 @@ function determineOuts(rawEvent, baseStateBeforePlay, defensivePlayers) {
     }
   }
 
+  // baserunning (advances) outs
+  rawEvent.advances.forEach(function(advance) {
+    if (["out", "safe-on-error"].includes(advance.type)) {
+      let out = new Object;
+      advance.parameters.forEach(function(param) {
+        if (/^[0-9]/.test(param.parameter)) {
+          out.play = param.parameter;
+          out.runnerStartingBase = advance.startingBase;
+          let runner = advance.startingBase === "B" ? 0 : Number.parseInt(advance.startingBase);
+          out.runnerId = baseStateBeforePlay[runner];
+          if (advance.type === "out") {
+            out.putoutFielderPosition = Number.parseInt(param.parameter.substr(-1, 1));
+            out.putoutFielderId = defensivePlayers[out.putoutFielderPosition - 1];
+          }
+          out.assistFielders = parseAssistFielders(param.parameter, defensivePlayers);
+          out.recorded = !advance.runnerSafe;
+        }
+      });
+      outs.push(out);
+    }
+  });
+
   let getBaserunningOut = function(advanceOutSpec) {
     let out = null;
     if (advanceOutSpec != null) {
@@ -211,15 +340,6 @@ function determineOuts(rawEvent, baseStateBeforePlay, defensivePlayers) {
     return out;
   }
 
-  // baserunning (advances) outs
-  rawEvent.advances.forEach(function(advance) {
-    let outAdvance = advance.match(/([B123])X(?:[123H])(\([1-9E]+.*\))/);
-    let out = getBaserunningOut(outAdvance);
-    if (out != null) {
-      outs.push(out);
-    }
-  });
-
   // caught stealing
   let cs = rawEvent.basicPlay.match(/CS([23H])(\([1-9E]+.*\))/);
   if (cs != null) {
@@ -239,7 +359,7 @@ function determineOuts(rawEvent, baseStateBeforePlay, defensivePlayers) {
 
   // strikeout
   let kk = rawEvent.basicPlay.match(/^K([0-9]+)?/);
-  if (kk != null && !rawEvent.advances.includes("B-1")) {
+  if (kk != null && !rawEvent.advances.reduce(function(accumulator, advance) { return accumulator |= (advance.startingBase === "B" && advance.endingBase === "1" ? true : false); }, false)) {
     out = new Object;
     let fielders = kk[1];
     out.play = rawEvent.basicPlay;
@@ -266,15 +386,14 @@ function determineRunsScoredBy(rawEvent, baseStateBeforePlay) {
     score.noRbiIndicated = false;
     ret.push(score);
   }
-  let scoreAdvanceRegex = /^([B123])(?:-H|XH\().*/;
-  rawEvent.advances.forEach(function(currentValue) {
-    if (scoreAdvanceRegex.test(currentValue)) {
-      let baseFromStr = currentValue.replace(scoreAdvanceRegex, "$1");
+  rawEvent.advances.forEach(function(advance) {
+    if (advance.runnerSafe && advance.endingBase === "H") {
+      let baseFromStr = advance.startingBase;
       let baseFrom = baseFromStr === 'B' ? 0 : Number.parseInt(baseFromStr);
       let score = new Object;
       score.runner = baseStateBeforePlay[baseFrom];
-      score.unearnedIndicated = /\(UR\)/.test(currentValue);
-      score.noRbiIndicated = /\((?:NR|NORBI)\)/.test(currentValue);
+      score.unearnedIndicated = advance.parameters.reduce(function(accumulator, param) { return accumulator |= param.parameter === "UR" ? true : false; }, false);
+      score.noRbiIndicated = advance.parameters.reduce(function(accumulator, param) { return accumulator |= ["NR","NORBI"].includes(param.parameter) ? true : false; }, false);
       ret.push(score);
     }
   });
@@ -288,10 +407,8 @@ function determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay) {
 
   let ret = baseStateBeforePlay.slice(1, 4);
 
-  let advanceRegex = /^([B123])-([123H])/;
-
-  rawEvent.advances.forEach(function(value) {
-    let preState = value.replace(advanceRegex, "$1");
+  rawEvent.advances.forEach(function(advance) {
+    let preState = advance.startingBase;
     if (preState != "B") {
       ret[Number.parseInt(preState)-1] = null;
     }
@@ -301,10 +418,10 @@ function determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay) {
   ret[1] = /^D[1-9]?$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[1];
   ret[2] = /^T[1-9]?$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[2];
 
-  rawEvent.advances.forEach(function(value) {
-    if (advanceRegex.test(value)) {
-      let preState = value.replace(advanceRegex, "$1");
-      let postState = value.replace(advanceRegex, "$2");
+  rawEvent.advances.forEach(function(advance) {
+    if(advance.runnerSafe) {
+      let preState = advance.startingBase;
+      let postState = advance.endingBase;
       if (postState != "H") {
         if (preState === "B") {
           preState = "0";
@@ -343,3 +460,7 @@ module.exports.getBallInPlay = getBallInPlay;
 module.exports.getIsSacFly = getIsSacFly;
 module.exports.getIsSacBunt = getIsSacBunt;
 module.exports.getPlayCode = getPlayCode;
+module.exports.validateBasicPlay = validateBasicPlay;
+module.exports.validateAdvances = validateAdvances;
+module.exports.validateModifiers = validateModifiers;
+module.exports.parseAdvancesDetail = parseAdvancesDetail;

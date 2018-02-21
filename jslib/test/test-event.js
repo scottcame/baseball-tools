@@ -42,24 +42,38 @@ describe('Event.parseRawEvent (with advances)', function() {
   it('should parse D7.2-H', function() {
     let o = Event.parseRawEvent("D7.2-H");
     assert.equal("D7", o.basicPlay);
-    assert.equal("2-H", o.advances);
+    assert.equal(1, o.advances.length);
+    assert.equal("2", o.advances[0].startingBase);
+    assert.equal("H", o.advances[0].endingBase);
+    assert.equal("advance", o.advances[0].type);
   });
   it('should parse D7.2-H;3-H', function() {
     let o = Event.parseRawEvent("D7.2-H;3-H");
     assert.equal("D7", o.basicPlay);
-    assert.deepEqual(["2-H", "3-H"], o.advances);
+    assert.equal(2, o.advances.length);
+    assert.equal("2", o.advances[0].startingBase);
+    assert.equal("H", o.advances[0].endingBase);
+    assert.equal("advance", o.advances[0].type);
+    assert.equal("3", o.advances[1].startingBase);
+    assert.equal("H", o.advances[1].endingBase);
+    assert.equal("advance", o.advances[1].type);
   });
   it('should parse D7/L.2-H;3-H', function() {
     let o = Event.parseRawEvent("D7/L.2-H;3-H");
     assert.equal("D7", o.basicPlay);
     assert.equal("L", o.modifiers);
-    assert.deepEqual(["2-H", "3-H"], o.advances);
+    assert.equal(2, o.advances.length);
   });
   it('should parse D7.2-H;3-H', function() {
     let o = Event.parseRawEvent("FC5/G5.3XH(52)");
     assert.equal("FC5", o.basicPlay);
     assert.equal("G5", o.modifiers);
-    assert.equal("3XH(52)", o.advances);
+    assert.equal(1, o.advances.length);
+    assert.equal("3", o.advances[0].startingBase);
+    assert.equal("H", o.advances[0].endingBase);
+    assert.equal("out", o.advances[0].type);
+    assert.equal(1, o.advances[0].parameters.length);
+    assert.equal("52", o.advances[0].parameters[0].parameter);
   });
 });
 
@@ -507,6 +521,7 @@ describe('Event.determineOuts (no outs)', function() {
   it('K+WP.B-1 -> 0', function() {
     let o = Event.parseRawEvent("K+WP.B-1");
     let outs = Event.determineOuts(o, ["batter", null, null, null], defense);
+    console.log(outs);
     assert.equal(0, outs.length);
     assert.equal(0, Event.determineOutsRecorded(outs));
   });
@@ -743,6 +758,13 @@ describe('Ball In Play location tests', function() {
       Event.getBallInPlay(o);
     }, /Multiple.+modifiers/);
   });
+  it('S4/P4MS', function() {
+    let o = Event.parseRawEvent("S4/P4MS");
+    Event.getBallInPlay(o);
+    let bip = Event.getBallInPlay(o);
+    assert.equal(true, bip.popup);
+    assert.equal("4MS", bip.location);
+  });
 });
 
 describe('Recorded outs', function() {
@@ -812,6 +834,89 @@ describe('determineOuts: double plays in various forms', function() {
     assert.equal("SS", out.assistFielders[1].fielderId);
   });
 });
+
+describe('Pickoff error', function() {
+  it('PO2(E2/TH).2-3;1-2', function() {
+    let o = Event.parseRawEvent("PO2(E2/TH).2-3;1-2");
+    assert.equal("PO2(E2/TH)", o.basicPlay);
+    assert.equal(0, o.modifiers.length);
+    assert.equal(2, o.advances.length);
+  });
+  it('PO2(E2/TH)/UREV.2-3;1-2', function() {
+    let o = Event.parseRawEvent("PO2(E2/TH)/UREV.2-3;1-2");
+    assert.equal("PO2(E2/TH)", o.basicPlay);
+    assert.equal("UREV", o.modifiers[0]);
+    assert.equal(2, o.advances.length);
+  });
+});
+
+describe('Advances detail', function() {
+  it('[1-2]', function() {
+    let o = Event.parseAdvancesDetail(["1-2"]);
+    assert.equal(1, o.length);
+    assert.equal("1", o[0].startingBase);
+    assert.equal("advance", o[0].type);
+    assert.equal("2", o[0].endingBase);
+    assert.equal(0, o[0].parameters.length);
+  });
+  it('[1-2], [2-3]', function() {
+    let o = Event.parseAdvancesDetail(["1-2", "2-3"]);
+    assert.equal(2, o.length);
+  });
+  it('[1-2], [2X3]', function() {
+    let o = Event.parseAdvancesDetail(["1-2", "2X3"]);
+    assert.equal(2, o.length);
+    assert.equal(true, o[0].runnerSafe);
+    assert.equal("advance", o[0].type);
+    assert.equal("out", o[1].type);
+  });
+  it('[3-H(UR)]', function() {
+    let o = Event.parseAdvancesDetail(["3-H(UR)"]);
+    assert.equal(1, o.length);
+    assert.equal("3", o[0].startingBase);
+    assert.equal(true, o[0].runnerSafe);
+    assert.equal("advance", o[0].type);
+    assert.equal("H", o[0].endingBase);
+    assert.equal(1, o[0].parameters.length);
+    assert.equal("UR", o[0].parameters[0].parameter);
+    assert.equal(0, o[0].parameters[0].modifiers.length);
+  });
+  it('[3-H(UR)(NR)]', function() {
+    let o = Event.parseAdvancesDetail(["3-H(UR)(NR)"]);
+    assert.equal(1, o.length);
+    assert.equal("3", o[0].startingBase);
+    assert.equal(true, o[0].runnerSafe);
+    assert.equal("advance", o[0].type);
+    assert.equal("H", o[0].endingBase);
+    assert.equal(2, o[0].parameters.length);
+    assert.equal("UR", o[0].parameters[0].parameter);
+    assert.equal("NR", o[0].parameters[1].parameter);
+  });
+  it('[3-H(E7/TH)]', function() {
+    let o = Event.parseAdvancesDetail(["3-H(E7/TH)"]);
+    assert.equal(1, o.length);
+    assert.equal("3", o[0].startingBase);
+    assert.equal(true, o[0].runnerSafe);
+    assert.equal("safe-on-error", o[0].type);
+    assert.equal("H", o[0].endingBase);
+    assert.equal(1, o[0].parameters.length);
+    assert.equal("E7", o[0].parameters[0].parameter);
+    assert.equal(1, o[0].parameters[0].modifiers.length);
+    assert.equal("TH", o[0].parameters[0].modifiers[0]);
+  });
+  it('[2X3(5/INT)]', function() {
+    let o = Event.parseAdvancesDetail(["2X3(5/INT)"]);
+    assert.equal(1, o.length);
+    assert.equal(false, o[0].runnerSafe);
+    assert.equal("out", o[0].type);
+  });
+});
+
+
+
+
+
+
 
 
 
