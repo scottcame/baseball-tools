@@ -1,9 +1,9 @@
 "use strict";
 
-function parseEvent(eventText, baseStateBeforePlay, defensivePlayers) {
+function parseEvent(eventText, baseStateBeforePlay, outsBeforePlay, defensivePlayers) {
 
-  if (arguments.length != 3) {
-    throw new Error("parseEvent requires eventText, baseStateBeforePlay, and defensivePlayers arguments");
+  if (arguments.length != 4) {
+    throw new Error("parseEvent requires eventText, baseStateBeforePlay, outsBeforePlay, and defensivePlayers arguments");
   }
 
   let rawEvent = parseRawEvent(eventText);
@@ -23,35 +23,48 @@ function parseEvent(eventText, baseStateBeforePlay, defensivePlayers) {
   ret.runs = ret.runsScoredBy.length;
   ret.basesOccupiedAfterPlay = determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay);
 
-  /*
-  ret.atBat = !(["W","IW","HP","C"].includes(playCode));
-  ret.single = playCode === 'S';
-  ret.double = ['D','DGR'].includes(playCode);
-  ret.triple = playCode === 'T';
-  ret.homeRun = ["H","HR"].includes(playCode);
-  ret.hit = ret.single || ret.double || ret.triple || ret.homeRun;
-  ret.walk = ["W","IW"].includes(playCode);
-  ret.balk = playCode === 'BK';
-  ret.stolenBase = playCode === 'SB';
-  ret.caughtStealing = playCode === 'CS';
-  ret.pickoff = playCode === 'PO';
-  ret.strikeout = playCode === 'K';
-  ret.hitByPitch = playCode === 'HP';
-  ret.sacrificeFly = getIsSacFly(rawEvent);
-  ret.sacrificeBunt = getIsSacBunt(rawEvent);
-  ret.fieldersChoice = playCode === 'FC';
-  ret.forceOut = playCode === 'FO';
-  ret.error = ['E', 'FLE'].contains(playCode);
-  */
-
   ret.ballInPlay = getBallInPlay(rawEvent);
+
+  ret.rbi = determineRBI(ret, outsBeforePlay);
 
   ret.valid = rawEvent.basicPlayError == null && rawEvent.advancesErrors.length == 0 && rawEvent.modifiersErrors.length == 0;
 
-  // Cannot determine if a play is an error without knowing how many outs there are.  Have to defer this to the calling context.
-  // And therefore also, because determination of an RBI requires knowing whether there is an error...we have to defer RBI determination too
-
   return ret;
+
+}
+
+function determineRBI(parsedEvent, outsBeforePlay) {
+
+  /*
+    1. If play is not an error or strikeout, then iterate through the advances.  If endingBase === H and no error parameter or NR/NORBI parameter or GDP modifier on the play, then count an RBI.
+    2. If play is an error, and outs < 2, and endingBase === H and startingBase === 3 and no NR/NORBI parameter, then count an RBI
+    3. If play is a home run, batter's advance to home is implicit, so count an additional RBI for him
+  */
+
+  let rbi = 0;
+
+  let rbiScore = function(advance) {
+    return advance.endingBase === "H" && advance.type != "safe-on-error" && !advance.parameters.reduce(function(accumulator, parameter) { return accumulator |= ["NR", "NORBI"].includes(parameter.parameter); }, false);
+  };
+
+  if (parsedEvent.playCode === "E" && outsBeforePlay < 2) {
+    parsedEvent.rawEvent.advances.forEach(function(advance) {
+      if (rbiScore(advance) && advance.startingBase === "3") {
+        rbi++;
+      }
+    });
+  } else if (!["K", "E"].includes(parsedEvent.playCode) && !parsedEvent.rawEvent.modifiers.reduce(function(accumulator, modifier) { return accumulator |= ("GDP" === modifier); }, false)) {
+    parsedEvent.rawEvent.advances.forEach(function(advance) {
+      if (rbiScore(advance)) {
+        rbi++;
+      }
+    });
+    if (["HR", "H"].includes(parsedEvent.playCode)) {
+      rbi++;
+    }
+  }
+
+  return rbi;
 
 }
 
@@ -464,3 +477,4 @@ module.exports.validateBasicPlay = validateBasicPlay;
 module.exports.validateAdvances = validateAdvances;
 module.exports.validateModifiers = validateModifiers;
 module.exports.parseAdvancesDetail = parseAdvancesDetail;
+module.exports.determineRBI = determineRBI;

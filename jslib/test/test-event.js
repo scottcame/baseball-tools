@@ -912,8 +912,76 @@ describe('Advances detail', function() {
   });
 });
 
-
-
+describe('RBI calculations', function() {
+  it('No RBI on single', function() {
+    let e = Event.parseEvent("S7/G78", ["batter", null, null, null], 0, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.equal(0, e.rbi);
+  });
+  it('No RBI on single with 2-3 advance', function() {
+    let e = Event.parseEvent("S7/G78.2-3", ["batter", null, "2d", null], 0, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.equal(0, e.rbi);
+  });
+  it('Solo HR', function() {
+    let e = Event.parseEvent("HR", ["batter", null, null, null], 0, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.equal(1, e.rbi);
+  });
+  it('Grand slam', function() {
+    let e = Event.parseEvent("HR/7D.3-H;2-H;1-H", ["batter", "1st", "2d", "3d"], 2, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.equal(4, e.rbi);
+  });
+  it('Solo HR (H)', function() {
+    let e = Event.parseEvent("H", ["batter", null, null, null], 0, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.equal(1, e.rbi);
+  });
+  it('ITP HR', function() {
+    let e = Event.parseEvent("HR7", ["batter", null, null, null], 0, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.equal(1, e.rbi);
+  });
+  it('Single with 2-H advance', function() {
+    let e = Event.parseEvent("S7/G78.2-H", ["batter", null, "2d", null], 0, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.equal(1, e.rbi);
+  });
+  it('Single with 2-H+3-H advance', function() {
+    let e = Event.parseEvent("S7/G78.3-H;2-H", ["batter", null, "2d", "3d"], 0, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.equal(2, e.rbi);
+  });
+  it('Single with 2-H+3-H advance but error allowing 2-H', function() {
+    let e = Event.parseEvent("S7/G78.3-H;2-H(E7/THH)", ["batter", null, "2d", "3d"], 0, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.equal(1, e.rbi);
+  });
+  it('Fielders Choice', function() {
+    let e = Event.parseEvent("FC5/G5-.3-H;2-2", ["batter", null, "2d", "3d"], 0, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.equal(1, e.rbi);
+  });
+  it('Sac Fly', function() {
+    let e = Event.parseEvent("SF9/F9D.3-H;2-3", ["batter", null, "2d", "3d"], 0, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.equal(1, e.rbi);
+  });
+  it('No RBI on GDP', function() {
+    let e = Event.parseEvent("64(1)3/GDP.3-H", ["batter", "1st", null, "3d"], 0, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.equal(0, e.rbi);
+  });
+  it('No RBI on K', function() {
+    let e = Event.parseEvent("K23.3-H(TH)", ["batter", null, null, "3d"], 0, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.equal(0, e.rbi);
+  });
+  it('No RBI on E with runner at 2B', function() {
+    let e = Event.parseEvent("E7/F7S.2-H", ["batter", null, "2d", null], 0, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.equal(0, e.rbi);
+  });
+  it('RBI on E with runner at 3B and < 2 out', function() {
+    let e = Event.parseEvent("E6/G6+.3-H", ["batter", null, null, "3d"], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.equal(1, e.rbi);
+  });
+  it('No RBI on E with runner at 3B and 2 out', function() {
+    let e = Event.parseEvent("E6/G6+.3-H", ["batter", null, null, "3d"], 2, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.equal(0, e.rbi);
+  });
+  it('RBI on E with runner at 3B and < 2 out *negated* by NR parameter', function() {
+    let e = Event.parseEvent("E6/G6+.3-H(NR)", ["batter", null, null, "3d"], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.equal(0, e.rbi);
+  });
+});
 
 
 
