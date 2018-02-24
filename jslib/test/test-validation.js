@@ -6,8 +6,9 @@ var fs = require('fs');
 
 var Event = require('../src/event.js')
 
-describe('Test validation against 2017 plays', function() {
-  let lines = fs.readFileSync('test/retrosheet-plays-1517.txt', 'utf-8').split('\n');
+let lines = fs.readFileSync('test/retrosheet-plays-1517.txt', 'utf-8').split('\n');
+
+describe('Test validation against ' + lines.length + ' Retrosheet plays from 2015-2017', function() {
   it('basic plays', function() {
     lines.forEach(function(line) {
       let rawEvent = Event.parseRawEvent(line);
