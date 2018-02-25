@@ -161,7 +161,7 @@ infoRecs.forEach(function(rec) {
   } else if ("date" === rec[1]) {
     game.start_date = moment(rec[2], "YYYY/MM/DD").format("YYYY-MM-DD");
   } else if ("starttime" === rec[1]) {
-    game.start_time = moment(rec[2], "h:ma").format("HH:mm");
+    game.start_time = moment(rec[2], "h:ma").format("HH:mm:ss");
   } else if ("daynight" === rec[1]) {
     game.daynight = rec[2];
   } else if ("site" === rec[1]) {
@@ -216,7 +216,7 @@ infoRecs.forEach(function(rec) {
     let time = Number.parseInt(rec[2]);
     let startTime = moment(game.start_date + " " + game.start_time, "YYYY-MM-DD HH:mm");
     let endTime = startTime.add(Number.parseInt(time), "minutes");
-    game.end_time = endTime.format("HH:mm");
+    game.end_time = endTime.format("HH:mm:ss");
   }
 });
 
@@ -248,8 +248,8 @@ startRecs.forEach(function(rec) {
     }
   });
   player.starter = true;
-  player.lineup_position = rec[4];
-  player.fielder_position = rec[5];
+  player.lineup_position = Number.parseInt(rec[4]);
+  player.fielder_position = Number.parseInt(rec[5]);
 });
 
 subRecs.forEach(function(rec) {
@@ -297,8 +297,8 @@ playRecs.forEach(function(rec) {
         o.substitution.player.player_last_name = rosterRec[1];
       }
     });
-    o.substitution.lineup_position = rec[4];
-    o.substitution.fielder_position = rec[5];
+    o.substitution.lineup_position = Number.parseInt(rec[4]);
+    o.substitution.fielder_position = Number.parseInt(rec[5]);
   }
   game.plays.push(o);
 });
@@ -343,13 +343,14 @@ function integratePitchFx(data) {
         let p = new Object;
         p.event_num = Number.parseInt(pitch.$.event_num);
         p.des = pitch.$.des;
-        p.velocity = pitch.$.start_speed;
+        p.velocity = Number.parseFloat(pitch.$.start_speed);
         p.pitch_type = pitch.$.pitch_type;
         p.batterMlbId = atbat.$.batter;
-        p.px = pitch.$.px;
-        p.pz = pitch.$.pz;
+        p.px = Number.parseFloat(pitch.$.px);
+        p.pz = Number.parseFloat(pitch.$.pz);
         p.type = pitch.$.type;
         p.code = pitch.$.code; // doesn't seem to exist before 2016?
+        p.time = pitch.$.tfs_zulu;
         abEvents.push(p);
       });
       abEvents.forEach(function(abEvent) {
@@ -445,6 +446,7 @@ function integratePitchFx(data) {
                     ep.location = new Object;
                     ep.location.x = event.px;
                     ep.location.z = event.pz;
+                    ep.time = event.time;
                     //console.log(play.inning + ": " + play.batting_player_id + ": " + "RETRO=" + c + ', PITCHFX=' + event.des);
                     // todo: test for incompatible pitches?  compare c to p.des / p.type / p.code
                   }
