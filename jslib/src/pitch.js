@@ -49,47 +49,21 @@ const PITCH_OUTCOMES = {
 };
 
 /*
-  We support two pitch sequence formats:
-
-    1. Standard Retrosheet format
-    2. Enhanced format, regex occurs 1..* separated by semi-colons: (.)?(.)/([0-9]+)/([A-Z]{2})/([0-9])
-       Where $1=PITCH_MODIFIER, $2=PITCH_OUTCOME, $3=velocity, $4=PITCH_TYPE, $5=location zone
+  Parses the legacy Retrosheet pitch sequence format into an object structure.
 */
 function parsePitchSequence(pitchSequenceText) {
 
     let ret = [];
 
-    let enhancedRegex = /(.)?(.)\/([0-9]+)\/([A-Z]{2})\/([0-9])/;
-
-    if (/;|\//.test(pitchSequenceText)) {
-      // enhanced format
-      let pitches = pitchSequenceText.split(";");
-      pitches.forEach(function(value) {
-        if (value.length > 0) {
-          let values = value.match(enhancedRegex);
-          if (values == null) {
-            throw new Error("Invalid enhanced pitch sequence: " + value);
-          }
-          let obj = new Object;
-          obj.modifier = values[1];
-          obj.outcome = values[2];
-          obj.velocity = values[3];
-          obj.type = values[4];
-          obj.location = values[5];
-          ret.push(obj);
-        }
-      });
-    } else {
-      for (let i=0; i < pitchSequenceText.length; i++) {
-        let obj = new Object;
-        let c = pitchSequenceText.charAt(i);
-        if (PITCH_MODIFIERS.hasOwnProperty(c)) {
-          obj.modifier = c;
-          c = pitchSequenceText.charAt(++i);
-        }
-        obj.outcome = c;
-        ret.push(obj);
+    for (let i=0; i < pitchSequenceText.length; i++) {
+      let obj = new Object;
+      let c = pitchSequenceText.charAt(i);
+      if (PITCH_MODIFIERS.hasOwnProperty(c)) {
+        obj.modifier = c;
+        c = pitchSequenceText.charAt(++i);
       }
+      obj.outcome = c;
+      ret.push(obj);
     }
 
     return ret;

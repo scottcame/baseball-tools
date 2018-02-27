@@ -13,21 +13,83 @@ function parseEvent(eventText, baseStateBeforePlay, outsBeforePlay, defensivePla
     return null;
   }
 
+  if (baseStateBeforePlay == null) {
+    throw new Error("Must provide non-null prior base state");
+  } else {
+    if (baseStateBeforePlay[0] == null) {
+      throw new Error("Every play must have a batter");
+    } else {
+      let pastValues = [];
+      baseStateBeforePlay.forEach(function(value) {
+        if (pastValues.includes(value)) {
+          throw new Error("Same runner cannot occupy multiple bases");
+          pastValues.push(value);
+          console.log(JSON.stringify(pastValues));
+        }
+      });
+    }
+  }
+
   let ret = new Object();
   ret.rawEvent = rawEvent;
 
   ret.playCode = getPlayCode(rawEvent);
   ret.outs = determineOuts(rawEvent, baseStateBeforePlay, defensivePlayers);
   ret.outsRecorded = determineOutsRecorded(ret.outs);
+  ret.outsAfterPlay = outsBeforePlay + ret.outsRecorded;
   ret.runsScoredBy = determineRunsScoredBy(rawEvent, baseStateBeforePlay);
   ret.runs = ret.runsScoredBy.length;
   ret.basesOccupiedAfterPlay = determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay);
 
   ret.ballInPlay = getBallInPlay(rawEvent);
 
-  ret.rbi = determineRBI(ret, outsBeforePlay);
+  ret.atBat = isAtBat(ret);
+  ret.hit = ["S","D","T","H","HR"].includes(ret.playCode);
+  ret.walk = ["W","IW"].includes(ret.playCode);
+  ret.strikeout = ret.playCode === "K";
 
-  ret.valid = rawEvent.basicPlayError == null && rawEvent.advancesErrors.length == 0 && rawEvent.modifiersErrors.length == 0;
+  ret.rbi = determineRBI(ret, outsBeforePlay);
+  ret.errors = determineErrors(rawEvent, defensivePlayers);
+
+  ret.valid = rawEvent.basicPlayParseError == null && rawEvent.advancesParseErrors.length == 0 && rawEvent.modifiersParseErrors.length == 0;
+
+  return ret;
+
+}
+
+function isAtBat(parsedEvent) {
+  return !(["W","IW","HP","NP","C"].includes(parsedEvent.playCode) || getIsSacFly(parsedEvent.rawEvent) || getIsSacBunt(parsedEvent.rawEvent));
+}
+
+function isBaserunningEvent(parsedEvent) {
+  return ["BK","CS","DI","OA","PB","WP","PO","POCS","SB"].includes(parsedEvent.playCode);
+}
+
+function determineErrors(rawEvent, defensivePlayers) {
+
+  let ret = [];
+  let eRegex = /E([0-9])/;
+
+  let extractError = function(m) {
+    if (m != null) {
+      ret.push(defensivePlayers[Number.parseInt(m[1])-1]);
+    }
+  };
+
+  extractError(rawEvent.basicPlay.match(eRegex));
+
+  rawEvent.advances.forEach(function(advance) {
+    advance.parameters.forEach(function(param) {
+      extractError(param.parameter.match(eRegex));
+      param.modifiers.forEach(function(modifier) {
+        extractError(modifier.match(eRegex));
+      });
+    });
+  });
+
+  rawEvent.modifiers.forEach(function(modifier) {
+    extractError(modifier.match(eRegex));
+  });
 
   return ret;
 
@@ -149,6 +211,8 @@ function getBallInPlay(rawEvent) {
   // todo: do we want to infer bip locations from base play notations...e.g., S7 means "middle" left field, 63 means "normal" ground ball to shortstop?
   // for now, we do not.  and i don't think we should...implies an accuracy that is not intended/supported by data.
   var ret = null;
+  var locationModifierFound = false;
+  var trajectoryModifierFound = false;
   rawEvent.modifiers.forEach(function(modifier, index) {
     if (modifier === "LDP") {
       modifier = "L";
@@ -158,17 +222,38 @@ function getBallInPlay(rawEvent) {
     let components = modifier.match(BATTED_BALL_LOCATION_REGEX);
     if (components != null) {
       if (ret != null) {
-        throw new Error("Multiple ball-in-play modifiers: " + rawEvent.rawText);
+        if (components[1] != null && trajectoryModifierFound) {
+          throw new Error("Duplicate trajectory modifiers in play: " + rawEvent.rawText);
+        } else if (components[2] != null && locationModifierFound) {
+          throw new Error("Duplicate location modifiers in play: " + rawEvent.rawText);
+        }
+      } else {
+        ret = new Object;
+        ret.bunt = null;
+        ret.flyBall = null;
+        ret.groundBall = null;
+        ret.lineDrive = null;
+        ret.location = null;
+        ret.soft = null;
+        ret.bunt = null;
+        ret.hard = null;
       }
-      ret = new Object;
-      ret.bunt = ["BP","BG","BGDP","BL","BP","BPDP"].includes(components[1]);
-      ret.flyBall = components[1] === "F";
-      ret.popup = ["P","BP","BPDP"].includes(components[1]);
-      ret.groundBall = ["G","GDP","GTP","BG","BGDP"].includes(components[1]);
-      ret.lineDrive = ["L","LDP","LTP","BLDP","BL"].includes(components[1]);
-      ret.location = components[2] == null || components[2] === '' ? null : components[2];
-      ret.soft = "-" === components[3];
-      ret.hard = "+" === components[3];
+      if (components[1] != null) {
+        ret.bunt = ["BP","BG","BGDP","BL","BP","BPDP"].includes(components[1]);
+        ret.flyBall = components[1] === "F";
+        ret.popup = ["P","BP","BPDP"].includes(components[1]);
+        ret.groundBall = ["G","GDP","GTP","BG","BGDP"].includes(components[1]);
+        ret.lineDrive = ["L","LDP","LTP","BLDP","BL"].includes(components[1]);
+        trajectoryModifierFound = true;
+      }
+      if (components[2] != null) {
+        ret.location = components[2] === '' ? null : components[2];
+        locationModifierFound = true;
+      }
+      if (components[3] != null) {
+        ret.soft = "-" === components[3];
+        ret.hard = "+" === components[3];
+      }
     }
   });
   return ret;
@@ -183,7 +268,7 @@ function getIsSacBunt(rawEvent) {
 }
 
 function getPlayCode(rawEvent) {
-  if (rawEvent.basicPlayError != null) {
+  if (rawEvent.basicPlayParseError != null) {
     return null;
   }
   let outRegex = /^([0-9]+)[\/\.$]/;
@@ -228,9 +313,9 @@ function parseRawEvent(eventText) {
   ret.modifiers = modifiersRegex.test(basicPlayAndModifiers) ? basicPlayAndModifiers.replace(innerRegex, "$2").split("/") : [];
   ret.rawText = eventText;
 
-  ret.basicPlayError = validateBasicPlay(ret.basicPlay);
-  ret.advancesErrors = validateAdvances(ret.advances);
-  ret.modifiersErrors = validateModifiers(ret.modifiers);
+  ret.basicPlayParseError = validateBasicPlay(ret.basicPlay);
+  ret.advancesParseErrors = validateAdvances(ret.advances);
+  ret.modifiersParseErrors = validateModifiers(ret.modifiers);
 
   ret.advances = parseAdvancesDetail(ret.advances);
 
@@ -427,9 +512,7 @@ function determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay) {
     }
   });
 
-  ret[0] = /^(?:S[1-9]?|E[1-9]?|W|IW|I|HP|C)$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[0];
-  ret[1] = /^D[1-9]?$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[1];
-  ret[2] = /^T[1-9]?$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[2];
+  let batterExplicit = false;
 
   rawEvent.advances.forEach(function(advance) {
     if(advance.runnerSafe) {
@@ -437,12 +520,30 @@ function determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay) {
       let postState = advance.endingBase;
       if (postState != "H") {
         if (preState === "B") {
+          batterExplicit = true;
           preState = "0";
         }
         ret[Number.parseInt(postState)-1] = baseStateBeforePlay[Number.parseInt(preState)];
       }
     }
   });
+
+  if (!batterExplicit) {
+    ret[0] = /^(?:S[1-9]?|E[1-9]?|W|IW|I|HP|C)$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[0];
+    ret[1] = /^D[1-9]?$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[1];
+    ret[2] = /^T[1-9]?$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[2];
+  }
+
+  let sbRegex = /^(?:SB)([23H])/;
+
+  if (sbRegex.test(rawEvent.basicPlay)) {
+    let baseStr = rawEvent.basicPlay.replace(sbRegex, "$1");
+    let base = (baseStr === 'H' ? 3 : Number.parseInt(baseStr)-1);
+    if (base < 3) {
+      ret[base] = ret[base-1];
+    }
+    ret[base-1] = null;
+  }
 
   let poRegex = /^(?:PO|K\+PO)([123])/;
 
@@ -478,3 +579,4 @@ module.exports.validateAdvances = validateAdvances;
 module.exports.validateModifiers = validateModifiers;
 module.exports.parseAdvancesDetail = parseAdvancesDetail;
 module.exports.determineRBI = determineRBI;
+module.exports.determineErrors = determineErrors;

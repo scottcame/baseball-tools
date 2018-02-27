@@ -707,6 +707,21 @@ describe('Event.determineBasesOccupiedAfterPlay (baserunning plays)', function()
     let o = Event.parseRawEvent("POCS2(1361)");
     assert.deepEqual([null, null, "third"], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, "third"]));
   });
+  it('[batter,first,null,null] + SB2 -> [null,first,null]', function() {
+    let o = Event.parseRawEvent("SB2");
+    assert.deepEqual([null, "first", null], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]));
+  });
+  it('[batter,null,null,third] + SBH -> [null,null,null]', function() {
+    let o = Event.parseRawEvent("SBH");
+    assert.deepEqual([null, null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, "third"]));
+  });
+  it('[batter,null,second,null] + E3/TH/G.2-H(NR);B-2 -> [null,batter,null]', function() {
+    let o = Event.parseRawEvent("E3/TH/G.2-H(NR);B-2");
+    assert.deepEqual([null, "batter", null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, "second", null]));
+    let rsby = Event.determineRunsScoredBy(o, ["batter", null, "second", null]);
+    assert.equal(1, rsby.length);
+    assert.equal(rsby[0].runner, "second");
+  });
 });
 
 describe('Event.determineBasesOccupiedAfterPlay (explicits, runners on)', function() {
@@ -756,14 +771,19 @@ describe('Ball In Play location tests', function() {
     assert.throws(() => {
       let o = Event.parseRawEvent("7/F7/G8");
       Event.getBallInPlay(o);
-    }, /Multiple.+modifiers/);
+    }, /Duplicate.+modifiers/);
   });
   it('S4/P4MS', function() {
     let o = Event.parseRawEvent("S4/P4MS");
-    Event.getBallInPlay(o);
     let bip = Event.getBallInPlay(o);
     assert.equal(true, bip.popup);
     assert.equal("4MS", bip.location);
+  });
+  it('Multiple BIP: HR/8/L.3-H', function() {
+    let o = Event.parseRawEvent("HR/8/L.3-H");
+    let bip = Event.getBallInPlay(o);
+    assert.equal(true, bip.lineDrive);
+    assert.equal("8", bip.location);
   });
 });
 
@@ -983,8 +1003,32 @@ describe('RBI calculations', function() {
   });
 });
 
-
-
+describe('Error determinations', function() {
+  it('No errors', function() {
+    let errors = Event.determineErrors(Event.parseRawEvent("S7/G78"), ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.deepEqual([], errors);
+  });
+  it('Basic fielding error', function() {
+    let errors = Event.determineErrors(Event.parseRawEvent("E7/G78"), ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.deepEqual(["7"], errors);
+  });
+  it('Throwing error allowing advance', function() {
+    let errors = Event.determineErrors(Event.parseRawEvent("S7/G78.1-3(E7/TH)"), ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.deepEqual(["7"], errors);
+  });
+  it('Fielding error compounded by infielder error allowing advance', function() {
+    let errors = Event.determineErrors(Event.parseRawEvent("E7/G78.2XH(E2)"), ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.deepEqual(["7","2"], errors);
+  });
+  it('Interference error', function() {
+    let errors = Event.determineErrors(Event.parseRawEvent("C/E2"), ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.deepEqual(["2"], errors);
+  });
+  it('Pickoff error', function() {
+    let errors = Event.determineErrors(Event.parseRawEvent("PO1(E3)"), ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.deepEqual(["3"], errors);
+  });
+});
 
 
 

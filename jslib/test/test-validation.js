@@ -26,11 +26,11 @@ describe('Test validation against ' + lines.length + ' Retrosheet plays from 201
       let rawEvent = Event.parseRawEvent(line);
       if (rawEvent != null) {
         let rawEvent = Event.parseRawEvent(line);
-        let error = rawEvent.advancesErrors;
+        let error = rawEvent.advancesParseErrors;
         if (error != null && error.length > 0) {
           console.log("Invalid: '" + line + "'");
           console.log(rawEvent.advances);
-          console.log(rawEvent.advancesErrors);
+          console.log(rawEvent.advancesParseErrors);
         }
         assert.ok(error.length == 0);
       }
@@ -41,11 +41,11 @@ describe('Test validation against ' + lines.length + ' Retrosheet plays from 201
       let rawEvent = Event.parseRawEvent(line);
       if (rawEvent != null) {
         let rawEvent = Event.parseRawEvent(line);
-        let error = rawEvent.modifiersErrors;
+        let error = rawEvent.modifiersParseErrors;
         if (error != null && error.length > 0) {
           console.log("Invalid: '" + line + "'");
           console.log(rawEvent.modifiers);
-          console.log(rawEvent.modifiersErrors);
+          console.log(rawEvent.modifiersParseErrors);
         }
         assert.ok(error.length == 0);
       }
