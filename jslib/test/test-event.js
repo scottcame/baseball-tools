@@ -722,6 +722,14 @@ describe('Event.determineBasesOccupiedAfterPlay (baserunning plays)', function()
     assert.equal(1, rsby.length);
     assert.equal(rsby[0].runner, "second");
   });
+  it('[batter,first,second,null] + 46(1)/FO/G.2-3 -> [batter,null,second]', function() {
+    let o = Event.parseRawEvent("46(1)/FO/G.2-3");
+    assert.deepEqual(["batter",null,"second"], Event.determineBasesOccupiedAfterPlay(o, ["batter","first","second",null]));
+    let defense = ["P", "C", "1B", "2B", "3B", "SS", "LF", "CF", "RF"];
+    let outs = Event.determineOuts(o, ["batter","first","second",null], defense);
+    assert.equal(1, outs.length);
+    assert.equal(outs[0].runnerId, "first");
+  });
 });
 
 describe('Event.determineBasesOccupiedAfterPlay (explicits, runners on)', function() {
@@ -826,6 +834,7 @@ describe('determineOuts: double plays in various forms', function() {
     assert.equal("LF", out.assistFielders[0].fielderId);
     assert.equal("6", out.assistFielders[1].fielderPosition);
     assert.equal("SS", out.assistFielders[1].fielderId);
+    assert.ok(Event.isDoublePlay(o));
   });
   it('7/LDP.1X1(763)', function() {
     let o = Event.parseRawEvent("7/LDP.1X1(763)");
@@ -852,6 +861,7 @@ describe('determineOuts: double plays in various forms', function() {
     assert.equal("LF", out.assistFielders[0].fielderId);
     assert.equal("6", out.assistFielders[1].fielderPosition);
     assert.equal("SS", out.assistFielders[1].fielderId);
+    assert.ok(Event.isDoublePlay(o));
   });
 });
 

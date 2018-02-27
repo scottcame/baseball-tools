@@ -22,12 +22,14 @@ function getGameSummaryToPlay(game, playIndex) {
   ret.visitor_team_stats.hits = 0;
   ret.visitor_team_stats.errors = 0;
   ret.visitor_team_stats.runs_per_inning = [];
+  ret.visitor_team_stats.lob = 0;
 
   ret.home_team_stats = new Object;
   ret.home_team_stats.score = 0;
   ret.home_team_stats.hits = 0;
   ret.home_team_stats.errors = 0;
   ret.home_team_stats.runs_per_inning = [];
+  ret.home_team_stats.lob = 0;
 
   ret.box = new Object;
   ret.box.home_team = new Object;
@@ -141,6 +143,11 @@ function getGameSummaryToPlay(game, playIndex) {
           }
         })
       });
+
+      if (play.enhanced_play.outsAfterPlay === 3) {
+        let inningLob = play.enhanced_play.basesOccupiedAfterPlay.reduce(function(accumulator, value) { return accumulator += (value != null); }, 0);
+        offenseTeamStats.lob += inningLob;
+      }
 
     } else if (play.type === "substitution") {
       currentLineups = Game.applySubstitution(game, currentLineups, play);

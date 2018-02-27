@@ -37,6 +37,7 @@ function parseEvent(eventText, baseStateBeforePlay, outsBeforePlay, defensivePla
   ret.outs = determineOuts(rawEvent, baseStateBeforePlay, defensivePlayers);
   ret.outsRecorded = determineOutsRecorded(ret.outs);
   ret.outsAfterPlay = outsBeforePlay + ret.outsRecorded;
+  ret.doublePlay = isDoublePlay(rawEvent);
   ret.runsScoredBy = determineRunsScoredBy(rawEvent, baseStateBeforePlay);
   ret.runs = ret.runsScoredBy.length;
   ret.basesOccupiedAfterPlay = determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay);
@@ -55,6 +56,10 @@ function parseEvent(eventText, baseStateBeforePlay, outsBeforePlay, defensivePla
 
   return ret;
 
+}
+
+function isDoublePlay(rawEvent) {
+  return rawEvent.modifiers.reduce(function(accumulator, value) { return accumulator || ["GDP","LDP","DP"].includes(value); }, false);
 }
 
 function isAtBat(parsedEvent) {
@@ -529,7 +534,7 @@ function determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay) {
   });
 
   if (!batterExplicit) {
-    ret[0] = /^(?:S[1-9]?|E[1-9]?|W|IW|I|HP|C)$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[0];
+    ret[0] = /^(?:S[1-9]?|E[1-9]?|W|IW|I|HP|C|[1-9]+\([123]\))$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[0];
     ret[1] = /^D[1-9]?$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[1];
     ret[2] = /^T[1-9]?$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[2];
   }
@@ -580,3 +585,4 @@ module.exports.validateModifiers = validateModifiers;
 module.exports.parseAdvancesDetail = parseAdvancesDetail;
 module.exports.determineRBI = determineRBI;
 module.exports.determineErrors = determineErrors;
+module.exports.isDoublePlay = isDoublePlay;
