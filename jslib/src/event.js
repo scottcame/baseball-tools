@@ -45,6 +45,7 @@ function parseEvent(eventText, baseStateBeforePlay, outsBeforePlay, defensivePla
 
   ret.ballInPlay = getBallInPlay(rawEvent);
 
+  ret.plateAppearance = !isBaserunningEvent(ret) && ret.playCode != 'NP';
   ret.atBat = isAtBat(ret);
   ret.hit = ["S","D","T","H","HR"].includes(ret.playCode);
   ret.walk = ["W","IW"].includes(ret.playCode);
@@ -64,7 +65,7 @@ function isDoublePlay(rawEvent) {
 }
 
 function isAtBat(parsedEvent) {
-  return !(["W","IW","HP","NP","C"].includes(parsedEvent.playCode) || getIsSacFly(parsedEvent.rawEvent) || getIsSacBunt(parsedEvent.rawEvent));
+  return !(["W","IW","HP","NP","C"].includes(parsedEvent.playCode) || getIsSacFly(parsedEvent.rawEvent) || getIsSacBunt(parsedEvent.rawEvent) || isBaserunningEvent(parsedEvent));
 }
 
 function isBaserunningEvent(parsedEvent) {

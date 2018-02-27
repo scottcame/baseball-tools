@@ -70,7 +70,10 @@ function parseGame(game) {
       if (play.batting_team_id === ret.visitor_team.team_id) {
         defensivePlayers = currentLineups.current_home_defense;
       }
-      let baseStateBeforePlay = [play.batting_player_id].concat(lastBaseState);
+      let batterBaseState = new Object;
+      batterBaseState.batting_player_id = play.batting_player_id;
+      batterBaseState.responsible_pitcher_player_id = defensivePlayers[0];
+      let baseStateBeforePlay = [batterBaseState].concat(lastBaseState);
       //console.log("Updating baseStateBeforePlay=" + JSON.stringify(baseStateBeforePlay));
       play = enhancePlay(play, baseStateBeforePlay, outs, defensivePlayers);
       outs += play.enhanced_play.outsRecorded;
