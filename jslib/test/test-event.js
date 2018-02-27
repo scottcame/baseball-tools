@@ -1040,6 +1040,11 @@ describe('Error determinations', function() {
   });
 });
 
-
+describe('Random bugfixes', function() {
+  it('2017 WS Game 7 LAN 5th Turner single to third', function() {
+    let enhancedEvent = Event.parseEvent("S57/G.1-2", ["turner", "seager", null, null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.deepEqual(["turner", "seager", null], enhancedEvent.basesOccupiedAfterPlay);
+  });
+});
 
 // end
