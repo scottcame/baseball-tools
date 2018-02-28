@@ -2,6 +2,7 @@
 
 var assert = require('assert');
 var Game = require('../src/game.js')
+var Summary = require('../src/summary.js')
 var fs = require('fs');
 
 describe('Initialize Batting Order Tests', function() {
@@ -88,6 +89,7 @@ describe('Substitution Tests', function() {
     ret.enhancedGame = enhancedGame;
     return ret;
   };
+  let lastBaseState = [null, null, null];
   it('Basic visitor', function() {
     let setupStructure = setup();
     let subPlay = new Object;
@@ -97,7 +99,7 @@ describe('Substitution Tests', function() {
     subPlay.substitution.player.player_id = "v1";
     subPlay.substitution.lineup_position = 2;
     subPlay.substitution.fielder_position = 4;
-    Game.applySubstitution(setupStructure.enhancedGame, setupStructure.currentLineups, subPlay);
+    Game.applySubstitution(setupStructure.enhancedGame, setupStructure.currentLineups, subPlay, lastBaseState);
     assert.equal("v1", setupStructure.currentLineups.current_visitor_batting_order[1]);
     assert.equal("v1", setupStructure.currentLineups.current_visitor_defense[3]);
   });
@@ -110,7 +112,7 @@ describe('Substitution Tests', function() {
     subPlay.substitution.player.player_id = "h3";
     subPlay.substitution.lineup_position = 7;
     subPlay.substitution.fielder_position = 3;
-    Game.applySubstitution(setupStructure.enhancedGame, setupStructure.currentLineups, subPlay);
+    Game.applySubstitution(setupStructure.enhancedGame, setupStructure.currentLineups, subPlay, lastBaseState);
     assert.equal("h3", setupStructure.currentLineups.current_home_batting_order[6]);
     assert.equal("h3", setupStructure.currentLineups.current_home_defense[2]);
   });
@@ -125,7 +127,7 @@ describe('Substitution Tests', function() {
     subPlay.substitution.fielder_position = 3;
     let priorBattingOrder = setupStructure.currentLineups.current_home_batting_order;
     let priorDefense = setupStructure.currentLineups.current_home_defense;
-    Game.applySubstitution(setupStructure.enhancedGame, setupStructure.currentLineups, subPlay);
+    Game.applySubstitution(setupStructure.enhancedGame, setupStructure.currentLineups, subPlay, lastBaseState);
     assert.deepEqual(priorBattingOrder, setupStructure.currentLineups.current_home_batting_order);
     assert.deepEqual(priorDefense, setupStructure.currentLineups.current_home_defense);
   });
@@ -139,7 +141,7 @@ describe('Substitution Tests', function() {
     subPlay.substitution.lineup_position = 2;
     subPlay.substitution.fielder_position = 11;
     let priorDefense = setupStructure.currentLineups.current_home_defense;
-    Game.applySubstitution(setupStructure.enhancedGame, setupStructure.currentLineups, subPlay);
+    Game.applySubstitution(setupStructure.enhancedGame, setupStructure.currentLineups, subPlay, lastBaseState);
     assert.equal("h1", setupStructure.currentLineups.current_home_batting_order[1]);
     assert.deepEqual(priorDefense, setupStructure.currentLineups.current_home_defense);
   });
@@ -151,5 +153,203 @@ describe('Enhanced game play tests', function() {
     let enhancedGames = Game.parseGames(games);
     fs.writeFileSync('LAN201711010-enhanced.json', JSON.stringify(enhancedGames, null, 2));
     // for now, we just make sure there are no errors.
+  });
+});
+
+describe("Game boundary conditions", function() {
+  it('Game with no plays', function() {
+    let game = new Object;
+    game.home_team = new Object;
+    game.home_team.team_id = "HOM";
+    let lineup = [];
+    for (let i=0;i < 15;i++) {
+      let o = new Object;
+      o.fielder_position = i+1;
+      o.lineup_position = i+1;
+      o.player = new Object;
+      o.player.player_id = "PH" + i;
+      o.player.player_last_name = "P home " + i;
+      o.starter = i < 9;
+      lineup.push(o);
+    }
+    game.home_team.lineup = lineup;
+    game.visitor_team = new Object;
+    game.visitor_team.team_id = "VIZ";
+    lineup = [];
+    for (let i=0;i < 16;i++) {
+      let o = new Object;
+      o.fielder_position = i+1;
+      o.lineup_position = i+1;
+      o.player = new Object;
+      o.player.player_id = "PV" + i;
+      o.player.player_last_name = "P viz " + i;
+      o.starter = i < 9;
+      lineup.push(o);
+    }
+    game.visitor_team.lineup = lineup;
+    game.game_id = "MyGame";
+    game.plays = [];
+    let eg = Game.parseGame(game);
+    assert.equal(game.plays.length, eg.plays.length);
+    let s = Summary.getGameSummary(eg);
+  });
+  it('Unexpected batter', function() {
+    let game = new Object;
+    game.home_team = new Object;
+    game.home_team.team_id = "HOM";
+    let lineup = [];
+    for (let i=0;i < 15;i++) {
+      let o = new Object;
+      o.fielder_position = i+1;
+      o.lineup_position = i+1;
+      o.player = new Object;
+      o.player.player_id = "PH" + i;
+      o.player.player_last_name = "P home " + i;
+      o.starter = i < 9;
+      lineup.push(o);
+    }
+    game.home_team.lineup = lineup;
+    game.visitor_team = new Object;
+    game.visitor_team.team_id = "VIZ";
+    lineup = [];
+    for (let i=0;i < 16;i++) {
+      let o = new Object;
+      o.fielder_position = i+1;
+      o.lineup_position = i+1;
+      o.player = new Object;
+      o.player.player_id = "PV" + i;
+      o.player.player_last_name = "P viz " + i;
+      o.starter = i < 9;
+      lineup.push(o);
+    }
+    game.visitor_team.lineup = lineup;
+    game.game_id = "MyGame";
+    game.plays = [];
+    game.plays.push({
+      "type": "play",
+      "inning": 1,
+      "batting_team_id": "VIZ",
+      "batting_player_id": "PV1",
+      "count": "02",
+      "pitch_sequence": "SCX",
+      "play": "31/G-",
+      "enhanced_pitch_sequence": [
+        {
+          "type": "S",
+          "velocity": 95.7,
+          "pitch_type": "FF",
+          "location": {
+            "x": 0.320106343279761,
+            "z": 1.96774632961962
+          },
+          "time": "2017-11-02T00:26:42Z"
+        },
+        {
+          "type": "C",
+          "velocity": 84.7,
+          "pitch_type": "SL",
+          "location": {
+            "x": -0.191016133472106,
+            "z": 2.00797747217167
+          },
+          "time": "2017-11-02T00:27:04Z"
+        },
+        {
+          "type": "X",
+          "velocity": 87.5,
+          "pitch_type": "CH",
+          "location": {
+            "x": 0.0696062995225629,
+            "z": 2.69852350199868
+          },
+          "time": "2017-11-02T00:27:30Z"
+        }
+      ]
+    });
+    game.plays.push({
+      "type": "play",
+      "inning": 1,
+      "batting_team_id": "VIZ",
+      "batting_player_id": "PV8", // should be PV 2
+      "count": "02",
+      "pitch_sequence": "SCX",
+      "play": "31/G-",
+      "enhanced_pitch_sequence": [
+        {
+          "type": "S",
+          "velocity": 95.7,
+          "pitch_type": "FF",
+          "location": {
+            "x": 0.320106343279761,
+            "z": 1.96774632961962
+          },
+          "time": "2017-11-02T00:26:42Z"
+        },
+        {
+          "type": "C",
+          "velocity": 84.7,
+          "pitch_type": "SL",
+          "location": {
+            "x": -0.191016133472106,
+            "z": 2.00797747217167
+          },
+          "time": "2017-11-02T00:27:04Z"
+        },
+        {
+          "type": "X",
+          "velocity": 87.5,
+          "pitch_type": "CH",
+          "location": {
+            "x": 0.0696062995225629,
+            "z": 2.69852350199868
+          },
+          "time": "2017-11-02T00:27:30Z"
+        }
+      ]
+    });
+    game.plays.push({
+      "type": "play",
+      "inning": 1,
+      "batting_team_id": "VIZ",
+      "batting_player_id": "PV888", // should be PV 3, and PV888 doesn't even exist
+      "count": "02",
+      "pitch_sequence": "SCX",
+      "play": "31/G-",
+      "enhanced_pitch_sequence": [
+        {
+          "type": "S",
+          "velocity": 95.7,
+          "pitch_type": "FF",
+          "location": {
+            "x": 0.320106343279761,
+            "z": 1.96774632961962
+          },
+          "time": "2017-11-02T00:26:42Z"
+        },
+        {
+          "type": "C",
+          "velocity": 84.7,
+          "pitch_type": "SL",
+          "location": {
+            "x": -0.191016133472106,
+            "z": 2.00797747217167
+          },
+          "time": "2017-11-02T00:27:04Z"
+        },
+        {
+          "type": "X",
+          "velocity": 87.5,
+          "pitch_type": "CH",
+          "location": {
+            "x": 0.0696062995225629,
+            "z": 2.69852350199868
+          },
+          "time": "2017-11-02T00:27:30Z"
+        }
+      ]
+    });
+    let eg = Game.parseGame(game);
+    assert.equal(game.plays.length, eg.plays.length);
+    let s = Summary.getGameSummary(eg);
   });
 });
