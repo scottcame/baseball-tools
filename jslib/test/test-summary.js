@@ -5,6 +5,38 @@ var fs = require('fs');
 var Summary = require('../src/summary.js')
 var Game = require('../src/game.js')
 
+describe('SummaryTest: Entire game 2 - DH, CS, and pinch runners', function() {
+
+  let gameFile = "test/HOU201710290.json";
+  // find box score at http://www.retrosheet.org/boxesetc/2017/B10290HOU2017.htm
+  let games = JSON.parse(fs.readFileSync(gameFile, 'utf8'));
+  let enhancedGames = Game.parseGames(games);
+  fs.writeFileSync('HOU201710290-enhanced.json', JSON.stringify(enhancedGames, null, 2));
+  let summary = Summary.getGameSummary(enhancedGames.games[0]);
+
+  it('Headline', function() {
+    assert.equal(12, summary.visitor_team_stats.score);
+    assert.equal(13, summary.home_team_stats.score);
+  });
+
+  it("Pinch runner business", function() {
+    assert.deepEqual(summary.box.home_team.batting[4][0], ["gurry001", 5,1,2,3,0,1,6,1]);
+    assert.deepEqual(summary.box.home_team.batting[4][1], ["maybc001", 0,0,0,0,0,0,1,0]);
+    assert.deepEqual(summary.box.home_team.batting[8][0], ["mccab002", 4,1,1,1,0,1,12,1]);
+    assert.deepEqual(summary.box.home_team.batting[8][1], ["fishd001", 0,1,0,0,0,0,0,0]);
+  });
+
+  it("DH", function() {
+    assert.deepEqual(summary.box.home_team.batting[9][0], ["keucd001", 0,0,0,0,0,0,1,2]);
+    assert.deepEqual(summary.box.home_team.batting[9][3], ["peacb001", 0,0,0,0,0,0,0,1]);
+  });
+
+  it("Caught stealing", function() {
+    //console.log(JSON.stringify(summary.visitor_team_stats.cs));
+  });
+
+});
+
 describe('SummaryTest: Entire game', function() {
 
   let gameFile = "test/LAN201711010.json";
@@ -56,6 +88,16 @@ describe('SummaryTest: Entire game', function() {
     assert.deepEqual(summary.home_team_stats.sb, []);
     assert.deepEqual(summary.home_team_stats.cs, []);
     assert.deepEqual(summary.home_team_stats.errors, ["bellc002"]);
+  });
+
+  it('Pitching summary stats - home team', function() {
+    assert.deepEqual(summary.home_team_stats.wp, [{"batting_player_id":"reddj001","pitcher_player_id":"kersc001"}]);
+    assert.deepEqual(summary.home_team_stats.ibb, [{"batting_player_id":"gonzm002","pitcher_player_id":"kersc001"},{"batting_player_id":"gatte001","pitcher_player_id":"kersc001"}]);
+  });
+
+  it('Pitching summary stats - visitor team', function() {
+    assert.deepEqual(summary.visitor_team_stats.wp, []);
+    assert.deepEqual(summary.visitor_team_stats.ibb, []);
   });
 
   it('Batting boxes', function() {
