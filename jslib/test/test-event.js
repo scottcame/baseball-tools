@@ -922,8 +922,8 @@ describe('Advances detail', function() {
     assert.equal("UR", o[0].parameters[0].parameter);
     assert.equal("NR", o[0].parameters[1].parameter);
   });
-  it('[3-H(E7/TH)]', function() {
-    let o = Event.parseAdvancesDetail(["3-H(E7/TH)"]);
+  it('[3XH(E7/TH)]', function() {
+    let o = Event.parseAdvancesDetail(["3XH(E7/TH)"]);
     assert.equal(1, o.length);
     assert.equal("3", o[0].startingBase);
     assert.equal(true, o[0].runnerSafe);
@@ -976,7 +976,7 @@ describe('RBI calculations', function() {
     assert.equal(2, e.rbi);
   });
   it('Single with 2-H+3-H advance but error allowing 2-H', function() {
-    let e = Event.parseEvent("S7/G78.3-H;2-H(E7/THH)", ["batter", null, "2d", "3d"], 0, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    let e = Event.parseEvent("S7/G78.3-H;2XH(E7/TH)", ["batter", null, "2d", "3d"], 0, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
     assert.equal(1, e.rbi);
   });
   it('Fielders Choice', function() {
@@ -1045,6 +1045,67 @@ describe('Random bugfixes', function() {
     let enhancedEvent = Event.parseEvent("S57/G.1-2", ["turner", "seager", null, null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
     assert.deepEqual(["turner", "seager", null], enhancedEvent.basesOccupiedAfterPlay);
   });
+  it('Empty outs array on S5/G.B-2(E5/TH)', function() {
+    let enhancedEvent = Event.parseEvent("S5/G.B-2(E5/TH)", ["batter", null, null, null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.deepEqual([], enhancedEvent.outs);
+  });
+  it('FC not properly handled', function() {
+    let enhancedEvent = Event.parseEvent("FC1/BG.2X3(15)", ["batter", null, "second", null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.deepEqual(["batter", null, null], enhancedEvent.basesOccupiedAfterPlay);
+  });
+  it('POCS (2017 WS Game 5)', function() {
+
+    let runners = [
+      {
+        "batting_player_id": "puig",
+        "responsible_pitcher_player_id": "keucd001"
+      },
+      {
+        "batting_player_id": "forsl001",
+        "responsible_pitcher_player_id": "keucd001"
+      },
+      null,
+      {
+        "batting_player_id": "herne001",
+        "responsible_pitcher_player_id": "keucd001"
+      }
+    ];
+
+    let enhancedEvent = Event.parseEvent("POCS2(1E3).3-H(UR)", runners, 0, ["keucd001", '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.deepEqual([null, { "batting_player_id": "forsl001", "responsible_pitcher_player_id": "keucd001" }, null], enhancedEvent.basesOccupiedAfterPlay);
+    assert.deepEqual([
+      {
+        "runner": {
+          "batting_player_id": "herne001",
+          "responsible_pitcher_player_id": "keucd001"
+        },
+        "unearnedIndicated": 1,
+        "noRbiIndicated": 0
+      }
+    ], enhancedEvent.runsScoredBy);
+    assert.deepEqual([
+      {
+        "recorded": false,
+        "play": "1E3",
+        "runnerStartingBase": "1",
+        "runnerId": {
+          "batting_player_id": "forsl001",
+          "responsible_pitcher_player_id": "keucd001"
+        },
+        "putoutFielderPosition": null,
+        "putoutFielderId": null,
+        "assistFielders": [
+          {
+            "fielderPosition": "1",
+            "fielderId": "keucd001"
+          }
+        ]
+      }
+    ], enhancedEvent.outs);
+    assert.equal(0, enhancedEvent.outsRecorded);
+    assert.equal("POCS", enhancedEvent.playCode);
+  });
+
 });
 
 // end

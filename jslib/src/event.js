@@ -196,7 +196,7 @@ function parseAdvancesDetail(rawAdvances) {
           let p = new Object;
           let splitParam = param.split("/");
           p.parameter = splitParam[0];
-          if (/E/.test(p.parameter)) {
+          if (/E/.test(p.parameter) && a.type === "out") {
             // negated out
             a.type = "safe-on-error";
           }
@@ -282,8 +282,11 @@ function getPlayCode(rawEvent) {
   let testRegex = outRegex;
   if (!outRegex.test(rawEvent.basicPlay)) {
     let kwPlusRegex = /^([KW])\+.+/;
+    let csWithParamRegex = /^(CS|POCS)[123H].*/;
     if (kwPlusRegex.test(rawEvent.basicPlay)) {
       testRegex = kwPlusRegex;
+    } else if (csWithParamRegex.test(rawEvent.basicPlay)) {
+      testRegex = csWithParamRegex;
     } else {
       testRegex = /^([A-Z]+)[\/\.0-9$]+/;
     }
@@ -536,7 +539,7 @@ function determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay) {
   });
 
   if (!batterExplicit) {
-    ret[0] = /^(?:S[1-9]*|E[1-9]?|W|IW|I|HP|C|[1-9]+\([123]\))$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[0];
+    ret[0] = /^(?:S[1-9]*|E[1-9]?|FC[1-9]?|W|IW|I|HP|C|[1-9]+\([123]\))$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[0];
     ret[1] = /^D[1-9]?$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[1];
     ret[2] = /^T[1-9]?$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[2];
   }
@@ -552,18 +555,23 @@ function determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay) {
     ret[base-1] = null;
   }
 
-  let poRegex = /^(?:PO|K\+PO)([123])/;
+  let m = rawEvent.basicPlay.match(/^(?:PO|K\+PO)([123])(\([1-9E].*\))?/);
 
-  if (poRegex.test(rawEvent.basicPlay)) {
-    let base = Number.parseInt(rawEvent.basicPlay.replace(poRegex, "$1"));
-    ret[base-1] = null;
+  if (m != null) {
+    let base = Number.parseInt(m[1]);
+    if (m[2] == null || !/E/.test(m[2])) {
+      ret[base-1] = null;
+    }
   }
 
-  let csRegex = /^(?:POCS|CS|K\+CS)([23H])/;
+  m = rawEvent.basicPlay.match(/^(?:POCS|CS|K\+CS)([23H])(\([1-9E].*\))?/);
 
-  if (csRegex.test(rawEvent.basicPlay)) {
-    let baseStr = rawEvent.basicPlay.replace(csRegex, "$1");
+  if (m != null) {
+    let baseStr = m[1];
     let base = (baseStr === 'H' ? 3 : Number.parseInt(baseStr) - 1);
+    if (m[2] != null && /E/.test(m[2]) && base < 3) {
+      ret[base] = ret[base-1];
+    }
     ret[base-1] = null;
   }
 
