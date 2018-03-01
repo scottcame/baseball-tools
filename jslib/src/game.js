@@ -136,6 +136,26 @@ function initializeLineups(enhancedGame) {
   ret.current_home_batting_order = initializeBattingOrder(enhancedGame.home_team);
   ret.current_visitor_defense = initializeDefense(enhancedGame.visitor_team);
   ret.current_home_defense = initializeDefense(enhancedGame.home_team);
+  ret.current_visitor_positions = [];
+  ret.current_visitor_batting_order.forEach(function(player) {
+    ret.current_visitor_defense.some(function(dplayer, index) {
+      if (player === dplayer) {
+        ret.current_visitor_positions.push(index+1);
+        return true;
+      }
+      return false;
+    })
+  });
+  ret.current_home_positions = [];
+  ret.current_home_batting_order.forEach(function(player) {
+    ret.current_home_defense.some(function(dplayer, index) {
+      if (player === dplayer) {
+        ret.current_home_positions.push(index+1);
+        return true;
+      }
+      return false;
+    })
+  });
   return ret;
 }
 
@@ -145,10 +165,12 @@ function applySubstitution(enhancedGame, currentLineups, substitutionPlay, lastB
 
   let battingOrder = null;
   let defense = null;
+  let positions = null;
   enhancedGame.visitor_team.lineup.some(function(spot) {
     if (spot.player.player_id === player) {
       battingOrder = currentLineups.current_visitor_batting_order;
       defense = currentLineups.current_visitor_defense;
+      positions = currentLineups.current_visitor_positions;
       return true;
     }
     return false;
@@ -158,6 +180,7 @@ function applySubstitution(enhancedGame, currentLineups, substitutionPlay, lastB
       if (spot.player.player_id === player) {
         battingOrder = currentLineups.current_home_batting_order;
         defense = currentLineups.current_home_defense;
+        positions = currentLineups.current_home_positions;
         return true;
       }
       return false;
@@ -173,9 +196,11 @@ function applySubstitution(enhancedGame, currentLineups, substitutionPlay, lastB
     if (substitutionPlay.substitution.lineup_position == 0) {
       currentPlayer = battingOrder[battingOrder.length-1];
       battingOrder[battingOrder.length-1] = player;
+      positions[battingOrder.length-1] = 1;
     } else {
       currentPlayer = battingOrder[substitutionPlay.substitution.lineup_position-1];
       battingOrder[substitutionPlay.substitution.lineup_position-1] = player;
+      positions[substitutionPlay.substitution.lineup_position-1] = substitutionPlay.substitution.fielder_position;
     }
 
     if (![11,12,13,14].includes(substitutionPlay.substitution.fielder_position)) {

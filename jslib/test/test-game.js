@@ -353,3 +353,24 @@ describe("Game boundary conditions", function() {
     let s = Summary.getGameSummary(eg);
   });
 });
+
+describe('Positions tests', function() {
+  it('No DH', function() {
+    let games = JSON.parse(fs.readFileSync("test/LAN201711010.json", 'utf8'));
+    let enhancedGames = Game.parseGames(games);
+    let g = enhancedGames.games[0];
+    let p = g.currentLineups.current_visitor_positions;
+    assert.deepEqual([9,5,4,6,3,2,7,1,8], p);
+    p = g.currentLineups.current_home_positions;
+    assert.deepEqual([8,6,5,3,9,7,4,2,11], p);
+  });
+  it('DH', function() {
+    let games = JSON.parse(fs.readFileSync("test/HOU201710290.json", 'utf8'));
+    let enhancedGames = Game.parseGames(games);
+    let g = enhancedGames.games[0];
+    let p = g.currentLineups.current_visitor_positions;
+    assert.deepEqual([4,6,10,7,3,5,9,2,8,1], p);
+    p = g.currentLineups.current_home_positions;
+    assert.deepEqual([9,5,4,6,8,7,10,3,12,1], p);
+  });
+});
