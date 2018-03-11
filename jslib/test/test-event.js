@@ -1106,6 +1106,17 @@ describe('Random bugfixes', function() {
     assert.equal("POCS", enhancedEvent.playCode);
   });
 
+  it('Failed double-steal, one runner caught, the other advances', function() {
+    let enhancedEvent = Event.parseEvent("CS3(25).1-2(TH)", ["batter", "first", "second", null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.deepEqual([null, "first", null], enhancedEvent.basesOccupiedAfterPlay);
+  });
+
+  it('Successful double-steal', function() {
+    console.warn("Note that double-steals do not currently parse properly...")
+    let enhancedEvent = Event.parseEvent("SB3;SB2", ["batter", "first", "second", null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    //assert.deepEqual([null, "first", "second"], enhancedEvent.basesOccupiedAfterPlay);
+  });
+
 });
 
 // end

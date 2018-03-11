@@ -54,13 +54,13 @@ if (fs.existsSync(chadwickRegisterFile)) {
     }
   });
 } else {
-  console.warn("No Chadwick register person file found, cannot lookup umpires or PitchFX info.  Download this file at https://github.com/chadwickbureau/register/blob/master/data/people.csv and put in " + dirname(chadwickRegisterFile));
+  console.warn("No Chadwick register person file found, cannot lookup umpires or PitchFX info.  Download this file at https://github.com/chadwickbureau/register/blob/master/data/people.csv and put in " + path.dirname(chadwickRegisterFile));
 }
 
 console.log("Read " + chadwickUmpires.length + " umpires and " + chadwickPlayers.length + " players from Chadwick register");
 
 let teams = [];
-fs.readFileSync(teamFile, 'utf-8').split('\r\n').forEach(function(line) {
+fs.readFileSync(teamFile, 'utf-8').replace('\r\n', '\n').split('\n').forEach(function(line) {
   if (!line.trim().length == 0) {
     teams.push(line.split(","));
   }
@@ -75,10 +75,10 @@ if (fs.existsSync(parksFile)) {
     }
   });
 } else {
-  console.warn("No parks file found, sites will not be translated.  Download parks file at http://www.retrosheet.org/parkcode.txt and put in " + dirname(parksFile));
+  console.warn("No parks file found, sites will not be translated.  Download parks file at http://www.retrosheet.org/parkcode.txt and put in " + path.dirname(parksFile));
 }
 
-let lines = fs.readFileSync(file, 'utf-8').split('\r\n');
+let lines = fs.readFileSync(file, 'utf-8').replace('\r\n', '\n').split('\n');
 
 var infoRecs = [];
 var startRecs = [];
@@ -221,16 +221,28 @@ infoRecs.forEach(function(rec) {
 });
 
 var visitorRoster = [];
-fs.readFileSync(path.join(dataDir, game.visitor_team.team_id + year + ".ROS"), 'utf-8').split('\r\n').forEach(function(rec) {
+fs.readFileSync(path.join(dataDir, game.visitor_team.team_id + year + ".ROS"), 'utf-8').replace('\r\n', '\n').split('\n').forEach(function(rec) {
   visitorRoster.push(rec.split(","));
 });
 var homeRoster = [];
-fs.readFileSync(path.join(dataDir, game.home_team.team_id + year + ".ROS"), 'utf-8').split('\r\n').forEach(function(rec) {
+fs.readFileSync(path.join(dataDir, game.home_team.team_id + year + ".ROS"), 'utf-8').replace('\r\n', '\n').split('\n').forEach(function(rec) {
   homeRoster.push(rec.split(","));
 });
 
 game.visitor_team.lineup = [];
 game.home_team.lineup = [];
+
+function playerInLineup(lineup, player_id) {
+  let ret = false;
+  lineup.some(function(p) {
+    if (player_id === p.player.player_id) {
+      ret = true;
+      return true;
+    }
+    return false;
+  });
+  return ret;
+}
 
 startRecs.forEach(function(rec) {
   let tt = rec[3] === "0" ? game.visitor_team : game.home_team;
@@ -255,19 +267,22 @@ startRecs.forEach(function(rec) {
 subRecs.forEach(function(rec) {
   let tt = rec[3] === "0" ? game.visitor_team : game.home_team;
   let roster = rec[3] === "0" ? visitorRoster : homeRoster;
-  let player = new Object;
-  tt.lineup.push(player);
-  player.player = new Object();
-  player.player.player_id = rec[1];
-  roster.forEach(function(rosterRec) {
-    if (rec[1] === rosterRec[0]) {
-      player.player.player_first_name = rosterRec[2];
-      player.player.player_last_name = rosterRec[1];
-      player.player.bats = rosterRec[3];
-      player.player.throws = rosterRec[4];
-    }
-  });
-  player.starter = false;
+  let pid = rec[1];
+  if (!playerInLineup(tt.lineup, pid)) {  // handle re-entrants in high school, etc.
+    let player = new Object;
+    tt.lineup.push(player);
+    player.player = new Object();
+    player.player.player_id = pid;
+    roster.forEach(function(rosterRec) {
+      if (rec[1] === rosterRec[0]) {
+        player.player.player_first_name = rosterRec[2];
+        player.player.player_last_name = rosterRec[1];
+        player.player.bats = rosterRec[3];
+        player.player.throws = rosterRec[4];
+      }
+    });
+    player.starter = false;
+  }
 });
 
 game.plays = [];

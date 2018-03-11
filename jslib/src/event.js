@@ -56,6 +56,8 @@ function parseEvent(eventText, baseStateBeforePlay, outsBeforePlay, defensivePla
 
   ret.valid = rawEvent.basicPlayParseError == null && rawEvent.advancesParseErrors.length == 0 && rawEvent.modifiersParseErrors.length == 0;
 
+  // looking for where ret.lineupPosition is set?  It has to be done in game.js, as we need to track it across plays/innings/etc.
+
   return ret;
 
 }
@@ -523,6 +525,7 @@ function determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay) {
   });
 
   let batterExplicit = false;
+  let explicitPostStates = [];
 
   rawEvent.advances.forEach(function(advance) {
     if(advance.runnerSafe) {
@@ -533,7 +536,8 @@ function determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay) {
           batterExplicit = true;
           preState = "0";
         }
-        ret[Number.parseInt(postState)-1] = baseStateBeforePlay[Number.parseInt(preState)];
+        // ret[Number.parseInt(postState)-1] = baseStateBeforePlay[Number.parseInt(preState)];
+        explicitPostStates[Number.parseInt(postState)-1] = baseStateBeforePlay[Number.parseInt(preState)];
       }
     }
   });
@@ -574,6 +578,12 @@ function determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay) {
     }
     ret[base-1] = null;
   }
+
+  explicitPostStates.forEach(function(runner, index) {
+    if (ret[index] == null) {
+      ret[index] = runner;
+    }
+  });
 
   return ret;
 

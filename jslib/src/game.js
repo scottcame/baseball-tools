@@ -22,6 +22,10 @@ function parseGames(games) {
 }
 
 function parseGame(game) {
+  return parseGameToPlay(game, game.plays.length-1);
+}
+
+function parseGameToPlay(game, playIndex) {
 
   let ret = new Object;
 
@@ -63,40 +67,55 @@ function parseGame(game) {
 
   let outs = 0;
   let lastBaseState = [null, null, null];
-  game.plays.forEach(function(play, index) {
+
+  game.plays.some(function(play, index) {
+
+    if (index > playIndex) {
+      return true;
+    }
+
     if (play.type === "substitution") {
       currentLineups = applySubstitution(ret, currentLineups, play, lastBaseState);
-      play.current_lineups = currentLineups;
+      play.current_lineups = JSON.parse(JSON.stringify(currentLineups));
     } else {
       let defensivePlayers = currentLineups.current_visitor_defense;
+      let lineupPosition = currentLineups.next_home_position_up;
       if (play.batting_team_id === ret.visitor_team.team_id) {
         defensivePlayers = currentLineups.current_home_defense;
+        lineupPosition = currentLineups.next_visitor_position_up;
       }
       let batterBaseState = new Object;
       batterBaseState.batting_player_id = play.batting_player_id;
       batterBaseState.responsible_pitcher_player_id = defensivePlayers[0];
       let baseStateBeforePlay = [batterBaseState].concat(lastBaseState);
-      //console.log("Updating baseStateBeforePlay=" + JSON.stringify(baseStateBeforePlay));
       play = enhancePlay(play, baseStateBeforePlay, outs, defensivePlayers);
+      play.enhanced_play.lineupPosition = lineupPosition;
       outs += play.enhanced_play.outsRecorded;
+      currentLineups.next_batter_team = play.batting_team_id;
       if (outs > 3) {
-        // todo: throw Error?
-        console.error("Encountered more than three outs, play: " + JSON.stringify(play));
+        throw new Error("Encountered more than three outs, play: " + JSON.stringify(play));
       } else if (outs === 3) {
         if (index != game.plays.length-1) {
           if (play.batting_team_id == game.plays[index+1].batting_team_id) {
-            // todo: throw Error?
-            console.error("Encountered three outs before the end of the inning, play: " + JSON.stringify(play));
+            throw new Error("Encountered three outs before the end of the inning, play: " + JSON.stringify(play));
           }
         }
         outs = 0;
         lastBaseState = [null, null, null];
+        currentLineups.next_batter_team = play.batting_team_id === ret.visitor_team.team_id ? ret.home_team.team_id : ret.visitor_team.team_id;
       } else {
         lastBaseState = play.enhanced_play.basesOccupiedAfterPlay;
-        //console.log("Updating lastBaseState=" + JSON.stringify(lastBaseState));
       }
+      currentLineups.next_visitor_position_up += (play.enhanced_play.plateAppearance && play.batting_team_id === ret.visitor_team.team_id);
+      currentLineups.next_visitor_position_up = currentLineups.next_visitor_position_up === currentLineups.current_visitor_batting_order.length ? 0 : currentLineups.next_visitor_position_up;
+      currentLineups.next_home_position_up += (play.enhanced_play.plateAppearance && play.batting_team_id === ret.home_team.team_id);
+      currentLineups.next_home_position_up = currentLineups.next_home_position_up === currentLineups.current_home_batting_order.length ? 0 : currentLineups.next_home_position_up;
     }
+
     ret.plays.push(play);
+
+    return false;
+
   });
 
   ret.currentLineups = currentLineups;
@@ -136,26 +155,9 @@ function initializeLineups(enhancedGame) {
   ret.current_home_batting_order = initializeBattingOrder(enhancedGame.home_team);
   ret.current_visitor_defense = initializeDefense(enhancedGame.visitor_team);
   ret.current_home_defense = initializeDefense(enhancedGame.home_team);
-  ret.current_visitor_positions = [];
-  ret.current_visitor_batting_order.forEach(function(player) {
-    ret.current_visitor_defense.some(function(dplayer, index) {
-      if (player === dplayer) {
-        ret.current_visitor_positions.push(index+1);
-        return true;
-      }
-      return false;
-    })
-  });
-  ret.current_home_positions = [];
-  ret.current_home_batting_order.forEach(function(player) {
-    ret.current_home_defense.some(function(dplayer, index) {
-      if (player === dplayer) {
-        ret.current_home_positions.push(index+1);
-        return true;
-      }
-      return false;
-    })
-  });
+  ret.next_home_position_up = 0;
+  ret.next_visitor_position_up = 0;
+  ret.next_batter_team = enhancedGame.visitor_team.team_id;
   return ret;
 }
 
@@ -165,27 +167,27 @@ function applySubstitution(enhancedGame, currentLineups, substitutionPlay, lastB
 
   let battingOrder = null;
   let defense = null;
-  let positions = null;
+
   enhancedGame.visitor_team.lineup.some(function(spot) {
     if (spot.player.player_id === player) {
       battingOrder = currentLineups.current_visitor_batting_order;
       defense = currentLineups.current_visitor_defense;
-      positions = currentLineups.current_visitor_positions;
       return true;
     }
     return false;
   });
+
   if (battingOrder == null) {
     enhancedGame.home_team.lineup.some(function(spot) {
       if (spot.player.player_id === player) {
         battingOrder = currentLineups.current_home_batting_order;
         defense = currentLineups.current_home_defense;
-        positions = currentLineups.current_home_positions;
         return true;
       }
       return false;
     });
   }
+
   if (battingOrder == null) {
     // todo: throw error?
     console.error("Player " + player + " not found in lineups.");
@@ -193,14 +195,15 @@ function applySubstitution(enhancedGame, currentLineups, substitutionPlay, lastB
 
     let currentPlayer = null;
 
-    if (substitutionPlay.substitution.lineup_position == 0) {
-      currentPlayer = battingOrder[battingOrder.length-1];
-      battingOrder[battingOrder.length-1] = player;
-      positions[battingOrder.length-1] = 1;
-    } else {
+    if (substitutionPlay.substitution.lineup_position != 0) {
+      // adjust batting order (as long as substitution is not for the player being DHed for)
       currentPlayer = battingOrder[substitutionPlay.substitution.lineup_position-1];
       battingOrder[substitutionPlay.substitution.lineup_position-1] = player;
-      positions[substitutionPlay.substitution.lineup_position-1] = substitutionPlay.substitution.fielder_position;
+    }
+
+    if (defense.length === 10 && defense[9] === player) {
+      // in next block of code, the current DH will be put into a new defense slot, but the DH is now gone.
+      defense.pop();
     }
 
     if (![11,12,13,14].includes(substitutionPlay.substitution.fielder_position)) {
@@ -223,24 +226,18 @@ function applySubstitution(enhancedGame, currentLineups, substitutionPlay, lastB
 
 function initializeBattingOrder(team) {
 
-  // If we're using the DH, then put the pitcher at the end of the "batting order" so that he/she can be found in lookups and
-  // have putouts and assists recorded in the summary
+  // The player DHed for does not go into the batting order.  Nor do subs.
 
   let ret = [];
-  let playerDHedFor = null;
+
   team.lineup.forEach(function(spot) {
-    if (spot.lineup_position != null) {
-      if (spot.lineup_position == DH_LINEUP_POSITION) {
-        playerDHedFor = spot.player.player_id;
-      } else {
+    if (spot.lineup_position != null && spot.lineup_position != DH_LINEUP_POSITION) {
         ret[spot.lineup_position-1] = spot.player.player_id;
-      }
     }
   });
-  if (playerDHedFor != null) {
-    ret.push(playerDHedFor);
-  }
+
   return ret;
+
 }
 
 function initializeDefense(team) {
@@ -253,11 +250,60 @@ function initializeDefense(team) {
   return ret;
 }
 
+function createNextPlay(game) {
+
+  // TODO: FINISH...
+
+  // if the prior play was a plate appearance by the batter, then the next play is a "blank" play, with the next lineup position as the batter
+  // else if the prior play was a substitution, then copy the state from the play prior to that one
+  // else if the prior play was a base running play, then copy the state from that play, unless the baserunning play was the third out
+
+  let ret = new Object;
+  let inning = 1;
+  let team = game.visitor_team.team_id;
+  let lineup = game.currentLineups.current_visitor_batting_order;
+  let pos = 0;
+
+  if (game.plays.length > 0) {
+    // let lastPlay = game.plays.slice(-1)[0];
+    // if (lastPlay.enhanced_play.outsAfterPlay === 3) {
+    //   if (lastPlay.batting_team_id == team) {
+    //     team = game.home_team.team_id;
+    //     lineup = game.currentLineups.current_home_batting_order;
+    //   } else {
+    //     inning = lastPlay.inning + 1;
+    //   }
+    // } else {
+    //   team = lastPlay.batting_team_id;
+    // }
+    // pos = lastPlay.enhanced_play.lineupPosition + 1;
+    // //console.log("pos=" + pos);
+    // if (pos === lineup.length) {
+    //   pos = 0;
+    // }
+
+  }
+
+  let batter = lineup[pos];
+  ret.inning = inning;
+  ret.batting_team_id = team;
+  ret.batting_player_id = batter;
+  ret.play = "NP";
+  ret.type = "play";
+  ret.pitch_sequence = "";
+  ret.count = "00";
+
+  return ret;
+
+}
+
 module.exports.initializeLineups = initializeLineups;
 module.exports.initializeBattingOrder = initializeBattingOrder;
 module.exports.initializeDefense = initializeDefense;
 module.exports.applySubstitution = applySubstitution;
 module.exports.parseGames = parseGames;
 module.exports.parseGame = parseGame;
+module.exports.parseGameToPlay = parseGameToPlay;
 module.exports.findPlayer = findPlayer;
+module.exports.createNextPlay = createNextPlay;
 module.exports.DH_LINEUP_POSITION = DH_LINEUP_POSITION;
