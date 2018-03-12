@@ -129,6 +129,7 @@ function enhancePlay(play, baseStatePrior, outs, defensivePlayers) {
   ret.enhanced_play = Event.parseEvent(play.play, baseStatePrior, outs, defensivePlayers);
   ret.enhanced_play.pitchCount = getPitchCount(play.pitch_sequence, defensivePlayers);
   ret.enhanced_play.qab = determineQualityAtBat(ret.enhanced_play);
+  ret.enhanced_play = determineOneOneCountWin(play);
   return ret;
 }
 
@@ -272,6 +273,34 @@ function initializeDefense(team) {
     }
   });
   return ret;
+}
+
+function determineOneOneCountWin(play) {
+  let count11 = false;
+  let win = false;
+  if (play.pitch_sequence != null && play.pitch_sequence.length > 2) {
+    let ball = false;
+    let strike = false;
+    for (let i=0;i < 2;i++) {
+      let c = play.pitch_sequence.charAt(i);
+      if (['B','H','P','I','V'].includes(c)) {
+        ball = true;
+      } else if (['C','M','S','K','Q','F','L','O','T','R'].includes(c)) {
+        strike = true;
+      }
+    }
+    if (ball && strike) {
+      count11 = true;
+      let c = play.pitch_sequence.charAt(2);
+      win = (['C','M','S','K','Q','F','L','O','T','R'].includes(c) || ('X' === c && (
+        play.enhanced_play.outsRecorded > 0 ||
+        play.enhanced_play.playCode === "E" ||
+        (play.enhanced_play.ballInPlay != null && play.enhanced_play.ballInPlay.soft))));
+    }
+  }
+  play.enhanced_play.had11count = count11;
+  play.enhanced_play.win11count = win;
+  return play.enhanced_play;
 }
 
 function getPitchCount(pitch_sequence, defensivePlayers) {
