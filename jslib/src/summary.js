@@ -2,6 +2,58 @@
 
 var Game = require("./game.js");
 
+const BATTING_STAT_AB = 1;
+const BATTING_STAT_R = 2;
+const BATTING_STAT_H = 3;
+const BATTING_STAT_RBI = 4;
+const BATTING_STAT_BB = 5;
+const BATTING_STAT_K = 6;
+const BATTING_STAT_PO = 7;
+const BATTING_STAT_A = 8;
+const BATTING_STAT_QAB = 9;
+const BATTING_STAT_PA = 10;
+
+const PITCHING_STAT_IP = 1;
+const PITCHING_STAT_H = 2;
+const PITCHING_STAT_R = 3;
+const PITCHING_STAT_ER = 4;
+const PITCHING_STAT_BB = 5;
+const PITCHING_STAT_SO = 6;
+const PITCHING_STAT_HR = 7;
+const PITCHING_STAT_BF = 8;
+const PITCHING_STAT_PT = 9;
+
+function initializePlayerStatArray(player_id) {
+  let ret = [];
+  ret[0] = player_id;
+  ret[BATTING_STAT_AB] = 0;
+  ret[BATTING_STAT_R] = 0;
+  ret[BATTING_STAT_H] = 0;
+  ret[BATTING_STAT_RBI] = 0;
+  ret[BATTING_STAT_BB] = 0;
+  ret[BATTING_STAT_K] = 0;
+  ret[BATTING_STAT_PO] = 0;
+  ret[BATTING_STAT_A] = 0;
+  ret[BATTING_STAT_QAB] = 0;
+  ret[BATTING_STAT_PA] = 0;
+  return ret;
+}
+
+function initializePitchingStatArray(player_id) {
+  let ret = [];
+  ret[0] = player_id;
+  ret[PITCHING_STAT_IP] = 0;
+  ret[PITCHING_STAT_H] = 0;
+  ret[PITCHING_STAT_R] = 0;
+  ret[PITCHING_STAT_ER] = 0;
+  ret[PITCHING_STAT_BB] = 0;
+  ret[PITCHING_STAT_SO] = 0;
+  ret[PITCHING_STAT_HR] = 0;
+  ret[PITCHING_STAT_BF] = 0;
+  ret[PITCHING_STAT_PT] = 0;
+  return ret;
+}
+
 function getGameSummary(game) {
   return getGameSummaryToPlay(game, game.plays.length - 1);
 }
@@ -73,20 +125,24 @@ function getGameSummaryToPlay(game, playIndex) {
       let po = new Object;
       po.player_id = p.player.player_id;
       po.player_last_name = p.player.player_last_name;
+      po.player_positions = [];
+      if (p.lineup_position != null) {
+        po.player_positions.push(p.fielder_position);
+      }
       ret.players.push(po);
     });
   });
 
   currentLineups.current_visitor_batting_order.forEach(function(player_id, index) {
     ret.box.visitor_team.batting[index] = [];
-    ret.box.visitor_team.batting[index].push([player_id, 0, 0, 0, 0, 0, 0, 0, 0]);
+    ret.box.visitor_team.batting[index].push(initializePlayerStatArray(player_id));
   });
 
   game.visitor_team.lineup.some(function(spot) {
     if (spot.lineup_position == Game.DH_LINEUP_POSITION) {
       let dhSpotSlot = [];
       ret.box.visitor_team.batting.push(dhSpotSlot);
-      dhSpotSlot.push([spot.player.player_id, 0, 0, 0, 0, 0, 0, 0, 0]);
+      dhSpotSlot.push(initializePlayerStatArray(spot.player.player_id));
       return true;
     }
     return false;
@@ -94,25 +150,28 @@ function getGameSummaryToPlay(game, playIndex) {
 
   currentLineups.current_home_batting_order.forEach(function(player_id, index) {
     ret.box.home_team.batting[index] = [];
-    ret.box.home_team.batting[index].push([player_id, 0, 0, 0, 0, 0, 0, 0, 0]);
+    ret.box.home_team.batting[index].push(initializePlayerStatArray(player_id));
   });
 
   game.home_team.lineup.some(function(spot) {
     if (spot.lineup_position == Game.DH_LINEUP_POSITION) {
       let dhSpotSlot = [];
       ret.box.home_team.batting.push(dhSpotSlot);
-      dhSpotSlot.push([spot.player.player_id, 0, 0, 0, 0, 0, 0, 0, 0]);
+      dhSpotSlot.push(initializePlayerStatArray(spot.player.player_id));
       return true;
     }
     return false;
   });
 
-  ret.box.home_team.pitching = [
-    [currentLineups.current_home_defense[0], 0, 0, 0, 0, 0, 0, 0, 0]
-  ];
-  ret.box.visitor_team.pitching = [
-    [currentLineups.current_visitor_defense[0], 0, 0, 0, 0, 0, 0, 0, 0]
-  ];
+  ret.box.home_team.pitching = [];
+  ret.box.home_team.pitching.push(initializePitchingStatArray(currentLineups.current_home_defense[0]));
+
+  ret.box.visitor_team.pitching = [];
+  ret.box.visitor_team.pitching.push(initializePitchingStatArray(currentLineups.current_visitor_defense[0]));
+
+  ret.winning_pitcher = game.winning_pitcher;
+  ret.losing_pitcher = game.losing_pitcher;
+  ret.save_pitcher = game.save_pitcher;
 
   let lastBaseState = [null, null, null];
 
@@ -190,11 +249,13 @@ function getGameSummaryToPlay(game, playIndex) {
       if (thisPlayerStatsArray == null) {
         console.error("Player " + play.batting_player_id + " involved in play before subbing in");
       } else {
-        thisPlayerStatsArray[1] += play.enhanced_play.atBat;
-        thisPlayerStatsArray[3] += play.enhanced_play.hit;
-        thisPlayerStatsArray[4] += play.enhanced_play.rbi;
-        thisPlayerStatsArray[5] += play.enhanced_play.walk;
-        thisPlayerStatsArray[6] += play.enhanced_play.strikeout;
+        thisPlayerStatsArray[BATTING_STAT_PA] += play.enhanced_play.plateAppearance;
+        thisPlayerStatsArray[BATTING_STAT_AB] += play.enhanced_play.atBat;
+        thisPlayerStatsArray[BATTING_STAT_H] += play.enhanced_play.hit;
+        thisPlayerStatsArray[BATTING_STAT_RBI] += play.enhanced_play.rbi;
+        thisPlayerStatsArray[BATTING_STAT_BB] += play.enhanced_play.walk;
+        thisPlayerStatsArray[BATTING_STAT_K] += play.enhanced_play.strikeout;
+        thisPlayerStatsArray[BATTING_STAT_QAB] += play.enhanced_play.qab;
       }
 
       play.enhanced_play.runsScoredBy.forEach(function(rsby) {
@@ -205,15 +266,15 @@ function getGameSummaryToPlay(game, playIndex) {
         if (thisPlayerStatsArray == null) {
           console.error("Player " + rsby.runner.batting_player_id + " somehow scored a run before subbing in");
         } else {
-          thisPlayerStatsArray[2]++;
+          thisPlayerStatsArray[BATTING_STAT_R]++;
         }
         let responsiblePitcherStatsArray = findResponsiblePitcherStatsArray(rsby.runner.responsible_pitcher_player_id);
         if (responsiblePitcherStatsArray == null) {
           throw new Error("Pitcher " + rsby.runner.responsible_pitcher_player_id + " somehow gave up a run before subbing in\n" + JSON.stringify(play));
         } else {
-          responsiblePitcherStatsArray[3]++;
+          responsiblePitcherStatsArray[PITCHING_STAT_R]++;
           if (!rsby.unearnedIndicated) {
-            responsiblePitcherStatsArray[4]++;
+            responsiblePitcherStatsArray[PITCHING_STAT_ER]++;
           }
         }
       });
@@ -224,7 +285,7 @@ function getGameSummaryToPlay(game, playIndex) {
           if (thisPlayerStatsArray == null) {
             console.error("Player " + out.putoutFielderId + " somehow got a putout before subbing in");
           } else {
-            thisPlayerStatsArray[7]++;
+            thisPlayerStatsArray[BATTING_STAT_PO]++;
           }
         }
         out.assistFielders.forEach(function(assistFielder) {
@@ -232,10 +293,10 @@ function getGameSummaryToPlay(game, playIndex) {
           if (thisPlayerStatsArray == null) {
             console.error("Player " + assistFielder.fielderId + " somehow got an assist before subbing in");
           } else {
-            thisPlayerStatsArray[8]++;
+            thisPlayerStatsArray[BATTING_STAT_A]++;
           }
         });
-        pitcherStatsArray[1]++; // this is the IP stat, but we need to express it as outs.  we'll convert it to the conventional .1, .2, .3 later
+        pitcherStatsArray[PITCHING_STAT_IP]++; // this is the IP stat, but we need to express it as outs.  we'll convert it to the conventional .1, .2, .3 later
       });
 
       if (play.enhanced_play.outsAfterPlay === 3) {
@@ -285,7 +346,7 @@ function getGameSummaryToPlay(game, playIndex) {
           }
         }
         offenseTeamStats.hr.push(dpo);
-        pitcherStatsArray[7]++;
+        pitcherStatsArray[PITCHING_STAT_HR]++;
       }
 
       if (play.enhanced_play.playCode === "HP") {
@@ -355,24 +416,29 @@ function getGameSummaryToPlay(game, playIndex) {
       defenseTeamStats.errors = defenseTeamStats.errors.concat(play.enhanced_play.errors);
 
       if (play.enhanced_play.plateAppearance) {
-        pitcherStatsArray[8]++;
+        pitcherStatsArray[PITCHING_STAT_BF]++;
       }
 
       if (play.enhanced_play.strikeout) {
-        pitcherStatsArray[6]++;
+        pitcherStatsArray[PITCHING_STAT_SO]++;
       } else if (play.enhanced_play.walk) {
-        pitcherStatsArray[5]++;
+        pitcherStatsArray[PITCHING_STAT_BB]++;
       } else if (play.enhanced_play.hit) {
-        pitcherStatsArray[2]++;
+        pitcherStatsArray[PITCHING_STAT_H]++;
       }
+
+      pitcherStatsArray[PITCHING_STAT_PT] += play.enhanced_play.pitchCount.totalPitches;
 
       // end of play tabulation
 
       lastBaseState = play.enhanced_play.outsAfterPlay === 3 ? [null, null, null] : play.enhanced_play.basesOccupiedAfterPlay;
 
     } else if (play.type === "substitution") {
+
       currentLineups = Game.applySubstitution(game, currentLineups, play, lastBaseState);
+
       let box = null;
+
       game.visitor_team.lineup.some(function(spot) {
         if (spot.player.player_id === play.substitution.player.player_id) {
           box = ret.box.visitor_team;
@@ -387,6 +453,7 @@ function getGameSummaryToPlay(game, playIndex) {
         }
         return false;
       });
+
       if (box == null) {
         console.error("Player " + play.substitution.player.player_id + " not found in either lineup");
       } else {
@@ -401,7 +468,7 @@ function getGameSummaryToPlay(game, playIndex) {
           return false;
         });
         if (!battingFound) {
-          box.batting[playerIndex].push([play.substitution.player.player_id, 0, 0, 0, 0, 0, 0, 0, 0]);
+          box.batting[playerIndex].push(initializePlayerStatArray(play.substitution.player.player_id));
         }
         if (play.substitution.fielder_position === 1) {
           let pitchingFound = false;
@@ -414,12 +481,21 @@ function getGameSummaryToPlay(game, playIndex) {
             return false;
           });
           if (!pitchingFound) {
-            box.pitching.push([play.substitution.player.player_id, 0, 0, 0, 0, 0, 0, 0, 0]);
+            box.pitching.push(initializePitchingStatArray(play.substitution.player.player_id));
           }
         }
       }
+
+      ret.players.some(function(player) {
+        if (player.player_id === play.substitution.player.player_id) {
+          player.player_positions.push(play.substitution.fielder_position);
+        }
+      });
+
     }
+
     return false;
+
   });
 
   let adjustInningsPitched = function(pitchingBox) {
@@ -441,16 +517,37 @@ function updateBoxForLineupChange(lineups, summary) {
     if (lineupSpot == null) {
       lineupSpot = [];
       summary.box.home.batting[index] = lineupSpot;
-      summary.box.home.batting[index].push([player_id, 0, 0, 0, 0, 0, 0]);
+      summary.box.home.batting[index].push(initializePlayerStatArray(player_id));
     }
 
   });
   lineups.current_visitor_batting_order.some(function(player_id, index) {
     summary.box.visitor.batting[index] = [];
-    summary.box.visitor.batting[index].push([player_id, 0, 0, 0, 0, 0, 0]);
+    summary.box.visitor.batting[index].push(initializePlayerStatArray(player_id));
   });
   return lineups;
 }
 
 module.exports.getGameSummary = getGameSummary;
 module.exports.getGameSummaryToPlay = getGameSummaryToPlay;
+
+module.exports.BATTING_STAT_AB = BATTING_STAT_AB;
+module.exports.BATTING_STAT_R = BATTING_STAT_R;
+module.exports.BATTING_STAT_H = BATTING_STAT_H;
+module.exports.BATTING_STAT_RBI = BATTING_STAT_RBI;
+module.exports.BATTING_STAT_BB = BATTING_STAT_BB;
+module.exports.BATTING_STAT_K = BATTING_STAT_K;
+module.exports.BATTING_STAT_PO = BATTING_STAT_PO;
+module.exports.BATTING_STAT_A = BATTING_STAT_A;
+module.exports.BATTING_STAT_QAB = BATTING_STAT_QAB;
+module.exports.BATTING_STAT_PA = BATTING_STAT_PA;
+
+module.exports.PITCHING_STAT_IP = PITCHING_STAT_IP;
+module.exports.PITCHING_STAT_H = PITCHING_STAT_H;
+module.exports.PITCHING_STAT_R = PITCHING_STAT_R;
+module.exports.PITCHING_STAT_ER = PITCHING_STAT_ER;
+module.exports.PITCHING_STAT_BB = PITCHING_STAT_BB;
+module.exports.PITCHING_STAT_SO = PITCHING_STAT_SO;
+module.exports.PITCHING_STAT_HR = PITCHING_STAT_HR;
+module.exports.PITCHING_STAT_BF = PITCHING_STAT_BF;
+module.exports.PITCHING_STAT_PT = PITCHING_STAT_PT;

@@ -127,7 +127,31 @@ function parseGameToPlay(game, playIndex) {
 function enhancePlay(play, baseStatePrior, outs, defensivePlayers) {
   let ret = play;
   ret.enhanced_play = Event.parseEvent(play.play, baseStatePrior, outs, defensivePlayers);
+  ret.enhanced_play.pitchCount = getPitchCount(play.pitch_sequence, defensivePlayers);
+  ret.enhanced_play.qab = determineQualityAtBat(ret.enhanced_play);
   return ret;
+}
+
+function determineQualityAtBat(enhanced_play) {
+  let ret = false;
+  ret |= enhanced_play.hit;
+  ret |= enhanced_play.walk;
+  ret |= ['E','HBP'].includes(enhanced_play.playCode);
+  ret |= enhanced_play.rawEvent.modifiers.includes('SH');
+  ret |= enhanced_play.rawEvent.modifiers.includes('SF');
+  if (enhanced_play.outsAfterPlay === enhanced_play.outsRecorded && enhanced_play.outsAfterPlay < 3) {
+    enhanced_play.rawEvent.advances.some(function(a) {
+      if (a.startingBase === "2") {
+        ret |= ["3","H"].includes(a.endingBase);
+        return true;
+      }
+      return false;
+    });
+  }
+  ret |= enhanced_play.ballInPlay != null && enhanced_play.runs > 0;
+  ret |= enhanced_play.ballInPlay != null && enhanced_play.ballInPlay.hard;
+  ret |= enhanced_play.pitchCount.totalPitches >= 8;
+  return ret != 0;
 }
 
 function findPlayer(game, player_id) {
@@ -247,6 +271,49 @@ function initializeDefense(team) {
       ret[spot.fielder_position-1] = spot.player.player_id;
     }
   });
+  return ret;
+}
+
+function getPitchCount(pitch_sequence, defensivePlayers) {
+  let ret = null;
+  if (pitch_sequence != null) {
+    ret = new Object;
+    ret.balls = 0;
+    ret.swingingStrikes = 0;
+    ret.calledStrikes = 0;
+    ret.unknownStrikes = 0;
+    ret.fouls = 0;
+    ret.bip = 0;
+    ret.unknown = 0;
+    ret.totalPitches = 0;
+    ret.responsible_pitcher_player_id = defensivePlayers[0];
+    // TODO: handle enhanced pitch seq
+    for (let i=0;i < pitch_sequence.length;i++) {
+      let c = pitch_sequence.charAt(i);
+      if (['B','H','P','I','V'].includes(c)) {
+        ret.balls++;
+        ret.totalPitches++;
+      } else if (['C','M'].includes(c)) {
+        ret.calledStrikes++;
+        ret.totalPitches++;
+      } else if (['S','Q'].includes(c)) {
+        ret.swingingStrikes++;
+        ret.totalPitches++;
+      } else if ('K' === c) {
+        ret.unknownStrikes++;
+        ret.totalPitches++;
+      } else if (['F','L','O','T','R'].includes(c)) {
+        ret.fouls++;
+        ret.totalPitches++;
+      } else if ('U' === c) {
+        ret.unknown++;
+        ret.totalPitches++;
+      } else if ('X' === c) {
+        ret.bip++;
+        ret.totalPitches++;
+      }
+    }
+  }
   return ret;
 }
 

@@ -34,6 +34,7 @@ function parseEvent(eventText, baseStateBeforePlay, outsBeforePlay, defensivePla
   ret.rawEvent = rawEvent;
 
   ret.playCode = getPlayCode(rawEvent);
+
   ret.outs = determineOuts(rawEvent, baseStateBeforePlay, defensivePlayers);
 
   ret.outsRecorded = determineOutsRecorded(ret.outs);

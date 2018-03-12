@@ -11,6 +11,8 @@ function displayUsage() {
   process.exit(-1);
 }
 
+var positions = ['p','c','1b','2b','3b','ss','lf','cf','rf','dh','ph','pr','eh','cr'];
+
 var gameFile = process.argv[2];
 
 if (gameFile == null) {
@@ -20,13 +22,13 @@ if (gameFile == null) {
 let gg = JSON.parse(fs.readFileSync(gameFile, 'utf8'));
 let g = gg.games[0];
 g = Game.parseGame(g);
+let gs = Summary.getGameSummary(g);
 
-//fs.writeFileSync(gameFile.split('.')[0] + '-enhanced.json', JSON.stringify(g, null, 2));
+fs.writeFileSync(gameFile.split('.')[0] + '-enhanced.json', JSON.stringify(g, null, 2));
+fs.writeFileSync(gameFile.split('.')[0] + '-summary.json', JSON.stringify(gs, null, 2));
 //console.log(JSON.stringify(gs, null, 2));
 
 let outStream = process.stdout;
-
-let gs = Summary.getGameSummary(g);
 
 let teamHead = [gs.home_team_name, gs.visitor_team_name];
 let scoreHead = [gs.home_team_stats.score, gs.visitor_team_stats.score];
@@ -40,9 +42,11 @@ let teamNameSpace = Math.max(gs.home_team_name.length, gs.visitor_team_name.leng
 var playerSpace = 25;
 
 outStream.write("---" + "\n");
-outStream.write("documentclass: extarticle" + "\n");
-outStream.write("fontsize: 8pt" + "\n");
+outStream.write("geometry: margin=.5in" + "\n");
 outStream.write("---" + "\n");
+outStream.write("\\setmonofont[Scale=1]{LetterGothic}" + "\n");
+outStream.write("\\pagenumbering{gobble}" + "\n");
+
 outStream.write("```" + "\n");
 
 outStream.write(teamHead[0] + " " + scoreHead[0] + ", " + teamHead[1] + " " + scoreHead[1] + "\n");
@@ -79,6 +83,7 @@ function writeTeamSection(teamStats, team, name) {
 
   outStream.write(" ".repeat(playerSpace) +
   "AB" + "   " +
+  "QAB" + "  " +
   "R" + "    " +
   "H" + "    " +
   "RBI" + "  " +
@@ -86,8 +91,35 @@ function writeTeamSection(teamStats, team, name) {
   "K" + "      " +
   "PO" + "   " +
   "A" + "    " +
+  "PA" + "    " +
     "\n"
   );
+
+  let writeBattingRow = function(row, indent = "") {
+    let playerId = row[0];
+    let pp = lookupPlayer(playerId);
+    if (pp != null) {
+      let ppp = [];
+      pp.player_positions.forEach(function(p) {
+        ppp.push(positions[p-1]);
+      });
+      let nm = pp.player_last_name + " " + ppp.join(",");
+      outStream.write(indent);
+      outStream.write(nm);
+      outStream.write(" ".repeat(playerSpace - nm.length - indent.length));
+      outStream.write("" + row[Summary.BATTING_STAT_AB] + "    ")
+      outStream.write("" + row[Summary.BATTING_STAT_QAB] + "    ")
+      outStream.write("" + row[Summary.BATTING_STAT_R] + "    ")
+      outStream.write("" + row[Summary.BATTING_STAT_H] + "    ")
+      outStream.write("" + row[Summary.BATTING_STAT_RBI] + "    ")
+      outStream.write("" + row[Summary.BATTING_STAT_BB] + "    ")
+      outStream.write("" + row[Summary.BATTING_STAT_K] + "      ")
+      outStream.write("" + row[Summary.BATTING_STAT_PO] + "    ")
+      outStream.write("" + row[Summary.BATTING_STAT_A] + "    ")
+      outStream.write("" + row[Summary.BATTING_STAT_PA] + "    ")
+      outStream.write("\n");
+    }
+  };
 
   team.batting.forEach(function(lineupSpotArray, index) {
     writeBattingRow(lineupSpotArray[0]);
@@ -159,6 +191,7 @@ function writeTeamSection(teamStats, team, name) {
   "SO" + "   " +
   "HR" + "   " +
   "BF" + "   " +
+  "PT" + "    " +
     "\n"
   );
 
@@ -166,19 +199,31 @@ function writeTeamSection(teamStats, team, name) {
     let playerId = pitcherArray[0];
     let pp = lookupPlayer(playerId);
     if (pp != null) {
-        outStream.write(pp.player_last_name);
-        outStream.write(" ".repeat(playerSpace - pp.player_last_name.length));
-        let ip = "" + pitcherArray[1];
-        outStream.write(ip + "    " + " ".repeat(3-ip.length));
-        outStream.write("" + pitcherArray[2] + "    ")
-        outStream.write("" + pitcherArray[3] + "    ")
-        outStream.write("" + pitcherArray[4] + "    ")
-        outStream.write("" + pitcherArray[5] + "    ")
-        outStream.write("" + pitcherArray[6] + "    ")
-        outStream.write("" + pitcherArray[7] + "    ")
-        outStream.write("" + pitcherArray[8] + "    ")
-        outStream.write("\n");
-        return true;
+      let nm = pp.player_last_name;
+      if (pp.player_id == gs.winning_pitcher) {
+        nm += " (W)";
+      }
+      if (pp.player_id == gs.losing_pitcher) {
+        nm += " (L)";
+      }
+      if (pp.player_id == gs.save_pitcher) {
+        nm += " (S)";
+      }
+      outStream.write(nm);
+      outStream.write(" ".repeat(playerSpace - nm.length));
+      let ip = "" + pitcherArray[Summary.PITCHING_STAT_IP];
+      outStream.write(ip + "    " + " ".repeat(3-ip.length));
+      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_H] + "    ")
+      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_R] + "    ")
+      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_ER] + "    ")
+      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_BB] + "    ")
+      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_SO] + "    ")
+      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_HR] + "    ")
+      let s = "" + pitcherArray[Summary.PITCHING_STAT_BF];
+      outStream.write(s + " ".repeat(5-s.length));
+      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_PT] + "    ")
+      outStream.write("\n");
+      return true;
     }
   });
 
@@ -226,25 +271,6 @@ function writeCumulativeStat(stat, label, offenseProperty, defenseProperty, conn
   }
 }
 
-function writeBattingRow(row, indent = "") {
-  let playerId = row[0];
-  let pp = lookupPlayer(playerId);
-  if (pp != null) {
-    outStream.write(indent);
-    outStream.write(pp.player_last_name);
-    outStream.write(" ".repeat(playerSpace - pp.player_last_name.length - indent.length));
-    outStream.write("" + row[1] + "    ")
-    outStream.write("" + row[2] + "    ")
-    outStream.write("" + row[3] + "    ")
-    outStream.write("" + row[4] + "    ")
-    outStream.write("" + row[5] + "    ")
-    outStream.write("" + row[6] + "      ")
-    outStream.write("" + row[7] + "    ")
-    outStream.write("" + row[8] + "    ")
-    outStream.write("\n");
-  }
-}
-
 function lookupPlayer(playerId, gameSummary) {
   let ret = null;
   gs.players.some(function(pp) {
@@ -256,7 +282,6 @@ function lookupPlayer(playerId, gameSummary) {
   });
   return ret;
 }
-
 
 
 

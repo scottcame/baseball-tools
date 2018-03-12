@@ -20,15 +20,15 @@ describe('SummaryTest: Entire game 2 - DH, CS, and pinch runners', function() {
   });
 
   it("Pinch runner business", function() {
-    assert.deepEqual(summary.box.home_team.batting[4][0], ["gurry001", 5,1,2,3,0,1,6,1]);
-    assert.deepEqual(summary.box.home_team.batting[4][1], ["maybc001", 0,0,0,0,0,0,1,0]);
-    assert.deepEqual(summary.box.home_team.batting[8][0], ["mccab002", 4,1,1,1,0,1,12,1]);
-    assert.deepEqual(summary.box.home_team.batting[8][1], ["fishd001", 0,1,0,0,0,0,0,0]);
+    assert.deepEqual(summary.box.home_team.batting[4][0], ["gurry001", 5,1,2,3,0,1,6,1,2,5]);
+    assert.deepEqual(summary.box.home_team.batting[4][1], ["maybc001", 0,0,0,0,0,0,1,0,0,0]);
+    assert.deepEqual(summary.box.home_team.batting[8][0], ["mccab002", 4,1,1,1,0,1,12,1,1,5]);
+    assert.deepEqual(summary.box.home_team.batting[8][1], ["fishd001", 0,1,0,0,0,0,0,0,0,0]);
   });
 
   it("DH", function() {
-    assert.deepEqual(summary.box.home_team.batting[9][0], ["keucd001", 0,0,0,0,0,0,1,2]);
-    assert.deepEqual(summary.box.home_team.batting[9][3], ["peacb001", 0,0,0,0,0,0,0,1]);
+    assert.deepEqual(summary.box.home_team.batting[9][0], ["keucd001", 0,0,0,0,0,0,1,2,0,0]);
+    assert.deepEqual(summary.box.home_team.batting[9][3], ["peacb001", 0,0,0,0,0,0,0,1,0,0]);
   });
 
   it("Caught stealing", function() {
@@ -103,45 +103,45 @@ describe('SummaryTest: Entire game', function() {
   it('Batting boxes', function() {
 
     let visitorBox = [
-      [["sprig001", 5,2,2,2,0,1,2,0]],
-      [["brega001", 4,1,0,0,0,3,1,2]],
-      [["altuj001", 3,0,0,1,1,0,1,4]],
-      [["corrc001", 4,0,1,0,0,0,3,3]],
-      [["gurry001", 4,0,0,0,0,1,10,0]],
-      [["mccab002", 3,1,0,0,1,2,8,1]],
-      [["gonzm002", 3,1,2,0,1,0,1,0]],
+      [["sprig001",5,2,2,2,0,1,2,0,2,5]],
+      [["brega001",4,1,0,0,0,3,1,2,1,4]],
+      [["altuj001",3,0,0,1,1,0,1,4,2,4]],
+      [["corrc001",4,0,1,0,0,0,3,3,1,4]],
+      [["gurry001",4,0,0,0,0,1,10,0,1,4]],
+      [["mccab002",3,1,0,0,1,2,8,1,1,4]],
+      [["gonzm002",3,1,2,0,1,0,1,0,3,4]],
       [
-        ["reddj001", 2,0,0,0,0,0,0,0],
-        ["gatte001", 0,0,0,0,1,0,0,0],
-        ["mortc002", 1,0,0,0,0,1,0,0]
+        ["reddj001",2,0,0,0,0,0,0,0,0,2],
+        ["gatte001",0,0,0,0,1,0,0,0,1,1],
+        ["mortc002",1,0,0,0,0,1,0,0,0,1]
       ],
       [
-        ["mccul002", 1,0,0,1,0,0,0,0],
-        ["peacb001", 1,0,0,0,0,0,0,0],
-        ["lirif001", 0,0,0,0,0,0,0,0],
-        ["devec001", 0,0,0,0,0,0,0,0],
-        ["maybc001", 2,0,0,0,0,1,1,0]
+        ["mccul002",1,0,0,1,0,0,0,0,1,1],
+        ["peacb001",1,0,0,0,0,0,0,0,0,1],
+        ["lirif001",0,0,0,0,0,0,0,0,0,0],
+        ["devec001",0,0,0,0,0,0,0,0,0,0],
+        ["maybc001",2,0,0,0,0,1,1,0,0,2]
       ]
     ];
 
     let homeBox = [
-      [["taylc001", 5,0,1,0,0,1,5,0]],
-      [["seagc001", 4,0,1,0,1,1,1,1]],
-      [["turnj001", 2,0,1,0,0,0,1,1]],
-      [["bellc002", 4,0,0,0,0,3,8,1]],
-      [["puigy001", 3,0,0,0,0,0,2,0]],
-      [["pedej001", 4,1,1,0,0,2,0,0]],
-      [["forsl001", 3,0,1,0,1,0,0,3]],
-      [["barna001", 4,0,0,0,0,0,9,0]],
+      [["taylc001",5,0,1,0,0,1,5,0,1,5]],
+      [["seagc001",4,0,1,0,1,1,1,1,2,5]],
+      [["turnj001",2,0,1,0,0,0,1,1,1,4]],
+      [["bellc002",4,0,0,0,0,3,8,1,0,4]],
+      [["puigy001",3,0,0,0,0,0,2,0,0,4]],
+      [["pedej001",4,1,1,0,0,2,0,0,1,4]],
+      [["forsl001",3,0,1,0,1,0,0,3,2,4]],
+      [["barna001",4,0,0,0,0,0,9,0,0,4]],
       [
-        ["darvy001", 0,0,0,0,0,0,1,0],
-        ["morrb001", 0,0,0,0,0,0,0,0],
-        ["herne001", 0,0,0,0,0,0,0,0],
-        ["kersc001", 1,0,0,0,0,1,0,1],
-        ["ethia001", 1,0,1,1,0,0,0,0],
-        ["jansk001", 0,0,0,0,0,0,0,0],
-        ["wooda002", 0,0,0,0,0,0,0,0],
-        ["utlec001", 1,0,0,0,0,1,0,0]
+        ["darvy001",0,0,0,0,0,0,1,0,0,0],
+        ["morrb001",0,0,0,0,0,0,0,0,0,0],
+        ["herne001",0,0,0,0,0,0,0,0,0,1],
+        ["kersc001",1,0,0,0,0,1,0,1,0,1],
+        ["ethia001",1,0,1,1,0,0,0,0,1,1],
+        ["jansk001",0,0,0,0,0,0,0,0,0,0],
+        ["wooda002",0,0,0,0,0,0,0,0,0,0],
+        ["utlec001",1,0,0,0,0,1,0,0,0,1]
       ]
     ];
 
@@ -163,19 +163,19 @@ describe('SummaryTest: Entire game', function() {
   it('Pitching boxes', function() {
 
     let visitorBox = [
-      ["mccul002", 2.1,3,0,0,0,3,0,13],
-      ["peacb001", 2,1,0,0,1,2,0,8],
-      ["lirif001", 0.1,0,0,0,0,0,0,1],
-      ["devec001", 0.1,0,0,0,0,0,0,1],
-      ["mortc002", 4,2,1,1,1,4,0,15]
+      ["mccul002", 2.1,3,0,0,0,3,0,13,49],
+      ["peacb001", 2,1,0,0,1,2,0,8,37],
+      ["lirif001", 0.1,0,0,0,0,0,0,1,4],
+      ["devec001", 0.1,0,0,0,0,0,0,1,6],
+      ["mortc002", 4,2,1,1,1,4,0,15,52]
     ];
 
     let homeBox = [
-      ["darvy001", 1.2,3,5,4,1,0,1,10],
-      ["morrb001", 0.1,0,0,0,0,1,0,1],
-      ["kersc001", 4,2,0,0,2,4,0,16],
-      ["jansk001", 1,0,0,0,1,1,0,4],
-      ["wooda002", 2,0,0,0,0,3,0,6]
+      ["darvy001", 1.2,3,5,4,1,0,1,10,50],
+      ["morrb001", 0.1,0,0,0,0,1,0,1,3],
+      ["kersc001", 4,2,0,0,2,4,0,16,55],
+      ["jansk001", 1,0,0,0,1,1,0,4,21],
+      ["wooda002", 2,0,0,0,0,3,0,6,25]
     ];
 
     let testPitchingBoxes = function(stats, box) {
