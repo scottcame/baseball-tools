@@ -108,7 +108,7 @@ function determineErrors(rawEvent, defensivePlayers) {
 function determineRBI(parsedEvent, outsBeforePlay) {
 
   /*
-    1. If play is not an error or strikeout, then iterate through the advances.  If endingBase === H and no error parameter or NR/NORBI parameter or GDP modifier on the play, then count an RBI.
+    1. If play is not a WP, PB, BK, error or strikeout, then iterate through the advances.  If endingBase === H and no error parameter or NR/NORBI parameter or GDP modifier on the play, then count an RBI.
     2. If play is an error, and outs < 2, and endingBase === H and startingBase === 3 and no NR/NORBI parameter, then count an RBI
     3. If play is a home run, batter's advance to home is implicit, so count an additional RBI for him
   */
@@ -116,7 +116,9 @@ function determineRBI(parsedEvent, outsBeforePlay) {
   let rbi = 0;
 
   let rbiScore = function(advance) {
-    return advance.endingBase === "H" && advance.type != "safe-on-error" && !advance.parameters.reduce(function(accumulator, parameter) { return accumulator |= ["NR", "NORBI"].includes(parameter.parameter); }, false);
+    return !/WP|PB|BK/.test(parsedEvent.rawEvent.basicPlay) && advance.endingBase === "H" &&
+    advance.type === "advance" &&
+    !advance.parameters.reduce(function(accumulator, parameter) { return accumulator |= ["NR", "NORBI"].includes(parameter.parameter); }, false);
   };
 
   if (parsedEvent.playCode === "E" && outsBeforePlay < 2) {

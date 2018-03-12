@@ -1117,6 +1117,12 @@ describe('Random bugfixes', function() {
     //assert.deepEqual([null, "first", "second"], enhancedEvent.basesOccupiedAfterPlay);
   });
 
+  it('RBI probs', function() {
+    let enhancedEvent = Event.parseEvent("W+WP.3-H;2XH(2516)", ["batter", null, "second", "third"], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.equal(1, enhancedEvent.runs);
+    assert.equal(0, enhancedEvent.rbi);
+  });
+
 });
 
 // end
