@@ -192,6 +192,9 @@ function writeTeamSection(teamStats, team, name) {
   "HR" + "   " +
   "BF" + "   " +
   "PT" + "    " +
+  "PS%" + "  " +
+  "1-1" + "  " +
+  "1-1 WIN%" + " " +
     "\n"
   );
 
@@ -213,15 +216,20 @@ function writeTeamSection(teamStats, team, name) {
       outStream.write(" ".repeat(playerSpace - nm.length));
       let ip = "" + pitcherArray[Summary.PITCHING_STAT_IP];
       outStream.write(ip + "    " + " ".repeat(3-ip.length));
-      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_H] + "    ")
-      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_R] + "    ")
-      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_ER] + "    ")
-      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_BB] + "    ")
-      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_SO] + "    ")
-      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_HR] + "    ")
+      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_H] + "    ");
+      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_R] + "    ");
+      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_ER] + "    ");
+      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_BB] + "    ");
+      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_SO] + "    ");
+      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_HR] + "    ");
       let s = "" + pitcherArray[Summary.PITCHING_STAT_BF];
       outStream.write(s + " ".repeat(5-s.length));
-      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_PT] + "    ")
+      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_PT] + "    ");
+      let psPct = Math.round(100*pitcherArray[Summary.PITCHING_STAT_PS] / pitcherArray[Summary.PITCHING_STAT_PT]);
+      outStream.write("" + psPct + "   ");
+      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_11COUNTS] + "    ");
+      let win11Pct = Math.round(100*pitcherArray[Summary.PITCHING_STAT_WIN11] / pitcherArray[Summary.PITCHING_STAT_11COUNTS]);
+      outStream.write("" + (win11Pct == Infinity ? "--" : win11Pct) + " ");
       outStream.write("\n");
       return true;
     }

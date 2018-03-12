@@ -22,6 +22,9 @@ const PITCHING_STAT_SO = 6;
 const PITCHING_STAT_HR = 7;
 const PITCHING_STAT_BF = 8;
 const PITCHING_STAT_PT = 9;
+const PITCHING_STAT_PS = 10;
+const PITCHING_STAT_11COUNTS = 11;
+const PITCHING_STAT_WIN11 = 12;
 
 function initializePlayerStatArray(player_id) {
   let ret = [];
@@ -51,6 +54,9 @@ function initializePitchingStatArray(player_id) {
   ret[PITCHING_STAT_HR] = 0;
   ret[PITCHING_STAT_BF] = 0;
   ret[PITCHING_STAT_PT] = 0;
+  ret[PITCHING_STAT_PS] = 0;
+  ret[PITCHING_STAT_11COUNTS] = 0;
+  ret[PITCHING_STAT_WIN11] = 0;
   return ret;
 }
 
@@ -427,7 +433,14 @@ function getGameSummaryToPlay(game, playIndex) {
         pitcherStatsArray[PITCHING_STAT_H]++;
       }
 
-      pitcherStatsArray[PITCHING_STAT_PT] += play.enhanced_play.pitchCount.totalPitches;
+      if (play.enhanced_play.plateAppearance) {
+        let pc = play.enhanced_play.pitchCount;
+        let totalStrikes = pc.calledStrikes + pc.swingingStrikes + pc.unknownStrikes + pc.fouls + pc.bip;
+        pitcherStatsArray[PITCHING_STAT_PS] += totalStrikes;
+        pitcherStatsArray[PITCHING_STAT_PT] += pc.totalPitches;
+        pitcherStatsArray[PITCHING_STAT_11COUNTS] += play.enhanced_play.had11count;
+        pitcherStatsArray[PITCHING_STAT_WIN11] += play.enhanced_play.win11count;
+      }
 
       // end of play tabulation
 
@@ -551,3 +564,6 @@ module.exports.PITCHING_STAT_SO = PITCHING_STAT_SO;
 module.exports.PITCHING_STAT_HR = PITCHING_STAT_HR;
 module.exports.PITCHING_STAT_BF = PITCHING_STAT_BF;
 module.exports.PITCHING_STAT_PT = PITCHING_STAT_PT;
+module.exports.PITCHING_STAT_PS = PITCHING_STAT_PS;
+module.exports.PITCHING_STAT_11COUNTS = PITCHING_STAT_11COUNTS;
+module.exports.PITCHING_STAT_WIN11 = PITCHING_STAT_WIN11;
