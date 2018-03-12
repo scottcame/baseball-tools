@@ -459,27 +459,28 @@ describe('Lineup tests DH', function() {
 
 });
 
-describe('BO> Batting order tracking tests', function() {
+// This is a test of the Game.createNextPlay() functionality that is not yet implemented
+// describe('BO> Batting order tracking tests', function() {
+//
+//   it('Basic', function() {
+//     let games = JSON.parse(fs.readFileSync("test/LAN201711010.json", 'utf8'));
+//     let g = Game.parseGameToPlay(games.games[0], 4);
+//     g.plays.forEach(function(play, index) {
+//       if (index > 0 && play.type === "play") {
+//         let gg = Game.parseGameToPlay(games.games[0], index-1);
+//         console.log("Testing inning " + play.inning + ", batter=" + play.batting_player_id + ", gg.plays.length=" + gg.plays.length + ", index=" + index);
+//         let p = Game.createNextPlay(gg);
+//         assert.equal(play.inning, p.inning);
+//         assert.equal(play.batting_team_id, p.batting_team_id);
+//         assert.equal(play.batting_player_id, p.batting_player_id);
+//         console.log("Successful test of " + play.batting_player_id + " === " + p.batting_player_id);
+//       }
+//     });
+//   });
+//
+// });
 
-  it('Basic', function() {
-    // let games = JSON.parse(fs.readFileSync("test/LAN201711010.json", 'utf8'));
-    // let g = Game.parseGameToPlay(games.games[0], 4);
-    // g.plays.forEach(function(play, index) {
-    //   if (index > 0 && play.type === "play") {
-    //     let gg = Game.parseGameToPlay(games.games[0], index-1);
-    //     console.log("Testing inning " + play.inning + ", batter=" + play.batting_player_id + ", gg.plays.length=" + gg.plays.length + ", index=" + index);
-    //     let p = Game.createNextPlay(gg);
-    //     assert.equal(play.inning, p.inning);
-    //     assert.equal(play.batting_team_id, p.batting_team_id);
-    //     assert.equal(play.batting_player_id, p.batting_player_id);
-    //     console.log("Successful test of " + play.batting_player_id + " === " + p.batting_player_id);
-    //   }
-    // });
-  });
-
-});
-
-describe('GLEEB DH Substitution Tests', function() {
+describe('DH Substitution Tests', function() {
   let setupWithoutDH = function() {
     let ret = new Object;
     let enhancedGame = new Object;
@@ -616,7 +617,7 @@ describe('GLEEB DH Substitution Tests', function() {
     assert.equal(9, setupStructure.currentLineups.current_home_defense.length);
     assert.equal("hdh", setupStructure.currentLineups.current_home_defense[0]);
   });
-  it('GLEEK Erase DH in 4 spot', function() {
+  it('Erase DH in 4 spot', function() {
 
     let setupStructure = setupWithDHIn4Hole();
 
@@ -634,10 +635,88 @@ describe('GLEEB DH Substitution Tests', function() {
     assert.equal("h2b", setupStructure.currentLineups.current_home_defense[3]);
 
     Game.applySubstitution(setupStructure.enhancedGame, setupStructure.currentLineups, subPlay, lastBaseState);
-    
+
     assert.equal("hdh", setupStructure.currentLineups.current_home_batting_order[3]);
     assert.equal(9, setupStructure.currentLineups.current_home_defense.length);
     assert.equal("hdh", setupStructure.currentLineups.current_home_defense[3]);
 
   });
+});
+
+describe('Pitch count tests', function() {
+
+  var defense = ['p','c','1b','2b','3b','ss','lf','cf','rf'];
+
+  it('no pitches', function() {
+    let ps = ".";
+    let pc = Game.getPitchCount(ps, defense);
+    assert.equal("p", pc.responsible_pitcher_player_id);
+    assert.equal(0, pc.totalPitches);
+  });
+
+  it('pitches', function() {
+    let ps = "CBBSFFBX";
+    let pc = Game.getPitchCount(ps, defense);
+    assert.equal("p", pc.responsible_pitcher_player_id);
+    assert.equal(8, pc.totalPitches);
+    assert.equal(1, pc.calledStrikes);
+    assert.equal(1, pc.swingingStrikes);
+    assert.equal(2, pc.fouls);
+    assert.equal(1, pc.bip);
+    assert.equal(3, pc.balls);
+  });
+
+});
+
+describe('1-1 count win tests', function() {
+
+  var defense = ['p','c','1b','2b','3b','ss','lf','cf','rf'];
+
+  var makePlay = function(pitch_sequence, outsRecorded, playCode, hardness) {
+    let play = new Object;
+    play.pitch_sequence = pitch_sequence;
+    play.enhanced_play = new Object;
+    play.enhanced_play.outsRecorded = outsRecorded;
+    play.enhanced_play.playCode = playCode;
+    play.enhanced_play.ballInPlay = null;
+    if (hardness != null) {
+      play.enhanced_play.ballInPlay = new Object;
+      play.enhanced_play.ballInPlay[hardness] = true;
+    }
+    return play;
+  };
+
+  it('no 1-1 count', function() {
+    let ep = Game.determineOneOneCountWin(makePlay("BBCCS", 1, "K", null));
+    assert.ok(!ep.had11count);
+    assert.ok(!ep.win11count);
+    ep = Game.determineOneOneCountWin(makePlay("BX", 1, "63", null));
+    assert.ok(!ep.had11count);
+    assert.ok(!ep.win11count);
+  });
+
+  it('1-1 count', function() {
+    let ep = Game.determineOneOneCountWin(makePlay("BCCS", 1, "K", null));
+    assert.ok(ep.had11count);
+    assert.ok(ep.win11count);
+    ep = Game.determineOneOneCountWin(makePlay("BCFS", 1, "K", null));
+    assert.ok(ep.had11count);
+    assert.ok(ep.win11count);
+    ep = Game.determineOneOneCountWin(makePlay("BCX", 1, "63", null));
+    assert.ok(ep.had11count);
+    assert.ok(ep.win11count);
+    ep = Game.determineOneOneCountWin(makePlay("BCX", 0, "E", null));
+    assert.ok(ep.had11count);
+    assert.ok(ep.win11count);
+    ep = Game.determineOneOneCountWin(makePlay("BCX", 0, "S", "hard"));
+    assert.ok(ep.had11count);
+    assert.ok(!ep.win11count);
+    ep = Game.determineOneOneCountWin(makePlay("BCBX", 1, "63", null));
+    assert.ok(ep.had11count);
+    assert.ok(!ep.win11count);
+    ep = Game.determineOneOneCountWin(makePlay("BCX", 0, "S", "soft"));
+    assert.ok(ep.had11count);
+    assert.ok(ep.win11count);
+  });
+
 });
