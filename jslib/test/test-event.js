@@ -1079,6 +1079,7 @@ describe('Random bugfixes', function() {
           "batting_player_id": "herne001",
           "responsible_pitcher_player_id": "keucd001"
         },
+        "scoredFrom": "3",
         "unearnedIndicated": 1,
         "noRbiIndicated": 0
       }

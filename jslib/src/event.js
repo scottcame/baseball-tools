@@ -504,6 +504,7 @@ function determineRunsScoredBy(rawEvent, baseStateBeforePlay) {
       let baseFromStr = advance.startingBase;
       let baseFrom = baseFromStr === 'B' ? 0 : Number.parseInt(baseFromStr);
       let score = new Object;
+      score.scoredFrom = baseFromStr;
       score.runner = baseStateBeforePlay[baseFrom];
       score.unearnedIndicated = advance.parameters.reduce(function(accumulator, param) { return accumulator |= param.parameter === "UR" ? true : false; }, false);
       score.noRbiIndicated = advance.parameters.reduce(function(accumulator, param) { return accumulator |= ["NR","NORBI"].includes(param.parameter) ? true : false; }, false);

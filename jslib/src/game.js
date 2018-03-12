@@ -295,7 +295,7 @@ function determineOneOneCountWin(play) {
       win = (['C','M','S','K','Q','F','L','O','T','R'].includes(c) || ('X' === c && (
         play.enhanced_play.outsRecorded > 0 ||
         play.enhanced_play.playCode === "E" ||
-        (play.enhanced_play.ballInPlay != null && play.enhanced_play.ballInPlay.soft))));
+        (play.enhanced_play.ballInPlay != null && play.enhanced_play.ballInPlay.soft != null && play.enhanced_play.ballInPlay.soft))));
     }
   }
   play.enhanced_play.had11count = count11;
@@ -401,5 +401,7 @@ module.exports.parseGames = parseGames;
 module.exports.parseGame = parseGame;
 module.exports.parseGameToPlay = parseGameToPlay;
 module.exports.findPlayer = findPlayer;
-module.exports.createNextPlay = createNextPlay;
+module.exports.getPitchCount = getPitchCount;
+module.exports.determineOneOneCountWin = determineOneOneCountWin;
+
 module.exports.DH_LINEUP_POSITION = DH_LINEUP_POSITION;
