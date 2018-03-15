@@ -229,7 +229,7 @@ function writeTeamSection(teamStats, team, name) {
       outStream.write("" + psPct + "   ");
       outStream.write("" + pitcherArray[Summary.PITCHING_STAT_11COUNTS] + "    ");
       let win11Pct = Math.round(100*pitcherArray[Summary.PITCHING_STAT_WIN11] / pitcherArray[Summary.PITCHING_STAT_11COUNTS]);
-      outStream.write("" + (win11Pct == Infinity ? "--" : win11Pct) + " ");
+      outStream.write("" + (isNaN(win11Pct) ? "--" : win11Pct) + " ");
       outStream.write("\n");
       return true;
     }
