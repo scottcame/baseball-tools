@@ -140,7 +140,7 @@ function determineQualityAtBat(enhanced_play) {
   ret |= ['E','HP'].includes(enhanced_play.playCode);
   ret |= enhanced_play.rawEvent.modifiers.includes('SH');
   ret |= enhanced_play.rawEvent.modifiers.includes('SF');
-  if (enhanced_play.outsAfterPlay === enhanced_play.outsRecorded && enhanced_play.outsAfterPlay < 3) {
+  if (enhanced_play.outsAfterPlay === enhanced_play.outsRecorded && enhanced_play.outsAfterPlay < 3 && !enhanced_play.rawEvent.modifiers.includes("GDP")) {
     enhanced_play.rawEvent.advances.some(function(a) {
       if (a.startingBase === "2") {
         ret |= ["3","H"].includes(a.endingBase);
