@@ -22,7 +22,7 @@ describe('SummaryTest: Entire game 2 - DH, CS, and pinch runners', function() {
   it("Pinch runner business", function() {
     assert.deepEqual(summary.box.home_team.batting[4][0], ["gurry001", 5,1,2,3,0,1,6,1,2,5]);
     assert.deepEqual(summary.box.home_team.batting[4][1], ["maybc001", 0,0,0,0,0,0,1,0,0,0]);
-    assert.deepEqual(summary.box.home_team.batting[8][0], ["mccab002", 4,1,1,1,0,1,12,1,1,5]);
+    assert.deepEqual(summary.box.home_team.batting[8][0], ["mccab002", 4,1,1,1,0,1,12,1,2,5]);
     assert.deepEqual(summary.box.home_team.batting[8][1], ["fishd001", 0,1,0,0,0,0,0,0,0,0]);
   });
 
@@ -127,16 +127,16 @@ describe('SummaryTest: Entire game', function() {
     let homeBox = [
       [["taylc001",5,0,1,0,0,1,5,0,1,5]],
       [["seagc001",4,0,1,0,1,1,1,1,2,5]],
-      [["turnj001",2,0,1,0,0,0,1,1,1,4]],
+      [["turnj001",2,0,1,0,0,0,1,1,3,4]],
       [["bellc002",4,0,0,0,0,3,8,1,0,4]],
-      [["puigy001",3,0,0,0,0,0,2,0,0,4]],
+      [["puigy001",3,0,0,0,0,0,2,0,1,4]],
       [["pedej001",4,1,1,0,0,2,0,0,1,4]],
       [["forsl001",3,0,1,0,1,0,0,3,2,4]],
       [["barna001",4,0,0,0,0,0,9,0,0,4]],
       [
         ["darvy001",0,0,0,0,0,0,1,0,0,0],
         ["morrb001",0,0,0,0,0,0,0,0,0,0],
-        ["herne001",0,0,0,0,0,0,0,0,0,1],
+        ["herne001",0,0,0,0,0,0,0,0,1,1],
         ["kersc001",1,0,0,0,0,1,0,1,0,1],
         ["ethia001",1,0,1,1,0,0,0,0,1,1],
         ["jansk001",0,0,0,0,0,0,0,0,0,0],
