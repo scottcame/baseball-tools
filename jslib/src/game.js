@@ -137,7 +137,7 @@ function determineQualityAtBat(enhanced_play) {
   let ret = false;
   ret |= enhanced_play.hit;
   ret |= enhanced_play.walk;
-  ret |= ['E','HBP'].includes(enhanced_play.playCode);
+  ret |= ['E','HP'].includes(enhanced_play.playCode);
   ret |= enhanced_play.rawEvent.modifiers.includes('SH');
   ret |= enhanced_play.rawEvent.modifiers.includes('SF');
   if (enhanced_play.outsAfterPlay === enhanced_play.outsRecorded && enhanced_play.outsAfterPlay < 3) {
