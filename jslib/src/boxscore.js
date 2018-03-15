@@ -7,7 +7,7 @@ var Summary = require('./summary.js')
 var moment = require("moment")
 
 function displayUsage() {
-  console.error("usage: node [path to boxscore.js] event-file");
+  console.error("usage: node [path to boxscore.js] event-file --latex=true");
   process.exit(-1);
 }
 
@@ -17,6 +17,15 @@ var gameFile = process.argv[2];
 
 if (gameFile == null) {
   displayUsage();
+}
+
+let latex = false;
+
+if (process.argv.length === 4) {
+  latex = process.argv[3].match(/^\-\-latex=(.+)$/);
+  if (latex != null) {
+    latex = latex[1] === "true";
+  }
 }
 
 let gg = JSON.parse(fs.readFileSync(gameFile, 'utf8'));
@@ -41,13 +50,13 @@ if (gs.home_team_stats.score < gs.visitor_team_stats.score) {
 let teamNameSpace = Math.max(gs.home_team_name.length, gs.visitor_team_name.length) + 5;
 var playerSpace = 25;
 
-outStream.write("---" + "\n");
-outStream.write("geometry: margin=.5in" + "\n");
-outStream.write("---" + "\n");
-outStream.write("\\setmonofont[Scale=1]{LetterGothic}" + "\n");
-outStream.write("\\pagenumbering{gobble}" + "\n");
+if (latex) outStream.write("---" + "\n");
+if (latex) outStream.write("geometry: margin=.5in" + "\n");
+if (latex) outStream.write("---" + "\n");
+if (latex) outStream.write("\\setmonofont[Scale=1]{LetterGothic}" + "\n");
+if (latex) outStream.write("\\pagenumbering{gobble}" + "\n");
 
-outStream.write("```" + "\n");
+if (latex) outStream.write("```" + "\n");
 
 outStream.write(teamHead[0] + " " + scoreHead[0] + ", " + teamHead[1] + " " + scoreHead[1] + "\n");
 outStream.write(moment(gs.date).format('dddd, MMMM Do YYYY') + "\n");
@@ -68,12 +77,12 @@ outStream.write("   " + gs.home_team_stats.hits);
 outStream.write("   " + gs.home_team_stats.error_count);
 
 writeTeamSection(gs.visitor_team_stats, gs.box.visitor_team, gs.visitor_team_name);
-outStream.write("```" + "\n");
-outStream.write("\\pagebreak\n");
-outStream.write("```" + "\n");
+if (latex) outStream.write("```" + "\n");
+if (latex) outStream.write("\\pagebreak\n");
+if (latex) outStream.write("```" + "\n");
 writeTeamSection(gs.home_team_stats, gs.box.home_team, gs.home_team_name);
 
-outStream.write("```" + "\n");
+if (latex) outStream.write("```" + "\n");
 
 function writeTeamSection(teamStats, team, name) {
 
