@@ -168,7 +168,7 @@ function validateAdvances(advances) {
 
 function validateBasicPlay(basicPlay) {
   let ret = null;
-  if (!(/^FC[1-9]|E[1-9]|[I]?W|SB[23H]|CS[23H]|PO[123]|POCS[23H]|DI|BK|HR[1-9]*|DGR|PB|FLE[1-9]|OA|NP|C|HP$/.test(basicPlay) ||
+  if (!(/^FC[1-9]|E[1-9]|[I]?W|(?:SB[23H])(?:;SB[23H])*|CS[23H]|PO[123]|POCS[23H]|DI|BK|HR[1-9]*|DGR|PB|FLE[1-9]|OA|NP|C|HP$/.test(basicPlay) ||
         /^(?:[1-9]+(?:[\-]|\([B123]\))?)+$/.test(basicPlay) ||
         /^[SDTH][1-9]*$/.test(basicPlay) ||
         /^[K][1-9]*(?:\+(?:CS|SB|PO)[23H]|E[1-9]|PB|WP)?$/.test(basicPlay))) {
@@ -552,15 +552,17 @@ function determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay) {
     ret[2] = /^T[1-9]?$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[2];
   }
 
-  let sbRegex = /^(?:SB)([23H])/;
+  let sbRegexMatch = rawEvent.basicPlay.match(/^(?:K\+)?(?:SB([23H]))(?:;SB([23H]))?(?:;SB([23H]))?/);
 
-  if (sbRegex.test(rawEvent.basicPlay)) {
-    let baseStr = rawEvent.basicPlay.replace(sbRegex, "$1");
-    let base = (baseStr === 'H' ? 3 : Number.parseInt(baseStr)-1);
-    if (base < 3) {
-      ret[base] = ret[base-1];
-    }
-    ret[base-1] = null;
+  if (sbRegexMatch) {
+    let sbs = sbRegexMatch.slice(1,4).filter(function(v) { return v != null; }).sort().reverse();
+    sbs.forEach(function(baseStr) {
+      let base = (baseStr === 'H' ? 3 : Number.parseInt(baseStr)-1);
+      if (base < 3) {
+        ret[base] = ret[base-1];
+      }
+      ret[base-1] = null;
+    });
   }
 
   let m = rawEvent.basicPlay.match(/^(?:PO|K\+PO)([123])(\([1-9E].*\))?/);

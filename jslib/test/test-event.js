@@ -1040,6 +1040,17 @@ describe('Error determinations', function() {
   });
 });
 
+describe('Double steal', function() {
+  it('SB2;SB3', function() {
+    let enhancedEvent = Event.parseEvent("SB2;SB3", ["b", "1", "2", null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.deepEqual([null, "1", "2"], enhancedEvent.basesOccupiedAfterPlay);
+  });
+  it('K+SB2;SB3', function() {
+    let enhancedEvent = Event.parseEvent("SB2;SB3", ["b", "1", "2", null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.deepEqual([null, "1", "2"], enhancedEvent.basesOccupiedAfterPlay);
+  });
+});
+
 describe('Random bugfixes', function() {
   it('2017 WS Game 7 LAN 5th Turner single to third', function() {
     let enhancedEvent = Event.parseEvent("S57/G.1-2", ["turner", "seager", null, null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);

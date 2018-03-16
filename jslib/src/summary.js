@@ -383,49 +383,60 @@ function getGameSummaryToPlay(game, playIndex) {
         defenseTeamStats.pb.push(dpo);
       }
 
-      if (play.enhanced_play.playCode === "SB") {
-        let base = play.enhanced_play.rawEvent.basicPlay.replace(/^SB([23H])/, "$1");
-        let runner_player_id = null;
-        let baseNumber = null;
-        if (base === "H") {
-          base = "Home";
-          baseNumber = 4;
-          runner_player_id = play.enhanced_play.runsScoredBy[0].runner.batting_player_id;
-        } else {
-          runner_player_id = play.enhanced_play.basesOccupiedAfterPlay[Number.parseInt(base)-1].batting_player_id;
-          base = base + "d";
-          baseNumber = Number.parseInt(base);
-        }
-        play.enhanced_play.rawEvent.advances.some(function(adv) {
-          let startingBaseNumber = Number.parseInt(adv.startingBase);
-          if (startingBaseNumber == baseNumber - 1) {
-            if (adv.endingBase === "H") {
-              let runnerFound = false;
-              play.enhanced_play.runsScoredBy.some(function(rsby) {
-                if (rsby.scoredFrom == adv.startingBase) {
-                  runner_player_id = rsby.runner.batting_player_id;
-                  runnerFound = true;
+      let sbRegexMatch = play.enhanced_play.rawEvent.basicPlay.match(/^(?:K\+)?(?:SB([23H]))(?:;SB([23H]))?(?:;SB([23H]))?/);
+
+      if (sbRegexMatch) {
+
+        let sbs = sbRegexMatch.slice(1,4).filter(function(v) { return v != null; }).sort().reverse();
+
+        sbs.forEach(function(base) {
+
+          let runner_player_id = null;
+          let baseNumber = null;
+          if (base === "H") {
+            base = "Home";
+            baseNumber = 4;
+            runner_player_id = play.enhanced_play.runsScoredBy[0].runner.batting_player_id;
+          } else {
+            runner_player_id = play.enhanced_play.basesOccupiedAfterPlay[Number.parseInt(base)-1].batting_player_id;
+            base = base + "d";
+            baseNumber = Number.parseInt(base);
+          }
+
+          let dpo = new Object;
+          dpo.base = base;
+          dpo.runner_player_id = runner_player_id;
+          dpo.pitcher_player_id = defensePositionPlayers[0];
+          dpo.catcher_player_id = defensePositionPlayers[1];
+          offenseTeamStats.sb.push(dpo);
+
+          play.enhanced_play.rawEvent.advances.some(function(adv) {
+            let startingBaseNumber = Number.parseInt(adv.startingBase);
+            if (startingBaseNumber == baseNumber - 1) {
+              if (adv.endingBase === "H") {
+                let runnerFound = false;
+                play.enhanced_play.runsScoredBy.some(function(rsby) {
+                  if (rsby.scoredFrom == adv.startingBase) {
+                    runner_player_id = rsby.runner.batting_player_id;
+                    runnerFound = true;
+                    return true;
+                  }
+                  return false;
+                });
+                return runnerFound;
+              } else {
+                let r = play.enhanced_play.basesOccupiedAfterPlay[Number.parseInt(adv.endingBase) - 1];
+                if (r != null) {
+                  runner_player_id = r;
                   return true;
                 }
-                return false;
-              });
-              return runnerFound;
-            } else {
-              let r = play.enhanced_play.basesOccupiedAfterPlay[Number.parseInt(adv.endingBase) - 1];
-              if (r != null) {
-                runner_player_id = r;
-                return true;
               }
             }
-          }
-          return false;
+            return false;
+          });
+
         });
-        let dpo = new Object;
-        dpo.base = base;
-        dpo.runner_player_id = runner_player_id;
-        dpo.pitcher_player_id = defensePositionPlayers[0];
-        dpo.catcher_player_id = defensePositionPlayers[1];
-        offenseTeamStats.sb.push(dpo);
+
       }
 
       if (play.enhanced_play.playCode === "CS") {
