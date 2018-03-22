@@ -7,7 +7,7 @@ var Summary = require('./summary.js')
 var moment = require("moment")
 
 function displayUsage() {
-  console.error("usage: node [path to boxscore.js] event-file --latex=true");
+  console.error("usage: node [path to boxscore.js] event-file --latex=true --intermediate-files=true");
   process.exit(-1);
 }
 
@@ -20,12 +20,19 @@ if (gameFile == null) {
 }
 
 let latex = false;
+let intermediateFiles = false;
 
-if (process.argv.length === 4) {
-  latex = process.argv[3].match(/^\-\-latex=(.+)$/);
-  if (latex != null) {
-    latex = latex[1] === "true";
-  }
+if (process.argv.length > 3) {
+  process.argv.slice(3).forEach(function(arg) {
+    let tl = arg.match(/^\-\-latex=(.+)$/);
+    if (tl) {
+      latex = tl[1] === "true";
+    }
+    tl = arg.match(/^\-\-intermediate-files=(.+)$/);
+    if (tl) {
+      intermediateFiles = tl[1] === "true";
+    }
+  });
 }
 
 let gg = JSON.parse(fs.readFileSync(gameFile, 'utf8'));
@@ -33,9 +40,12 @@ let g = gg.games[0];
 g = Game.parseGame(g);
 let gs = Summary.getGameSummary(g);
 
-fs.writeFileSync(gameFile.split('.')[0] + '-enhanced.json', JSON.stringify(g, null, 2));
-fs.writeFileSync(gameFile.split('.')[0] + '-summary.json', JSON.stringify(gs, null, 2));
-//console.log(JSON.stringify(gs, null, 2));
+if (intermediateFiles) {
+  let dir = path.dirname(gameFile);
+  if (!latex) console.log("Writing intermediate enhanced/summary files to " + dir);
+  fs.writeFileSync(gameFile.split('.')[0] + '-enhanced.json', JSON.stringify(g, null, 2));
+  fs.writeFileSync(gameFile.split('.')[0] + '-summary.json', JSON.stringify(gs, null, 2));
+}
 
 let outStream = process.stdout;
 
@@ -43,8 +53,8 @@ let teamHead = [gs.home_team_name, gs.visitor_team_name];
 let scoreHead = [gs.home_team_stats.score, gs.visitor_team_stats.score];
 
 if (gs.home_team_stats.score < gs.visitor_team_stats.score) {
-  teamHead = teamHead[1,0];
-  scoreHead = scoreHead[1,0];
+  teamHead = teamHead.reverse();
+  scoreHead = scoreHead.reverse()
 }
 
 let teamNameSpace = Math.max(gs.home_team_name.length, gs.visitor_team_name.length) + 5;

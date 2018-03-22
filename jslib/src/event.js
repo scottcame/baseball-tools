@@ -42,7 +42,9 @@ function parseEvent(eventText, baseStateBeforePlay, outsBeforePlay, defensivePla
   ret.doublePlay = isDoublePlay(rawEvent);
   ret.runsScoredBy = determineRunsScoredBy(rawEvent, baseStateBeforePlay);
   ret.runs = ret.runsScoredBy.length;
-  ret.basesOccupiedAfterPlay = determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay);
+  let boap = determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay);
+  ret.basesOccupiedAfterPlay = boap.basesOccupiedAfterPlay;
+  ret.baseStealers = boap.baseStealers;
 
   ret.ballInPlay = getBallInPlay(rawEvent);
 
@@ -499,6 +501,13 @@ function determineRunsScoredBy(rawEvent, baseStateBeforePlay) {
     score.noRbiIndicated = false;
     ret.push(score);
   }
+  if ("SBH" === rawEvent.basicPlay) {
+    let score = new Object;
+    score.runner = baseStateBeforePlay[3];
+    score.unearnedIndicated = false;
+    score.noRbiIndicated = false;
+    ret.push(score);
+  }
   rawEvent.advances.forEach(function(advance) {
     if (advance.runnerSafe && advance.endingBase === "H") {
       let baseFromStr = advance.startingBase;
@@ -518,6 +527,8 @@ function determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay) {
 
   // spec is not entirely clear if "implicit" advances are possible...i.e., runner on first, batter walks.  does the .1-2 advance have to be specified?  we assume so, but if
   //  we find this isn't the case, and sometimes advances are assumed, we'll have some work to do here.
+
+  let retObj = new Object;
 
   let ret = baseStateBeforePlay.slice(1, 4);
 
@@ -540,24 +551,26 @@ function determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay) {
           batterExplicit = true;
           preState = "0";
         }
-        // ret[Number.parseInt(postState)-1] = baseStateBeforePlay[Number.parseInt(preState)];
         explicitPostStates[Number.parseInt(postState)-1] = baseStateBeforePlay[Number.parseInt(preState)];
       }
     }
   });
 
   if (!batterExplicit) {
-    ret[0] = /^(?:S[1-9]*|E[1-9]?|FC[1-9]?|W|IW|I|HP|C|[1-9]+\([123]\))$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[0];
+    ret[0] = /^(?:S[1-9]*|E[1-9]?|FC[1-9]?|W(?:\+.+)?|IW|I|HP|C|[1-9]+\([123]\))$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[0];
     ret[1] = /^D[1-9]?$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[1];
     ret[2] = /^T[1-9]?$/.test(rawEvent.basicPlay) ? baseStateBeforePlay[0] : ret[2];
   }
 
-  let sbRegexMatch = rawEvent.basicPlay.match(/^(?:K\+)?(?:SB([23H]))(?:;SB([23H]))?(?:;SB([23H]))?/);
+  let baseStealers = [];
+
+  let sbRegexMatch = rawEvent.basicPlay.match(/^(?:W\+|K\+)?(?:SB([23H]))(?:;SB([23H]))?(?:;SB([23H]))?/);
 
   if (sbRegexMatch) {
     let sbs = sbRegexMatch.slice(1,4).filter(function(v) { return v != null; }).sort().reverse();
     sbs.forEach(function(baseStr) {
       let base = (baseStr === 'H' ? 3 : Number.parseInt(baseStr)-1);
+      baseStealers[base-1] = baseStateBeforePlay[base];
       if (base < 3) {
         ret[base] = ret[base-1];
       }
@@ -591,7 +604,14 @@ function determineBasesOccupiedAfterPlay(rawEvent, baseStateBeforePlay) {
     }
   });
 
-  return ret;
+  retObj.basesOccupiedAfterPlay = ret;
+
+  // we have to track base stealers explicitly, because if there is a credited SB but then an out on an attempted advance, we will
+  // no longer have (in the basesOccupiedAfterPlay array) who the runner was.  eg SB2.1X3(285).
+
+  retObj.baseStealers = baseStealers;
+
+  return retObj;
 
 }
 

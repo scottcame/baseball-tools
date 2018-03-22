@@ -294,6 +294,9 @@ function getGameSummaryToPlay(game, playIndex) {
             thisPlayerStatsArray[BATTING_STAT_PO]++;
           }
         }
+        if (out.assistFielders == null) {
+          throw new Error("Out with no assistFielders field, play=" + JSON.stringify(play));
+        }
         out.assistFielders.forEach(function(assistFielder) {
           thisPlayerStatsArray = findPlayerStatsArray(assistFielder.fielderId, defenseLineup);
           if (thisPlayerStatsArray == null) {
@@ -383,7 +386,7 @@ function getGameSummaryToPlay(game, playIndex) {
         defenseTeamStats.pb.push(dpo);
       }
 
-      let sbRegexMatch = play.enhanced_play.rawEvent.basicPlay.match(/^(?:K\+)?(?:SB([23H]))(?:;SB([23H]))?(?:;SB([23H]))?/);
+      let sbRegexMatch = play.enhanced_play.rawEvent.basicPlay.match(/^(?:W\+|K\+)?(?:SB([23H]))(?:;SB([23H]))?(?:;SB([23H]))?/);
 
       if (sbRegexMatch) {
 
@@ -394,13 +397,16 @@ function getGameSummaryToPlay(game, playIndex) {
           let runner_player_id = null;
           let baseNumber = null;
           if (base === "H") {
+            if (play.enhanced_play.runsScoredBy[0] == null) {
+              throw new Error("Null runner on SB of Home, play: " + JSON.stringify(play));
+            }
             base = "Home";
             baseNumber = 4;
             runner_player_id = play.enhanced_play.runsScoredBy[0].runner.batting_player_id;
           } else {
-            runner_player_id = play.enhanced_play.basesOccupiedAfterPlay[Number.parseInt(base)-1].batting_player_id;
             base = base + "d";
             baseNumber = Number.parseInt(base);
+            runner_player_id = play.enhanced_play.baseStealers[baseNumber-2].batting_player_id;
           }
 
           let dpo = new Object;

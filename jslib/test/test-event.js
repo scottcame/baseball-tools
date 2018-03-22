@@ -521,7 +521,6 @@ describe('Event.determineOuts (no outs)', function() {
   it('K+WP.B-1 -> 0', function() {
     let o = Event.parseRawEvent("K+WP.B-1");
     let outs = Event.determineOuts(o, ["batter", null, null, null], defense);
-    console.log(outs);
     assert.equal(0, outs.length);
     assert.equal(0, Event.determineOutsRecorded(outs));
   });
@@ -628,103 +627,103 @@ describe('determineRunsScoredBy', function() {
 describe('Event.determineBasesOccupiedAfterPlay (implicits, nobody on)', function() {
   it('S7 -> [batter,null,null]', function() {
     let o = Event.parseRawEvent("S7");
-    assert.deepEqual(["batter", null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]));
+    assert.deepEqual(["batter", null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]).basesOccupiedAfterPlay);
   });
   it('S -> [batter,null,null]', function() {
     let o = Event.parseRawEvent("S");
-    assert.deepEqual(["batter", null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]));
+    assert.deepEqual(["batter", null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]).basesOccupiedAfterPlay);
   });
   it('D7 -> [null,batter,null]', function() {
     let o = Event.parseRawEvent("D7");
-    assert.deepEqual([null, "batter", null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]));
+    assert.deepEqual([null, "batter", null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]).basesOccupiedAfterPlay);
   });
   it('D -> [null,batter,null]', function() {
     let o = Event.parseRawEvent("D");
-    assert.deepEqual([null, "batter", null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]));
+    assert.deepEqual([null, "batter", null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]).basesOccupiedAfterPlay);
   });
   it('T7 -> [null,null,batter]', function() {
     let o = Event.parseRawEvent("T7");
-    assert.deepEqual([null, null, "batter"], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]));
+    assert.deepEqual([null, null, "batter"], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]).basesOccupiedAfterPlay);
   });
   it('T -> [null,null,batter]', function() {
     let o = Event.parseRawEvent("T");
-    assert.deepEqual([null, null, "batter"], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]));
+    assert.deepEqual([null, null, "batter"], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]).basesOccupiedAfterPlay);
   });
   it('W -> [batter,null,null]', function() {
     let o = Event.parseRawEvent("W");
-    assert.deepEqual(["batter", null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]));
+    assert.deepEqual(["batter", null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]).basesOccupiedAfterPlay);
   });
   it('IW -> [batter,null,null]', function() {
     let o = Event.parseRawEvent("IW");
-    assert.deepEqual(["batter", null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]));
+    assert.deepEqual(["batter", null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]).basesOccupiedAfterPlay);
   });
   it('I -> [batter,null,null]', function() {
     let o = Event.parseRawEvent("I");
-    assert.deepEqual(["batter", null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]));
+    assert.deepEqual(["batter", null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]).basesOccupiedAfterPlay);
   });
   it('E6 -> [batter,null,null]', function() {
     let o = Event.parseRawEvent("E6");
-    assert.deepEqual(["batter", null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]));
+    assert.deepEqual(["batter", null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]).basesOccupiedAfterPlay);
   });
 });
 
 describe('Event.determineBasesOccupiedAfterPlay (explicits, nobody on)', function() {
   it('K+WP.B-1 -> [batter,null,null]', function() {
     let o = Event.parseRawEvent("K+WP.B-1");
-    assert.deepEqual(["batter", null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]));
+    assert.deepEqual(["batter", null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, null]).basesOccupiedAfterPlay);
   });
 });
 
 describe('Event.determineBasesOccupiedAfterPlay (implicit no advance, runners on)', function() {
   it('[batter,first,null,null] + 9 -> [first,null,null]', function() {
     let o = Event.parseRawEvent("9");
-    assert.deepEqual(["first", null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]));
+    assert.deepEqual(["first", null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]).basesOccupiedAfterPlay);
   });
   it('[null,null,third] + 63/G -> [null,null,third]', function() {
     let o = Event.parseRawEvent("63/G");
-    assert.deepEqual([null, null, "third"], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, "third"]));
+    assert.deepEqual([null, null, "third"], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, "third"]).basesOccupiedAfterPlay);
   });
 });
 
 describe('Event.determineBasesOccupiedAfterPlay (baserunning plays)', function() {
   it('[batter,first,null,null] + PO1(13) -> [null,null,null]', function() {
     let o = Event.parseRawEvent("PO1(13)");
-    assert.deepEqual([null, null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]));
+    assert.deepEqual([null, null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]).basesOccupiedAfterPlay);
   });
   it('[batter,first,null,null] + CS2(26) -> [null,null,null]', function() {
     let o = Event.parseRawEvent("CS2(26)");
-    assert.deepEqual([null, null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]));
+    assert.deepEqual([null, null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]).basesOccupiedAfterPlay);
   });
   it('[batter,first,null,null] + K+CS2(26) -> [null,null,null]', function() {
     let o = Event.parseRawEvent("K+CS2(26)");
-    assert.deepEqual([null, null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]));
+    assert.deepEqual([null, null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]).basesOccupiedAfterPlay);
   });
   it('[batter,first,null,null] + POCS2(1361) -> [null,null,null]', function() {
     let o = Event.parseRawEvent("POCS2(1361)");
-    assert.deepEqual([null, null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]));
+    assert.deepEqual([null, null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]).basesOccupiedAfterPlay);
   });
   it('[batter,first,null,third] + POCS2(1361) -> [null,null,third]', function() {
     let o = Event.parseRawEvent("POCS2(1361)");
-    assert.deepEqual([null, null, "third"], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, "third"]));
+    assert.deepEqual([null, null, "third"], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, "third"]).basesOccupiedAfterPlay);
   });
   it('[batter,first,null,null] + SB2 -> [null,first,null]', function() {
     let o = Event.parseRawEvent("SB2");
-    assert.deepEqual([null, "first", null], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]));
+    assert.deepEqual([null, "first", null], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]).basesOccupiedAfterPlay);
   });
   it('[batter,null,null,third] + SBH -> [null,null,null]', function() {
     let o = Event.parseRawEvent("SBH");
-    assert.deepEqual([null, null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, "third"]));
+    assert.deepEqual([null, null, null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, null, "third"]).basesOccupiedAfterPlay);
   });
   it('[batter,null,second,null] + E3/TH/G.2-H(NR);B-2 -> [null,batter,null]', function() {
     let o = Event.parseRawEvent("E3/TH/G.2-H(NR);B-2");
-    assert.deepEqual([null, "batter", null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, "second", null]));
+    assert.deepEqual([null, "batter", null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, "second", null]).basesOccupiedAfterPlay);
     let rsby = Event.determineRunsScoredBy(o, ["batter", null, "second", null]);
     assert.equal(1, rsby.length);
     assert.equal(rsby[0].runner, "second");
   });
   it('[batter,first,second,null] + 46(1)/FO/G.2-3 -> [batter,null,second]', function() {
     let o = Event.parseRawEvent("46(1)/FO/G.2-3");
-    assert.deepEqual(["batter",null,"second"], Event.determineBasesOccupiedAfterPlay(o, ["batter","first","second",null]));
+    assert.deepEqual(["batter",null,"second"], Event.determineBasesOccupiedAfterPlay(o, ["batter","first","second",null]).basesOccupiedAfterPlay);
     let defense = ["P", "C", "1B", "2B", "3B", "SS", "LF", "CF", "RF"];
     let outs = Event.determineOuts(o, ["batter","first","second",null], defense);
     assert.equal(1, outs.length);
@@ -735,27 +734,27 @@ describe('Event.determineBasesOccupiedAfterPlay (baserunning plays)', function()
 describe('Event.determineBasesOccupiedAfterPlay (explicits, runners on)', function() {
   it('[batter,null,second,third] + D9.2-H;3-H -> [null,batter,null]', function() {
     let o = Event.parseRawEvent("D9.2-H;3-H");
-    assert.deepEqual([null,"batter",null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, "second", "third"]));
+    assert.deepEqual([null,"batter",null], Event.determineBasesOccupiedAfterPlay(o, ["batter", null, "second", "third"]).basesOccupiedAfterPlay);
   });
   it('[batter,first,null,null] + S7.1-3 -> [batter,null,first]', function() {
     let o = Event.parseRawEvent("S7.1-3");
-    assert.deepEqual(["batter",null,"first"], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]));
+    assert.deepEqual(["batter",null,"first"], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]).basesOccupiedAfterPlay);
   });
   it('[batter,first,null,null] + E1/TH/BG15.1-3 -> [batter,null,first]', function() {
     let o = Event.parseRawEvent("E1/TH/BG15.1-3");
-    assert.deepEqual(["batter",null,"first"], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]));
+    assert.deepEqual(["batter",null,"first"], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]).basesOccupiedAfterPlay);
   });
   it('[batter,first,second,null] + S7.1-2;2XH -> [batter,first,null]', function() {
     let o = Event.parseRawEvent("S7.1-2;2XH");
-    assert.deepEqual(["batter","first",null], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", "second", null]));
+    assert.deepEqual(["batter","first",null], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", "second", null]).basesOccupiedAfterPlay);
   });
   it('[batter,first,null,null] + SH.1-2 -> [null,first,null]', function() {
     let o = Event.parseRawEvent("SH.1-2");
-    assert.deepEqual([null,"first",null], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]));
+    assert.deepEqual([null,"first",null], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]).basesOccupiedAfterPlay);
   });
   it('54(B)/BG+/SH.1-2', function() {
     let o = Event.parseRawEvent("54(B)/BG+/SH.1-2");
-    assert.deepEqual([null,"first",null], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]));
+    assert.deepEqual([null,"first",null], Event.determineBasesOccupiedAfterPlay(o, ["batter", "first", null, null]).basesOccupiedAfterPlay);
   });
 });
 
@@ -1133,6 +1132,27 @@ describe('Random bugfixes', function() {
     let enhancedEvent = Event.parseEvent("W+WP.3-H;2XH(2516)", ["batter", null, "second", "third"], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
     assert.equal(1, enhancedEvent.runs);
     assert.equal(0, enhancedEvent.rbi);
+  });
+
+  it('W+SB', function() {
+    let enhancedEvent = Event.parseEvent("W+SB3", ["batter", null, "second", null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.deepEqual(["batter", null, "second"], enhancedEvent.basesOccupiedAfterPlay);
+  });
+
+  it('SB plus out', function() {
+    let enhancedEvent = Event.parseEvent("SB2", ["batter", "first", null, null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.deepEqual([null, "first", null], enhancedEvent.basesOccupiedAfterPlay);
+    assert.deepEqual(["first"], enhancedEvent.baseStealers);
+    enhancedEvent = Event.parseEvent("SB2.1X3(285)", ["batter", "first", null, null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.deepEqual([null, null, null], enhancedEvent.basesOccupiedAfterPlay);
+    assert.deepEqual(["first"], enhancedEvent.baseStealers);
+  });
+
+  it('SBH bug', function() {
+    let enhancedEvent = Event.parseEvent("SBH", ["batter", "first", null, "third"], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.deepEqual(["first", null, null], enhancedEvent.basesOccupiedAfterPlay);
+    assert.deepEqual(1, enhancedEvent.runsScoredBy.length);
+    assert.equal("third", enhancedEvent.runsScoredBy[0].runner);
   });
 
 });

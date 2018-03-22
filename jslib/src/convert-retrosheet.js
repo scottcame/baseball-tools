@@ -319,7 +319,7 @@ playRecs.forEach(function(rec) {
 });
 
 function outputGame() {
-  fs.writeFileSync(gameId + '.json', JSON.stringify(o, null, 2));
+  fs.writeFileSync(path.join(dataDir, gameId + '.json'), JSON.stringify(o, null, 2));
 }
 
 function integratePitchFx(data) {
