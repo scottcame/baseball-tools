@@ -53,9 +53,13 @@ function parseEvent(eventText, baseStateBeforePlay, outsBeforePlay, defensivePla
   ret.hit = ["S","D","T","H","HR"].includes(ret.playCode);
   ret.walk = ["W","IW"].includes(ret.playCode);
   ret.strikeout = ret.playCode === "K";
+  ret.sacFly = getIsSacFly(rawEvent);
+  ret.sacBunt = getIsSacBunt(rawEvent);
+  ret.baserunningPlay = isBaserunningEvent(ret);
 
   ret.rbi = determineRBI(ret, outsBeforePlay);
   ret.errors = determineErrors(rawEvent, defensivePlayers);
+  ret.risp = baseStateBeforePlay[2] !== null || baseStateBeforePlay[3] !== null;
 
   ret.valid = rawEvent.basicPlayParseError == null && rawEvent.advancesParseErrors.length == 0 && rawEvent.modifiersParseErrors.length == 0;
 
@@ -222,11 +226,39 @@ function parseAdvancesDetail(rawAdvances) {
 }
 
 function getBallInPlay(rawEvent) {
+
   // todo: do we want to infer bip locations from base play notations...e.g., S7 means "middle" left field, 63 means "normal" ground ball to shortstop?
   // for now, we do not.  and i don't think we should...implies an accuracy that is not intended/supported by data.
-  var ret = null;
+
+  var ret = new Object;
+  ret.bunt = null;
+  ret.flyBall = null;
+  ret.groundBall = null;
+  ret.lineDrive = null;
+  ret.popup = null;
+  ret.trajectoryExplicit = false;
+  ret.location = null;
+  ret.soft = null;
+  ret.bunt = null;
+  ret.hard = null;
+
   var locationModifierFound = false;
   var trajectoryModifierFound = false;
+
+  if (/^[0-9]{2}$/.test(rawEvent.basicPlay)) {
+    ret.bunt = false;
+    ret.flyBall = false;
+    ret.groundBall = true;
+    ret.lineDrive = false;
+    ret.popup = false;
+  } else if (/^[0-9]$/.test(rawEvent.basicPlay)) {
+    ret.bunt = false;
+    ret.flyBall = true;
+    ret.groundBall = false;
+    ret.lineDrive = false;
+    ret.popup = false;
+  }
+
   rawEvent.modifiers.forEach(function(modifier, index) {
     if (modifier === "LDP") {
       modifier = "L";
@@ -241,16 +273,6 @@ function getBallInPlay(rawEvent) {
         } else if (components[2] != null && locationModifierFound) {
           throw new Error("Duplicate location modifiers in play: " + rawEvent.rawText);
         }
-      } else {
-        ret = new Object;
-        ret.bunt = null;
-        ret.flyBall = null;
-        ret.groundBall = null;
-        ret.lineDrive = null;
-        ret.location = null;
-        ret.soft = null;
-        ret.bunt = null;
-        ret.hard = null;
       }
       if (components[1] != null) {
         ret.bunt = ["BP","BG","BGDP","BL","BP","BPDP"].includes(components[1]);
@@ -258,6 +280,7 @@ function getBallInPlay(rawEvent) {
         ret.popup = ["P","BP","BPDP"].includes(components[1]);
         ret.groundBall = ["G","GDP","GTP","BG","BGDP"].includes(components[1]);
         ret.lineDrive = ["L","LDP","LTP","BLDP","BL"].includes(components[1]);
+        ret.trajectoryExplicit = true;
         trajectoryModifierFound = true;
       }
       if (components[2] != null) {
@@ -274,11 +297,11 @@ function getBallInPlay(rawEvent) {
 }
 
 function getIsSacFly(rawEvent) {
-  return rawEvent.modifiers.reduce(function(accumulator, currentValue) { return accumulator |= (/^SF/.test(currentValue) ? true : false); }, false);
+  return rawEvent.modifiers.reduce(function(accumulator, currentValue) { return accumulator |= (/^SF/.test(currentValue) ? true : false); }, false) == 1;
 }
 
 function getIsSacBunt(rawEvent) {
-  return rawEvent.modifiers.reduce(function(accumulator, currentValue) { return accumulator |= (/^SH/.test(currentValue) ? true : false); }, false);
+  return rawEvent.modifiers.reduce(function(accumulator, currentValue) { return accumulator |= (/^SH/.test(currentValue) ? true : false); }, false) == 1;
 }
 
 function getPlayCode(rawEvent) {

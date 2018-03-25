@@ -1050,6 +1050,40 @@ describe('Double steal', function() {
   });
 });
 
+describe('Inferred bip trajectory', function() {
+  it('63', function() {
+    let enhancedEvent = Event.parseEvent("63", ["b", null, null, null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    let bip = enhancedEvent.ballInPlay;
+    assert.ok(bip.groundBall);
+    assert.ok(!bip.flyBall);
+  });
+  it('3', function() {
+    let enhancedEvent = Event.parseEvent("3", ["b", null, null, null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    let bip = enhancedEvent.ballInPlay;
+    assert.ok(!bip.groundBall);
+    assert.ok(bip.flyBall);
+  });
+  it('3/G', function() {
+    let enhancedEvent = Event.parseEvent("3/G", ["b", null, null, null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    let bip = enhancedEvent.ballInPlay;
+    assert.ok(bip.groundBall);
+    assert.ok(!bip.flyBall);
+  });
+  it('3/BG', function() {
+    let enhancedEvent = Event.parseEvent("3/BG", ["b", null, null, null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    let bip = enhancedEvent.ballInPlay;
+    assert.ok(bip.groundBall);
+    assert.ok(bip.bunt);
+    assert.ok(!bip.flyBall);
+  });
+  it('7', function() {
+    let enhancedEvent = Event.parseEvent("7", ["b", null, null, null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    let bip = enhancedEvent.ballInPlay;
+    assert.ok(!bip.groundBall);
+    assert.ok(bip.flyBall);
+  });
+});
+
 describe('Random bugfixes', function() {
   it('2017 WS Game 7 LAN 5th Turner single to third', function() {
     let enhancedEvent = Event.parseEvent("S57/G.1-2", ["turner", "seager", null, null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
@@ -1123,9 +1157,9 @@ describe('Random bugfixes', function() {
   });
 
   it('Successful double-steal', function() {
-    console.warn("Note that double-steals do not currently parse properly...")
     let enhancedEvent = Event.parseEvent("SB3;SB2", ["batter", "first", "second", null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
-    //assert.deepEqual([null, "first", "second"], enhancedEvent.basesOccupiedAfterPlay);
+    assert.deepEqual([null, "first", "second"], enhancedEvent.basesOccupiedAfterPlay);
+    assert.deepEqual(["first", "second"], enhancedEvent.baseStealers);
   });
 
   it('RBI probs', function() {
@@ -1153,6 +1187,14 @@ describe('Random bugfixes', function() {
     assert.deepEqual(["first", null, null], enhancedEvent.basesOccupiedAfterPlay);
     assert.deepEqual(1, enhancedEvent.runsScoredBy.length);
     assert.equal("third", enhancedEvent.runsScoredBy[0].runner);
+  });
+
+  it('SB3', function() {
+    let enhancedEvent = Event.parseEvent("SB3", ["batter", null, "second", null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    assert.deepEqual([null, null, "second"], enhancedEvent.basesOccupiedAfterPlay);
+    assert.equal(2, enhancedEvent.baseStealers.length);
+    assert.equal(null, enhancedEvent.baseStealers[0]);
+    assert.equal("second", enhancedEvent.baseStealers[1]);
   });
 
 });
