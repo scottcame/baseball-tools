@@ -1,0 +1,20 @@
+Package: bbscore
+Type: Package
+Title: Analysis of baseball data in the baseball-json format
+Version: 0.1.0
+URL: https://github.com/scottcame/baseball-tools/R/bbscore
+BugReports: https://github.com/scottcame/baseball-tools/R/bbscore
+Authors@R: person("Scott", "Came", email = "scottcame10@gmail.com",
+                  role = c("aut", "cre"))
+Description: Analysis of baseball data in the baseball-json format
+License: Apache Software License 2.0
+Encoding: UTF-8
+LazyData: true
+Depends: dplyr,
+  purrr,
+  tidyr,
+  openxlsx,
+  jsonlite,
+  readr,
+  lubridate
+RoxygenNote: 6.0.1
