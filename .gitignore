@@ -1,2 +1,5 @@
 jslib/dist
 .Rproj.user
+R/bbscore/.RData
+R/bbscore/.Rbuildignore
+R/bbscore/.Rhistory
