@@ -1,5 +1,10 @@
 "use strict";
 
+function pad(n, totalLength) {
+  let sn = "" + n;
+  return sn.padEnd(totalLength, " ");
+}
+
 var path = require('path');
 var fs = require('fs');
 var Game = require("./game.js");
@@ -38,12 +43,17 @@ if (process.argv.length > 3) {
 let gg = JSON.parse(fs.readFileSync(gameFile, 'utf8'));
 let g = gg.games[0];
 g = Game.parseGame(g);
-let gs = Summary.getGameSummary(g);
 
 if (intermediateFiles) {
   let dir = path.dirname(gameFile);
   if (!latex) console.log("Writing intermediate enhanced/summary files to " + dir);
   fs.writeFileSync(gameFile.split('.')[0] + '-enhanced.json', JSON.stringify(g, null, 2));
+}
+
+let gs = Summary.getGameSummary(g);
+
+if (intermediateFiles) {
+  let dir = path.dirname(gameFile);
   fs.writeFileSync(gameFile.split('.')[0] + '-summary.json', JSON.stringify(gs, null, 2));
 }
 
@@ -73,18 +83,20 @@ outStream.write(moment(gs.date).format('dddd, MMMM Do YYYY') + "\n");
 outStream.write("\n");
 
 outStream.write(gs.visitor_team_name + " ".repeat(teamNameSpace - gs.visitor_team_name.length));
-outStream.write(gs.visitor_team_stats.runs_per_inning.join("   "));
-outStream.write("  :   " + gs.visitor_team_stats.runs_per_inning.reduce(function(a, v) { return a + v; }, 0));
-outStream.write("   " + gs.visitor_team_stats.hits);
-outStream.write("   " + gs.visitor_team_stats.error_count);
+let rs = gs.visitor_team_stats.runs_per_inning.reduce(function(a, v) { return a + pad(v, 3); }, "");
+outStream.write(rs);
+outStream.write("  :   " + pad(gs.visitor_team_stats.runs_per_inning.reduce(function(a, v) { return a + v; }, 0), 3));
+outStream.write("   " + pad(gs.visitor_team_stats.hits, 3));
+outStream.write("   " + pad(gs.visitor_team_stats.error_count, 3));
 outStream.write("\n");
 
 outStream.write(gs.home_team_name + " ".repeat(teamNameSpace - gs.home_team_name.length));
-outStream.write(gs.home_team_stats.runs_per_inning.join("   "));
-outStream.write(gs.home_team_stats.runs_per_inning.length < gs.visitor_team_stats.runs_per_inning.length ? "    " : "");
-outStream.write("  :   " + gs.home_team_stats.runs_per_inning.reduce(function(a, v) { return a + v; }, 0));
-outStream.write("   " + gs.home_team_stats.hits);
-outStream.write("   " + gs.home_team_stats.error_count);
+rs = gs.home_team_stats.runs_per_inning.reduce(function(a, v) { return a + pad(v, 3); }, "");
+outStream.write(rs);
+outStream.write(gs.home_team_stats.runs_per_inning.length < gs.visitor_team_stats.runs_per_inning.length ? "   " : "");
+outStream.write("  :   " + pad(gs.home_team_stats.runs_per_inning.reduce(function(a, v) { return a + v; }, 0), 3));
+outStream.write("   " + pad(gs.home_team_stats.hits, 3));
+outStream.write("   " + pad(gs.home_team_stats.error_count, 3));
 
 writeTeamSection(gs.visitor_team_stats, gs.box.visitor_team, gs.visitor_team_name);
 if (latex) outStream.write("```" + "\n");
@@ -101,16 +113,16 @@ function writeTeamSection(teamStats, team, name) {
   outStream.write("   *** " + name + " ***" + "\n\n");
 
   outStream.write(" ".repeat(playerSpace) +
-  "AB" + "   " +
-  "QAB" + "  " +
-  "R" + "    " +
-  "H" + "    " +
-  "RBI" + "  " +
-  "BB" + "   " +
-  "K" + "      " +
-  "PO" + "   " +
-  "A" + "    " +
-  "PA" + "    " +
+  pad("AB", 6) +
+  pad("QAB", 6) +
+  pad("R", 6) +
+  pad("H", 6) +
+  pad("RBI", 6) +
+  pad("BB", 6) +
+  pad("K", 6) +
+  pad("PO", 6) +
+  pad("A", 6) +
+  pad("PA", 6) +
     "\n"
   );
 
@@ -126,16 +138,16 @@ function writeTeamSection(teamStats, team, name) {
       outStream.write(indent);
       outStream.write(nm);
       outStream.write(" ".repeat(playerSpace - nm.length - indent.length));
-      outStream.write("" + row[Summary.BATTING_STAT_AB] + "    ")
-      outStream.write("" + row[Summary.BATTING_STAT_QAB] + "    ")
-      outStream.write("" + row[Summary.BATTING_STAT_R] + "    ")
-      outStream.write("" + row[Summary.BATTING_STAT_H] + "    ")
-      outStream.write("" + row[Summary.BATTING_STAT_RBI] + "    ")
-      outStream.write("" + row[Summary.BATTING_STAT_BB] + "    ")
-      outStream.write("" + row[Summary.BATTING_STAT_K] + "      ")
-      outStream.write("" + row[Summary.BATTING_STAT_PO] + "    ")
-      outStream.write("" + row[Summary.BATTING_STAT_A] + "    ")
-      outStream.write("" + row[Summary.BATTING_STAT_PA] + "    ")
+      outStream.write(pad(row[Summary.BATTING_STAT_AB], 6));
+      outStream.write(pad(row[Summary.BATTING_STAT_QAB], 6));
+      outStream.write(pad(row[Summary.BATTING_STAT_R], 6));
+      outStream.write(pad(row[Summary.BATTING_STAT_H], 6));
+      outStream.write(pad(row[Summary.BATTING_STAT_RBI], 6));
+      outStream.write(pad(row[Summary.BATTING_STAT_BB], 6));
+      outStream.write(pad(row[Summary.BATTING_STAT_K], 6));
+      outStream.write(pad(row[Summary.BATTING_STAT_PO], 6));
+      outStream.write(pad(row[Summary.BATTING_STAT_A], 6));
+      outStream.write(pad(row[Summary.BATTING_STAT_PA], 6));
       outStream.write("\n");
     }
   };
@@ -202,18 +214,18 @@ function writeTeamSection(teamStats, team, name) {
   outStream.write("---------\n\n");
 
   outStream.write(" ".repeat(playerSpace) +
-  "IP" + "     " +
-  "H" + "    " +
-  "R" + "    " +
-  "ER" + "   " +
-  "BB" + "   " +
-  "SO" + "   " +
-  "HR" + "   " +
-  "BF" + "   " +
-  "PT" + "    " +
-  "PS%" + "  " +
-  "1-1" + "  " +
-  "1-1 WIN%" + " " +
+  pad("IP", 6) +
+  pad("H", 6) +
+  pad("R", 6) +
+  pad("ER", 6) +
+  pad("BB", 6) +
+  pad("SO", 6) +
+  pad("HR", 6) +
+  pad("BF", 6) +
+  pad("PT", 6) +
+  pad("PS%", 6) +
+  pad("1-1", 6) +
+  pad("1-1 WIN%", 6) +
     "\n"
   );
 
@@ -233,22 +245,21 @@ function writeTeamSection(teamStats, team, name) {
       }
       outStream.write(nm);
       outStream.write(" ".repeat(playerSpace - nm.length));
-      let ip = "" + pitcherArray[Summary.PITCHING_STAT_IP];
-      outStream.write(ip + "    " + " ".repeat(3-ip.length));
-      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_H] + "    ");
-      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_R] + "    ");
-      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_ER] + "    ");
-      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_BB] + "    ");
-      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_SO] + "    ");
-      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_HR] + "    ");
-      let s = "" + pitcherArray[Summary.PITCHING_STAT_BF];
-      outStream.write(s + " ".repeat(5-s.length));
-      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_PT] + "    ");
+      outStream.write(pad(pitcherArray[Summary.PITCHING_STAT_IP], 6));
+      outStream.write(pad(pitcherArray[Summary.PITCHING_STAT_H], 6));
+      outStream.write(pad(pitcherArray[Summary.PITCHING_STAT_R], 6));
+      outStream.write(pad(pitcherArray[Summary.PITCHING_STAT_ER], 6));
+      outStream.write(pad(pitcherArray[Summary.PITCHING_STAT_BB], 6));
+      outStream.write(pad(pitcherArray[Summary.PITCHING_STAT_SO], 6));
+      outStream.write(pad(pitcherArray[Summary.PITCHING_STAT_HR], 6));
+      outStream.write(pad(pitcherArray[Summary.PITCHING_STAT_BF], 6));
+      outStream.write(pad(pitcherArray[Summary.PITCHING_STAT_PT], 6));
       let psPct = Math.round(100*pitcherArray[Summary.PITCHING_STAT_PS] / pitcherArray[Summary.PITCHING_STAT_PT]);
-      outStream.write("" + psPct + "   ");
-      outStream.write("" + pitcherArray[Summary.PITCHING_STAT_11COUNTS] + "    ");
+      outStream.write(pad(psPct, 6));
+      outStream.write(pad(pitcherArray[Summary.PITCHING_STAT_11COUNTS], 6));
       let win11Pct = Math.round(100*pitcherArray[Summary.PITCHING_STAT_WIN11] / pitcherArray[Summary.PITCHING_STAT_11COUNTS]);
-      outStream.write("" + (isNaN(win11Pct) ? "--" : win11Pct) + " ");
+      win11Pct = (isNaN(win11Pct) ? "--" : win11Pct);
+      outStream.write(pad(win11Pct, 6));
       outStream.write("\n");
       return true;
     }
