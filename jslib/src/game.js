@@ -89,6 +89,7 @@ function parseGameToPlay(game, playIndex) {
       batterBaseState.responsible_pitcher_player_id = defensivePlayers[0];
       let baseStateBeforePlay = [batterBaseState].concat(lastBaseState);
       play = enhancePlay(play, baseStateBeforePlay, outs, defensivePlayers);
+      play.enhanced_play.basesOccupiedBeforePlay = lastBaseState;
       play.enhanced_play.lineupPosition = lineupPosition;
       outs += play.enhanced_play.outsRecorded;
       currentLineups.next_batter_team = play.batting_team_id;
