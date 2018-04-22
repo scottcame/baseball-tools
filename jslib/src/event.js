@@ -524,7 +524,7 @@ function determineRunsScoredBy(rawEvent, baseStateBeforePlay) {
     score.noRbiIndicated = false;
     ret.push(score);
   }
-  if ("SBH" === rawEvent.basicPlay) {
+  if (/SBH/.test(rawEvent.basicPlay)) {
     let score = new Object;
     score.runner = baseStateBeforePlay[3];
     score.unearnedIndicated = false;
