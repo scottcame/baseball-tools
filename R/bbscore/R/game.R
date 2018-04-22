@@ -41,7 +41,16 @@ summarizeGames <- function(playDataList, teamID) {
     full_join(csSummary, by=c('PlayerID', 'PlayerLast', 'PlayerFirst')) %>%
     mutate_at(vars(!!c(countVars, 'R', 'SB', 'CS')), function(v) {
       case_when(is.na(v) ~ 0L, TRUE ~ v)
-    }) %>%
+    })
+
+  offenseTotals <- offenseSummary %>%
+    ungroup() %>%
+    summarize_at(vars(!!c(countVars, 'R', 'SB', 'CS')), sum) %>%
+    mutate(PlayerLast='Team')
+
+  offenseSummary <- offenseSummary %>%
+    arrange(PlayerLast) %>%
+    bind_rows(offenseTotals) %>%
     mutate(
       AVG=Hit/AtBat,
       OBP=(Hit+Walk+HBP)/(AtBat+Walk+HBP+SacFly),
@@ -53,8 +62,7 @@ summarizeGames <- function(playDataList, teamID) {
     ) %>%
     mutate_if(is.numeric, function(v) {ifelse(v==Inf, NA_real_, v)}) %>%
     ungroup() %>%
-    select(-HitRISP, -AtBatRISP, -PlayerID) %>%
-    arrange(desc(OPS))
+    select(-HitRISP, -AtBatRISP, -PlayerID)
 
   defenseSummary <- playDataList$Defense %>%
     filter(FieldingTeamID==teamID) %>%
@@ -65,12 +73,25 @@ summarizeGames <- function(playDataList, teamID) {
     select(-PlayerID) %>%
     arrange(FielderLast)
 
+  defenseTotals <- defenseSummary %>%
+    summarize_at(vars(Assists, Errors, Putouts), sum) %>%
+    mutate(FielderLast='Team')
+
+  defenseSummary <- bind_rows(defenseSummary, defenseTotals)
+
+  pitchingRunSummary <- playDataList$RunsScored %>%
+    filter(FieldingTeamID==teamID) %>%
+    mutate(earned_=!Unearned) %>%
+    group_by(PitcherID, PitcherLast, PitcherFirst) %>%
+    summarize(R=n(), ER=sum(earned_))
+
   pitchingSummary <- playDataList$BatterPlays %>%
     filter(FieldingTeamID==teamID) %>%
-    mutate(Strikes=str_count(PitchSequence, 'X|S|C|F|L'), Balls=str_count(PitchSequence, 'B|H')) %>%
+    mutate(Strikes=str_count(PitchSequence, 'X|S|C|F|L'), Balls=str_count(PitchSequence, 'B|H'), BIP_AB=AtBat*BIP) %>%
     group_by(PitcherID, PitcherLast, PitcherFirst) %>%
     summarize(BF=n(),
               AtBat=sum(AtBat),
+              BIPAtBat=sum(BIP_AB),
               Walks=sum(Walk),
               Hits=sum(Hit),
               Pitches=sum(Pitches),
@@ -81,17 +102,31 @@ summarizeGames <- function(playDataList, teamID) {
               Balls=sum(Balls),
               OutsRecorded=sum(OutsRecorded),
               QAB=sum(QAB)) %>%
+    full_join(pitchingRunSummary, by=c('PitcherID', 'PitcherLast', 'PitcherFirst')) %>%
+    mutate_at(vars(R, ER), function(v) {
+      case_when(is.na(v) ~ 0L, TRUE ~ v)
+    })
+
+  pitchingTotals <- pitchingSummary %>%
+    ungroup() %>%
+    summarize_if(is.numeric, sum) %>%
+    mutate(PitcherLast='Team')
+
+  pitchingSummary <- pitchingSummary %>%
+    bind_rows(pitchingTotals) %>%
     mutate(
       BAA=Hits/AtBat,
+      BABIP=Hits/BIPAtBat,
       PctStrikes=Strikes/Pitches,
       `Pitches/Batter`=Pitches/BF,
       `QABA Pct`=QAB/BF,
-      Innings=sum(OutsRecorded),
-      Innings=as.integer(Innings/3) + (Innings %% 3)*.1
+      `ERA per 7`=ER*21/OutsRecorded,
+      Innings=OutsRecorded,
+      Innings=as.integer(Innings/3) + (Innings %% 3)*.1,
+      WHIP=(Walks+Hits)/Innings
       ) %>%
     ungroup() %>%
-    select(-PitcherID, -AtBat, -Strikes, -Balls, -QAB, -OutsRecorded) %>%
-    arrange(desc(Pitches))
+    select(-PitcherID, -AtBat, -Strikes, -Balls, -QAB, -OutsRecorded, -BIPAtBat)
 
   boldStyle <- createStyle(textDecoration = "bold")
   threePointStyle <- createStyle(numFmt = "0.000")
@@ -100,21 +135,31 @@ summarizeGames <- function(playDataList, teamID) {
   wb <- createWorkbook()
   sheet <- addWorksheet(wb, "Offense")
   writeData(wb, "Offense", offenseSummary, headerStyle=boldStyle)
+  addStyle(wb, "Offense", boldStyle, cols=1:(ncol(offenseSummary)), rows=nrow(offenseSummary)+1, gridExpand = TRUE)
   addStyle(wb, "Offense", threePointStyle, cols=c(25:29, 31), rows=2:(nrow(offenseSummary)+1), gridExpand = TRUE)
   addStyle(wb, "Offense", percentageStyle, cols=c(30), rows=2:(nrow(offenseSummary)+1), gridExpand = TRUE)
   setColWidths(wb, "Offense", widths="auto", cols=1:(ncol(offenseSummary)))
 
   sheet <- addWorksheet(wb, "Defense")
   writeData(wb, "Defense", defenseSummary, headerStyle=boldStyle)
+  addStyle(wb, "Defense", boldStyle, cols=1:(ncol(defenseSummary)), rows=nrow(defenseSummary)+1, gridExpand = TRUE)
   setColWidths(wb, "Defense", widths="auto", cols=1:(ncol(defenseSummary)))
 
   sheet <- addWorksheet(wb, "Pitching")
   writeData(wb, "Pitching", pitchingSummary, headerStyle=boldStyle)
-  addStyle(wb, "Pitching", threePointStyle, cols=c(10:11, 13), rows=2:(nrow(pitchingSummary)+1), gridExpand = TRUE)
-  addStyle(wb, "Pitching", percentageStyle, cols=c(12), rows=2:(nrow(pitchingSummary)+1), gridExpand = TRUE)
+  addStyle(wb, "Pitching", boldStyle, cols=1:(ncol(pitchingSummary)), rows=nrow(pitchingSummary)+1, gridExpand = TRUE)
+  addStyle(wb, "Pitching", threePointStyle, cols=c(12, 13, 14, 16, 19), rows=2:(nrow(pitchingSummary)+1), gridExpand = TRUE)
+  addStyle(wb, "Pitching", percentageStyle, cols=c(15, 17), rows=2:(nrow(pitchingSummary)+1), gridExpand = TRUE)
   setColWidths(wb, "Pitching", widths="auto", cols=1:(ncol(pitchingSummary)))
 
   saveWorkbook(wb, 'Stats.xlsx', overwrite = TRUE)
+
+  ret <- list()
+  ret$offenseSummary <- offenseSummary
+  ret$defenseSummary <- defenseSummary
+  ret$pitchingSummary <- pitchingSummary
+
+  ret
 
 }
 
@@ -178,7 +223,7 @@ parseGames <- function(sourceDir, filePattern='.+-enhanced.json') {
 #' \href{https://github.com/scottcame/baseball-tools/tree/master/jslib}{baseball-tools Javascript library}
 #' for more information and guidance on how to enhance raw retrosheet input data.
 #' @importFrom jsonlite fromJSON
-#' @importFrom stringr str_length
+#' @importFrom stringr str_length str_sub
 #' @importFrom lubridate ymd year
 #' @import dplyr
 #' @import tibble
@@ -245,7 +290,12 @@ parseGame <- function(enhancedGameJSON, masterRoster=NULL) {
         FlyBall=ifelse(!is.null(ep$ballInPlay$flyBall), ep$ballInPlay$flyBall, FALSE),
         Popup=ifelse(!is.null(ep$ballInPlay$popup), ep$ballInPlay$popup, FALSE),
         HardHitBallInPlay=ifelse(!is.null(ep$ballInPlay$hard), ep$ballInPlay$hard, FALSE),
-        RISP=ep$risp
+        RISP=ep$risp,
+        BIP=ep$pitchCount$bip,
+        BaseOccupied1=is.list(ep$basesOccupiedBeforePlay[[1]]),
+        BaseOccupied2=is.list(ep$basesOccupiedBeforePlay[[2]]),
+        BaseOccupied3=is.list(ep$basesOccupiedBeforePlay[[3]]),
+        R=NA_integer_
       )
 
       ret$rsdf <- map_df(ep$runsScoredBy, function(rsby) {
@@ -377,6 +427,25 @@ parseGame <- function(enhancedGameJSON, masterRoster=NULL) {
       FieldingTeamID=unname(otherTeamLookup[BattingTeamID]),
       Year_=year(GameDate)
     )
+
+  if (nrow(rsdf) > 0) {
+
+    playRuns <- rsdf %>%
+      group_by(PlayID) %>%
+      summarize(R=n())
+
+    odf <- odf %>%
+      select(-R) %>%
+      left_join(playRuns, by='PlayID')
+
+  }
+
+  odf <- odf %>%
+    mutate(R=case_when(is.na(R) ~ 0L, TRUE ~ R)) %>%
+    group_by(GameID, Inning, BattingTeamID) %>%
+    arrange(GameID, desc(PlayID))  %>%
+    mutate(InningRunsAfterPlay=cumsum(R)) %>%
+    ungroup() %>% arrange(GameID, PlayID)
 
   bsdf <- map_df(playLists, function(pl) {
     pl$bsdf
