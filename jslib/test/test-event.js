@@ -899,8 +899,9 @@ describe('Advances detail', function() {
     assert.equal("advance", o[0].type);
     assert.equal("out", o[1].type);
   });
-  it('[3-H(UR)]', function() {
+  it('XFOO [3-H(UR)]', function() {
     let o = Event.parseAdvancesDetail(["3-H(UR)"]);
+    console.log(JSON.stringify(o));
     assert.equal(1, o.length);
     assert.equal("3", o[0].startingBase);
     assert.equal(true, o[0].runnerSafe);
@@ -1085,6 +1086,10 @@ describe('Inferred bip trajectory', function() {
 });
 
 describe('Random bugfixes', function() {
+  it('Error allowing runner advance', function() {
+    let enhancedEvent = Event.parseEvent("S1/BG/56S.2-H(E1/TH)(UR)(NR);1-3;B-2", ["batter", "first", "second", null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
+    console.log(JSON.stringify(enhancedEvent, null, 2));
+  });
   it('2017 WS Game 7 LAN 5th Turner single to third', function() {
     let enhancedEvent = Event.parseEvent("S57/G.1-2", ["turner", "seager", null, null], 1, ['1', '2', '3', '4', '5', '6', '7', '8', '9']);
     assert.deepEqual(["turner", "seager", null], enhancedEvent.basesOccupiedAfterPlay);

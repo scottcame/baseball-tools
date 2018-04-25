@@ -149,7 +149,7 @@ function determineRBI(parsedEvent, outsBeforePlay) {
 }
 
 const BATTED_BALL_LOCATION_REGEX = /^(BP|BG|BGDP|BL|BP|BPDP|G|GDP|GTP|L|LDP|LTP|F|P)?([1-9]{1,2}(?:F|DF|LSF|LF|LDF|D|LS|L|LD|S|M|MD|MS|XD)?)?([+\-])?$/;
-const ADVANCE_REGEX = /^([B123])([\-X])([123H])(\((?:[1-9E]+)?(?:\/?(?:TH[123H]?|INT|RINT))?\)|(?:\((?:UR|NR|WP|PB|TUR|RBI)\)){0,2})*$/;
+const ADVANCE_REGEX = /^([B123])([\-X])([123H])((?:\((?:[1-9E]+)?(?:\/?(?:TH[123H]?|INT|RINT))?\))?(?:\((?:UR|NR|WP|PB|TUR|RBI)\)){0,2})*$/;
 
 function validateModifiers(modifiers) {
   let errors = [];
