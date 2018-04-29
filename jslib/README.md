@@ -152,3 +152,6 @@ Wood                     2     0     0     0     0     3     0     6     25    7
 WP: Kershaw: 1
 IBB: Kershaw: 2
 ```
+
+The `boxscore.js` application also supports a `--latex=true` command-line option, which outputs the boxscore with LaTeX formatting that can be fed into a processor
+like [pandoc](https://pandoc.org/) to create a PDF version of the box score.
