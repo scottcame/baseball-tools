@@ -12,7 +12,7 @@ var Summary = require('./summary.js')
 var moment = require("moment")
 
 function displayUsage() {
-  console.error("usage: node [path to boxscore.js] event-file --latex=true --intermediate-files=true");
+  console.error("usage: node [path to boxscore.js] event-file --latex=true --intermediate-files=true --include-11=false");
   process.exit(-1);
 }
 
@@ -22,10 +22,13 @@ var gameFile = process.argv[2];
 
 if (gameFile == null) {
   displayUsage();
+} else {
+  gameFile = path.resolve(gameFile)
 }
 
 let latex = false;
 let intermediateFiles = false;
+let include11 = false;
 
 if (process.argv.length > 3) {
   process.argv.slice(3).forEach(function(arg) {
@@ -36,6 +39,10 @@ if (process.argv.length > 3) {
     tl = arg.match(/^\-\-intermediate-files=(.+)$/);
     if (tl) {
       intermediateFiles = tl[1] === "true";
+    }
+    tl = arg.match(/^\-\-include-11=(.+)$/);
+    if (tl) {
+      include11 = tl[1] === "true";
     }
   });
 }
@@ -168,7 +175,7 @@ function writeTeamSection(teamStats, team, name) {
   outStream.write("Team LOB: " + teamStats.lob + "\n");
   outStream.write("\n");
 
-  if (teamStats.doubles.length || teamStats.triples.length || teamStats.hr.length || teamStats.hbp.length) {
+  if (teamStats.doubles.length || teamStats.triples.length || teamStats.hr.length || teamStats.hbp.length || teamStats.sf.length || teamStats.sh.length) {
     outStream.write("Batting:\n");
     outStream.write("--------\n");
     outStream.write("\n");
@@ -176,6 +183,9 @@ function writeTeamSection(teamStats, team, name) {
     writeCumulativeStat(teamStats.triples, "3B:", 'batting_player_id', 'pitcher_player_id');
     writeCumulativeStat(teamStats.hr, "HR:", 'batting_player_id', 'pitcher_player_id');
     writeCumulativeStat(teamStats.hbp, "HBP:", 'batting_player_id', 'pitcher_player_id', "by");
+    writeCumulativeStat(teamStats.sf, "Sac Fly:", 'batting_player_id', 'pitcher_player_id');
+    writeCumulativeStat(teamStats.sh, "Sac Bunt:", 'batting_player_id', 'pitcher_player_id');
+    writeCumulativeStat(teamStats.gdp, "GDP:", 'batting_player_id', null);
     outStream.write("\n");
   }
 
@@ -188,30 +198,44 @@ function writeTeamSection(teamStats, team, name) {
     outStream.write("\n");
   }
 
-  if (teamStats.errors.length) {
+  let writeFieldingStatLine = function(teamStatArray, label, playerProperty) {
+    if (teamStatArray.length) {
+      let m = teamStatArray.reduce(function(a, vo) {
+        let v = playerProperty == null ? vo : vo[playerProperty];
+        let tally = a[v];
+        if (tally == null) {
+          tally = 0;
+        }
+        tally++;
+        a[v] = tally;
+        return a;
+      }, new Object);
+      let ds = [];
+      for (let p in m) {
+        ds.push(lookupPlayer(p).player_last_name + ": " + m[p]);
+      }
+      outStream.write(label + ds.join("; "));
+      outStream.write("\n");
+    }
+  };
+
+  if (teamStats.errors.length || teamStats.pb.length) {
     outStream.write("Fielding:\n");
     outStream.write("---------\n");
     outStream.write("\n");
-    let m = teamStats.errors.reduce(function(a, v) {
-      let tally = a[v];
-      if (tally == null) {
-        tally = 0;
-      }
-      tally++;
-      a[v] = tally;
-      return a;
-    }, new Object);
-    let ds = [];
-    for (let p in m) {
-      ds.push(lookupPlayer(p).player_last_name + ": " + m[p]);
-    }
-    outStream.write("E: " + ds.join("; "));
+    writeFieldingStatLine(teamStats.errors, "E: ", null);
+    writeFieldingStatLine(teamStats.pb, "PB: ", "catcher_player_id");
   }
 
-  outStream.write("\n\n");
+  outStream.write("\n");
 
   outStream.write("Pitching:\n");
   outStream.write("---------\n\n");
+
+  let header11 = "";
+  if (include11) {
+    header11 = pad("1-1", 6) + pad("1-1 WIN%", 6);
+  }
 
   outStream.write(" ".repeat(playerSpace) +
   pad("IP", 6) +
@@ -224,8 +248,7 @@ function writeTeamSection(teamStats, team, name) {
   pad("BF", 6) +
   pad("PT", 6) +
   pad("PS%", 6) +
-  pad("1-1", 6) +
-  pad("1-1 WIN%", 6) +
+  header11 +
     "\n"
   );
 
@@ -256,18 +279,30 @@ function writeTeamSection(teamStats, team, name) {
       outStream.write(pad(pitcherArray[Summary.PITCHING_STAT_PT], 6));
       let psPct = Math.round(100*pitcherArray[Summary.PITCHING_STAT_PS] / pitcherArray[Summary.PITCHING_STAT_PT]);
       outStream.write(pad(psPct, 6));
-      outStream.write(pad(pitcherArray[Summary.PITCHING_STAT_11COUNTS], 6));
-      let win11Pct = Math.round(100*pitcherArray[Summary.PITCHING_STAT_WIN11] / pitcherArray[Summary.PITCHING_STAT_11COUNTS]);
-      win11Pct = (isNaN(win11Pct) ? "--" : win11Pct);
-      outStream.write(pad(win11Pct, 6));
+      if (include11) {
+        outStream.write(pad(pitcherArray[Summary.PITCHING_STAT_11COUNTS], 6));
+        let win11Pct = Math.round(100*pitcherArray[Summary.PITCHING_STAT_WIN11] / pitcherArray[Summary.PITCHING_STAT_11COUNTS]);
+        win11Pct = (isNaN(win11Pct) ? "--" : win11Pct);
+        outStream.write(pad(win11Pct, 6));
+      }
       outStream.write("\n");
       return true;
     }
   });
 
+  outStream.write("\n");
+  writeFieldingStatLine(teamStats.wp, "WP: ", "pitcher_player_id");
+  writeFieldingStatLine(teamStats.ibb, "IBB: ", "pitcher_player_id");
+  writeFieldingStatLine(teamStats.balks, "Balk: ", "pitcher_player_id");
+
 }
 
 function writeCumulativeStat(stat, label, offenseProperty, defenseProperty, connector='off') {
+
+  if (defenseProperty == null) {
+    defenseProperty = "0000";
+  }
+
   if (stat.length) {
     var baseStat = false;
     var m = stat.reduce(function(a, d) {
@@ -299,7 +334,7 @@ function writeCumulativeStat(stat, label, offenseProperty, defenseProperty, conn
       for (let op in m[b]) {
         let ddds = [];
         for (let dp in m[b][op]) {
-          ddds.push(m[b][op][dp] + " " + connector + " " + lookupPlayer(dp).player_last_name);
+          ddds.push(m[b][op][dp] + (defenseProperty === "0000" ? "" : (" " + connector + " " + lookupPlayer(dp).player_last_name)));
         }
         dds.push(lookupPlayer(op).player_last_name + ": " + ddds.join(", "));
       }

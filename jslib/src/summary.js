@@ -12,6 +12,8 @@ const BATTING_STAT_PO = 7;
 const BATTING_STAT_A = 8;
 const BATTING_STAT_QAB = 9;
 const BATTING_STAT_PA = 10;
+const BATTING_STAT_SF = 11;
+const BATTING_STAT_SH = 12;
 
 const PITCHING_STAT_IP = 1;
 const PITCHING_STAT_H = 2;
@@ -39,6 +41,8 @@ function initializePlayerStatArray(player_id) {
   ret[BATTING_STAT_A] = 0;
   ret[BATTING_STAT_QAB] = 0;
   ret[BATTING_STAT_PA] = 0;
+  ret[BATTING_STAT_SF] = 0;
+  ret[BATTING_STAT_SH] = 0;
   return ret;
 }
 
@@ -92,6 +96,10 @@ function getGameSummaryToPlay(game, playIndex) {
   ret.visitor_team_stats.wp = [];
   ret.visitor_team_stats.pb = [];
   ret.visitor_team_stats.ibb = [];
+  ret.visitor_team_stats.balks = [];
+  ret.visitor_team_stats.sf = [];
+  ret.visitor_team_stats.sh = [];
+  ret.visitor_team_stats.gdp = [];
 
   ret.home_team_stats = new Object;
   ret.home_team_stats.score = 0;
@@ -110,6 +118,10 @@ function getGameSummaryToPlay(game, playIndex) {
   ret.home_team_stats.wp = [];
   ret.home_team_stats.pb = [];
   ret.home_team_stats.ibb = [];
+  ret.home_team_stats.balks = [];
+  ret.home_team_stats.sf = [];
+  ret.home_team_stats.sh = [];
+  ret.home_team_stats.gdp = [];
 
   ret.box = new Object;
   ret.box.home_team = new Object;
@@ -262,6 +274,8 @@ function getGameSummaryToPlay(game, playIndex) {
         thisPlayerStatsArray[BATTING_STAT_BB] += play.enhanced_play.walk;
         thisPlayerStatsArray[BATTING_STAT_K] += play.enhanced_play.strikeout;
         thisPlayerStatsArray[BATTING_STAT_QAB] += play.enhanced_play.qab;
+        thisPlayerStatsArray[BATTING_STAT_SF] += play.enhanced_play.sf;
+        thisPlayerStatsArray[BATTING_STAT_SH] += play.enhanced_play.sh;
       }
 
       play.enhanced_play.runsScoredBy.forEach(function(rsby) {
@@ -365,6 +379,27 @@ function getGameSummaryToPlay(game, playIndex) {
         offenseTeamStats.hbp.push(dpo);
       }
 
+      if (play.enhanced_play.sacFly) {
+        let dpo = new Object;
+        dpo.batting_player_id = play.batting_player_id;
+        dpo.pitcher_player_id = defensePositionPlayers[0];
+        offenseTeamStats.sf.push(dpo);
+      }
+
+      if (play.enhanced_play.sacBunt) {
+        let dpo = new Object;
+        dpo.batting_player_id = play.batting_player_id;
+        dpo.pitcher_player_id = defensePositionPlayers[0];
+        offenseTeamStats.sh.push(dpo);
+      }
+
+      if (play.enhanced_play.rawEvent.modifiers.includes('GDP')) {
+        let dpo = new Object;
+        dpo.batting_player_id = play.batting_player_id;
+        dpo.pitcher_player_id = defensePositionPlayers[0];
+        offenseTeamStats.gdp.push(dpo);
+      }
+
       if (play.enhanced_play.playCode === "WP") {
         let dpo = new Object;
         dpo.batting_player_id = play.batting_player_id;
@@ -377,6 +412,13 @@ function getGameSummaryToPlay(game, playIndex) {
         dpo.batting_player_id = play.batting_player_id;
         dpo.pitcher_player_id = defensePositionPlayers[0];
         defenseTeamStats.ibb.push(dpo);
+      }
+
+      if (play.enhanced_play.playCode === "BK") {
+        let dpo = new Object;
+        dpo.batting_player_id = play.batting_player_id;
+        dpo.pitcher_player_id = defensePositionPlayers[0];
+        defenseTeamStats.balks.push(dpo);
       }
 
       if (play.enhanced_play.playCode === "PB") {
@@ -598,6 +640,8 @@ module.exports.BATTING_STAT_PO = BATTING_STAT_PO;
 module.exports.BATTING_STAT_A = BATTING_STAT_A;
 module.exports.BATTING_STAT_QAB = BATTING_STAT_QAB;
 module.exports.BATTING_STAT_PA = BATTING_STAT_PA;
+module.exports.BATTING_STAT_SF = BATTING_STAT_SF;
+module.exports.BATTING_STAT_SH = BATTING_STAT_SH;
 
 module.exports.PITCHING_STAT_IP = PITCHING_STAT_IP;
 module.exports.PITCHING_STAT_H = PITCHING_STAT_H;
