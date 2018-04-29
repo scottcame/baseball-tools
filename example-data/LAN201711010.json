@@ -1,0 +1,1436 @@
+{
+  "description": "Game file converted from Retrosheet game ID LAN201711010",
+  "source": "The information used here was obtained free of charge from and is copyrighted by Retrosheet.  Interested parties may contact Retrosheet at 20 Sunset Rd., Newark, DE 19711.",
+  "games": [
+    {
+      "game_id": "LAN201711010",
+      "visitor_team": {
+        "team_id": "HOU",
+        "team_name": "Houston Astros",
+        "lineup": [
+          {
+            "player": {
+              "player_id": "sprig001",
+              "player_first_name": "George",
+              "player_last_name": "Springer",
+              "bats": "R",
+              "throws": "R"
+            },
+            "starter": true,
+            "lineup_position": 1,
+            "fielder_position": 8
+          },
+          {
+            "player": {
+              "player_id": "brega001",
+              "player_first_name": "Alex",
+              "player_last_name": "Bregman",
+              "bats": "R",
+              "throws": "R"
+            },
+            "starter": true,
+            "lineup_position": 2,
+            "fielder_position": 5
+          },
+          {
+            "player": {
+              "player_id": "altuj001",
+              "player_first_name": "Jose",
+              "player_last_name": "Altuve",
+              "bats": "R",
+              "throws": "R"
+            },
+            "starter": true,
+            "lineup_position": 3,
+            "fielder_position": 4
+          },
+          {
+            "player": {
+              "player_id": "corrc001",
+              "player_first_name": "Carlos",
+              "player_last_name": "Correa",
+              "bats": "R",
+              "throws": "R"
+            },
+            "starter": true,
+            "lineup_position": 4,
+            "fielder_position": 6
+          },
+          {
+            "player": {
+              "player_id": "gurry001",
+              "player_first_name": "Yulieski",
+              "player_last_name": "Gurriel",
+              "bats": "R",
+              "throws": "R"
+            },
+            "starter": true,
+            "lineup_position": 5,
+            "fielder_position": 3
+          },
+          {
+            "player": {
+              "player_id": "mccab002",
+              "player_first_name": "Brian",
+              "player_last_name": "McCann",
+              "bats": "L",
+              "throws": "R"
+            },
+            "starter": true,
+            "lineup_position": 6,
+            "fielder_position": 2
+          },
+          {
+            "player": {
+              "player_id": "gonzm002",
+              "player_first_name": "Marwin",
+              "player_last_name": "Gonzalez",
+              "bats": "B",
+              "throws": "R"
+            },
+            "starter": true,
+            "lineup_position": 7,
+            "fielder_position": 7
+          },
+          {
+            "player": {
+              "player_id": "reddj001",
+              "player_first_name": "Josh",
+              "player_last_name": "Reddick",
+              "bats": "L",
+              "throws": "R"
+            },
+            "starter": true,
+            "lineup_position": 8,
+            "fielder_position": 9
+          },
+          {
+            "player": {
+              "player_id": "mccul002",
+              "player_first_name": "Lance",
+              "player_last_name": "McCullers",
+              "bats": "L",
+              "throws": "R"
+            },
+            "starter": true,
+            "lineup_position": 9,
+            "fielder_position": 1
+          },
+          {
+            "player": {
+              "player_id": "peacb001",
+              "player_first_name": "Brad",
+              "player_last_name": "Peacock",
+              "bats": "R",
+              "throws": "R"
+            },
+            "starter": false
+          },
+          {
+            "player": {
+              "player_id": "lirif001",
+              "player_first_name": "Francisco",
+              "player_last_name": "Liriano",
+              "bats": "L",
+              "throws": "L"
+            },
+            "starter": false
+          },
+          {
+            "player": {
+              "player_id": "devec001",
+              "player_first_name": "Chris",
+              "player_last_name": "Devenski",
+              "bats": "R",
+              "throws": "R"
+            },
+            "starter": false
+          },
+          {
+            "player": {
+              "player_id": "gatte001",
+              "player_first_name": "Evan",
+              "player_last_name": "Gattis",
+              "bats": "R",
+              "throws": "R"
+            },
+            "starter": false
+          },
+          {
+            "player": {
+              "player_id": "maybc001",
+              "player_first_name": "Cameron",
+              "player_last_name": "Maybin",
+              "bats": "R",
+              "throws": "R"
+            },
+            "starter": false
+          },
+          {
+            "player": {
+              "player_id": "mortc002",
+              "player_first_name": "Charlie",
+              "player_last_name": "Morton",
+              "bats": "R",
+              "throws": "R"
+            },
+            "starter": false
+          }
+        ]
+      },
+      "home_team": {
+        "team_id": "LAN",
+        "team_name": "Los Angeles Dodgers",
+        "lineup": [
+          {
+            "player": {
+              "player_id": "taylc001",
+              "player_first_name": "Chris",
+              "player_last_name": "Taylor",
+              "bats": "R",
+              "throws": "R"
+            },
+            "starter": true,
+            "lineup_position": 1,
+            "fielder_position": 8
+          },
+          {
+            "player": {
+              "player_id": "seagc001",
+              "player_first_name": "Corey",
+              "player_last_name": "Seager",
+              "bats": "L",
+              "throws": "R"
+            },
+            "starter": true,
+            "lineup_position": 2,
+            "fielder_position": 6
+          },
+          {
+            "player": {
+              "player_id": "turnj001",
+              "player_first_name": "Justin",
+              "player_last_name": "Turner",
+              "bats": "R",
+              "throws": "R"
+            },
+            "starter": true,
+            "lineup_position": 3,
+            "fielder_position": 5
+          },
+          {
+            "player": {
+              "player_id": "bellc002",
+              "player_first_name": "Cody",
+              "player_last_name": "Bellinger",
+              "bats": "L",
+              "throws": "L"
+            },
+            "starter": true,
+            "lineup_position": 4,
+            "fielder_position": 3
+          },
+          {
+            "player": {
+              "player_id": "puigy001",
+              "player_first_name": "Yasiel",
+              "player_last_name": "Puig",
+              "bats": "R",
+              "throws": "R"
+            },
+            "starter": true,
+            "lineup_position": 5,
+            "fielder_position": 9
+          },
+          {
+            "player": {
+              "player_id": "pedej001",
+              "player_first_name": "Joc",
+              "player_last_name": "Pederson",
+              "bats": "L",
+              "throws": "L"
+            },
+            "starter": true,
+            "lineup_position": 6,
+            "fielder_position": 7
+          },
+          {
+            "player": {
+              "player_id": "forsl001",
+              "player_first_name": "Logan",
+              "player_last_name": "Forsythe",
+              "bats": "R",
+              "throws": "R"
+            },
+            "starter": true,
+            "lineup_position": 7,
+            "fielder_position": 4
+          },
+          {
+            "player": {
+              "player_id": "barna001",
+              "player_first_name": "Austin",
+              "player_last_name": "Barnes",
+              "bats": "R",
+              "throws": "R"
+            },
+            "starter": true,
+            "lineup_position": 8,
+            "fielder_position": 2
+          },
+          {
+            "player": {
+              "player_id": "darvy001",
+              "player_first_name": "Yu",
+              "player_last_name": "Darvish",
+              "bats": "R",
+              "throws": "R"
+            },
+            "starter": true,
+            "lineup_position": 9,
+            "fielder_position": 1
+          },
+          {
+            "player": {
+              "player_id": "morrb001",
+              "player_first_name": "Brandon",
+              "player_last_name": "Morrow",
+              "bats": "R",
+              "throws": "R"
+            },
+            "starter": false
+          },
+          {
+            "player": {
+              "player_id": "herne001",
+              "player_first_name": "Enrique",
+              "player_last_name": "Hernandez",
+              "bats": "R",
+              "throws": "R"
+            },
+            "starter": false
+          },
+          {
+            "player": {
+              "player_id": "kersc001",
+              "player_first_name": "Clayton",
+              "player_last_name": "Kershaw",
+              "bats": "L",
+              "throws": "L"
+            },
+            "starter": false
+          },
+          {
+            "player": {
+              "player_id": "ethia001",
+              "player_first_name": "Andre",
+              "player_last_name": "Ethier",
+              "bats": "L",
+              "throws": "L"
+            },
+            "starter": false
+          },
+          {
+            "player": {
+              "player_id": "jansk001",
+              "player_first_name": "Kenley",
+              "player_last_name": "Jansen",
+              "bats": "B",
+              "throws": "R"
+            },
+            "starter": false
+          },
+          {
+            "player": {
+              "player_id": "wooda002",
+              "player_first_name": "Alex",
+              "player_last_name": "Wood",
+              "bats": "R",
+              "throws": "L"
+            },
+            "starter": false
+          },
+          {
+            "player": {
+              "player_id": "utlec001",
+              "player_first_name": "Chase",
+              "player_last_name": "Utley",
+              "bats": "L",
+              "throws": "R"
+            },
+            "starter": false
+          }
+        ]
+      },
+      "site": {
+        "site_id": "LOS03",
+        "site_name": "Dodger Stadium"
+      },
+      "start_date": "2017-11-01",
+      "start_time": "17:21:00",
+      "daynight": "night",
+      "use_dh": false,
+      "ump_home": {
+        "umpire_id": "wegnm901",
+        "umpire_last_name": "Wegner",
+        "umpire_first_name": "Mark"
+      },
+      "ump_1b": {
+        "umpire_id": "nauep901",
+        "umpire_last_name": "Nauert",
+        "umpire_first_name": "Paul"
+      },
+      "ump_2b": {
+        "umpire_id": "davig901",
+        "umpire_last_name": "Davis",
+        "umpire_first_name": "Gerry"
+      },
+      "ump_3b": {
+        "umpire_id": "diazl901",
+        "umpire_last_name": "Diaz",
+        "umpire_first_name": "Laz"
+      },
+      "ump_lf": {
+        "umpire_id": "millb901",
+        "umpire_last_name": "Miller",
+        "umpire_first_name": "Bill"
+      },
+      "ump_rf": {
+        "umpire_id": "iassd901",
+        "umpire_last_name": "Iassogna",
+        "umpire_first_name": "Dan"
+      },
+      "how_scored": "park",
+      "pitches": "pitches",
+      "temp": "69",
+      "wind": "ltor",
+      "wind_speed": "5",
+      "field_conditions": "unknown",
+      "precip": "unknown",
+      "sky": "overcast",
+      "end_time": "20:58:00",
+      "attendance": 54124,
+      "winning_pitcher": "mortc002",
+      "losing_pitcher": "darvy001",
+      "plays": [
+        {
+          "type": "play",
+          "inning": 1,
+          "batting_team_id": "HOU",
+          "batting_player_id": "sprig001",
+          "count": "11",
+          "pitch_sequence": "BCX",
+          "play": "D7/L"
+        },
+        {
+          "type": "play",
+          "inning": 1,
+          "batting_team_id": "HOU",
+          "batting_player_id": "brega001",
+          "count": "00",
+          "pitch_sequence": "X",
+          "play": "E3/TH/G.2-H(NR);B-2"
+        },
+        {
+          "type": "play",
+          "inning": 1,
+          "batting_team_id": "HOU",
+          "batting_player_id": "altuj001",
+          "count": "11",
+          "pitch_sequence": "BC*B",
+          "play": "SB3"
+        },
+        {
+          "type": "play",
+          "inning": 1,
+          "batting_team_id": "HOU",
+          "batting_player_id": "altuj001",
+          "count": "21",
+          "pitch_sequence": "BC*B.X",
+          "play": "3/G.3-H(UR)"
+        },
+        {
+          "type": "play",
+          "inning": 1,
+          "batting_team_id": "HOU",
+          "batting_player_id": "corrc001",
+          "count": "02",
+          "pitch_sequence": "SCX",
+          "play": "31/G-"
+        },
+        {
+          "type": "play",
+          "inning": 1,
+          "batting_team_id": "HOU",
+          "batting_player_id": "gurry001",
+          "count": "32",
+          "pitch_sequence": "CCBBFFBFFFFFX",
+          "play": "9/F"
+        },
+        {
+          "type": "play",
+          "inning": 1,
+          "batting_team_id": "LAN",
+          "batting_player_id": "taylc001",
+          "count": "11",
+          "pitch_sequence": "CBX",
+          "play": "D8/L"
+        },
+        {
+          "type": "play",
+          "inning": 1,
+          "batting_team_id": "LAN",
+          "batting_player_id": "seagc001",
+          "count": "32",
+          "pitch_sequence": "BC*BTBS",
+          "play": "K"
+        },
+        {
+          "type": "play",
+          "inning": 1,
+          "batting_team_id": "LAN",
+          "batting_player_id": "turnj001",
+          "count": "12",
+          "pitch_sequence": "FS*BH",
+          "play": "HP"
+        },
+        {
+          "type": "play",
+          "inning": 1,
+          "batting_team_id": "LAN",
+          "batting_player_id": "bellc002",
+          "count": "12",
+          "pitch_sequence": "F*BSS",
+          "play": "K"
+        },
+        {
+          "type": "play",
+          "inning": 1,
+          "batting_team_id": "LAN",
+          "batting_player_id": "puigy001",
+          "count": "31",
+          "pitch_sequence": "CBBBH",
+          "play": "HP.2-3;1-2"
+        },
+        {
+          "type": "play",
+          "inning": 1,
+          "batting_team_id": "LAN",
+          "batting_player_id": "pedej001",
+          "count": "02",
+          "pitch_sequence": "CSX",
+          "play": "43/G"
+        },
+        {
+          "type": "play",
+          "inning": 2,
+          "batting_team_id": "HOU",
+          "batting_player_id": "mccab002",
+          "count": "32",
+          "pitch_sequence": "CCBBFFBB",
+          "play": "W"
+        },
+        {
+          "type": "play",
+          "inning": 2,
+          "batting_team_id": "HOU",
+          "batting_player_id": "gonzm002",
+          "count": "21",
+          "pitch_sequence": "BCB1X",
+          "play": "D9/L.1-3"
+        },
+        {
+          "type": "play",
+          "inning": 2,
+          "batting_team_id": "HOU",
+          "batting_player_id": "reddj001",
+          "count": "10",
+          "pitch_sequence": "BX",
+          "play": "43/G"
+        },
+        {
+          "type": "play",
+          "inning": 2,
+          "batting_team_id": "HOU",
+          "batting_player_id": "mccul002",
+          "count": "11",
+          "pitch_sequence": "BFX",
+          "play": "43/G-.3-H;2-3"
+        },
+        {
+          "type": "play",
+          "inning": 2,
+          "batting_team_id": "HOU",
+          "batting_player_id": "sprig001",
+          "count": "32",
+          "pitch_sequence": "*BBCBSX",
+          "play": "HR/8/L.3-H"
+        },
+        {
+          "type": "play",
+          "inning": 2,
+          "batting_team_id": "HOU",
+          "batting_player_id": "brega001",
+          "count": "00",
+          "pitch_sequence": "",
+          "play": "NP"
+        },
+        {
+          "type": "substitution",
+          "substitution": {
+            "player": {
+              "player_id": "morrb001",
+              "player_first_name": "Brandon",
+              "player_last_name": "Morrow"
+            },
+            "lineup_position": 9,
+            "fielder_position": 1
+          }
+        },
+        {
+          "type": "play",
+          "inning": 2,
+          "batting_team_id": "HOU",
+          "batting_player_id": "brega001",
+          "count": "02",
+          "pitch_sequence": ".FFS",
+          "play": "K"
+        },
+        {
+          "type": "play",
+          "inning": 2,
+          "batting_team_id": "LAN",
+          "batting_player_id": "forsl001",
+          "count": "10",
+          "pitch_sequence": "BX",
+          "play": "S7/G"
+        },
+        {
+          "type": "play",
+          "inning": 2,
+          "batting_team_id": "LAN",
+          "batting_player_id": "barna001",
+          "count": "22",
+          "pitch_sequence": "BCBCX",
+          "play": "53/G.1-2"
+        },
+        {
+          "type": "play",
+          "inning": 2,
+          "batting_team_id": "LAN",
+          "batting_player_id": "morrb001",
+          "count": "00",
+          "pitch_sequence": "",
+          "play": "NP"
+        },
+        {
+          "type": "substitution",
+          "substitution": {
+            "player": {
+              "player_id": "herne001",
+              "player_first_name": "Enrique",
+              "player_last_name": "Hernandez"
+            },
+            "lineup_position": 9,
+            "fielder_position": 11
+          }
+        },
+        {
+          "type": "play",
+          "inning": 2,
+          "batting_team_id": "LAN",
+          "batting_player_id": "herne001",
+          "count": "31",
+          "pitch_sequence": ".BBCBH",
+          "play": "HP"
+        },
+        {
+          "type": "play",
+          "inning": 2,
+          "batting_team_id": "LAN",
+          "batting_player_id": "taylc001",
+          "count": "00",
+          "pitch_sequence": "X",
+          "play": "6/L/DP.2X2(64)"
+        },
+        {
+          "type": "play",
+          "inning": 3,
+          "batting_team_id": "HOU",
+          "batting_player_id": "altuj001",
+          "count": "00",
+          "pitch_sequence": "",
+          "play": "NP"
+        },
+        {
+          "type": "substitution",
+          "substitution": {
+            "player": {
+              "player_id": "kersc001",
+              "player_first_name": "Clayton",
+              "player_last_name": "Kershaw"
+            },
+            "lineup_position": 9,
+            "fielder_position": 1
+          }
+        },
+        {
+          "type": "play",
+          "inning": 3,
+          "batting_team_id": "HOU",
+          "batting_player_id": "altuj001",
+          "count": "20",
+          "pitch_sequence": ".BBX",
+          "play": "8/F"
+        },
+        {
+          "type": "play",
+          "inning": 3,
+          "batting_team_id": "HOU",
+          "batting_player_id": "corrc001",
+          "count": "00",
+          "pitch_sequence": "X",
+          "play": "9/F"
+        },
+        {
+          "type": "play",
+          "inning": 3,
+          "batting_team_id": "HOU",
+          "batting_player_id": "gurry001",
+          "count": "32",
+          "pitch_sequence": "CCBBBC",
+          "play": "K"
+        },
+        {
+          "type": "play",
+          "inning": 3,
+          "batting_team_id": "LAN",
+          "batting_player_id": "seagc001",
+          "count": "12",
+          "pitch_sequence": "FCFBX",
+          "play": "S8/L+"
+        },
+        {
+          "type": "play",
+          "inning": 3,
+          "batting_team_id": "LAN",
+          "batting_player_id": "turnj001",
+          "count": "00",
+          "pitch_sequence": "H",
+          "play": "HP.1-2"
+        },
+        {
+          "type": "play",
+          "inning": 3,
+          "batting_team_id": "LAN",
+          "batting_player_id": "bellc002",
+          "count": "22",
+          "pitch_sequence": "SB*BSS",
+          "play": "K"
+        },
+        {
+          "type": "play",
+          "inning": 3,
+          "batting_team_id": "LAN",
+          "batting_player_id": "puigy001",
+          "count": "00",
+          "pitch_sequence": "",
+          "play": "NP"
+        },
+        {
+          "type": "substitution",
+          "substitution": {
+            "player": {
+              "player_id": "peacb001",
+              "player_first_name": "Brad",
+              "player_last_name": "Peacock"
+            },
+            "lineup_position": 9,
+            "fielder_position": 1
+          }
+        },
+        {
+          "type": "play",
+          "inning": 3,
+          "batting_team_id": "LAN",
+          "batting_player_id": "puigy001",
+          "count": "11",
+          "pitch_sequence": ".BCX",
+          "play": "8/F.2-3"
+        },
+        {
+          "type": "play",
+          "inning": 3,
+          "batting_team_id": "LAN",
+          "batting_player_id": "pedej001",
+          "count": "22",
+          "pitch_sequence": "F1BTBS",
+          "play": "K23"
+        },
+        {
+          "type": "play",
+          "inning": 4,
+          "batting_team_id": "HOU",
+          "batting_player_id": "mccab002",
+          "count": "02",
+          "pitch_sequence": "CSS",
+          "play": "K"
+        },
+        {
+          "type": "play",
+          "inning": 4,
+          "batting_team_id": "HOU",
+          "batting_player_id": "gonzm002",
+          "count": "00",
+          "pitch_sequence": "X",
+          "play": "S6/G"
+        },
+        {
+          "type": "play",
+          "inning": 4,
+          "batting_team_id": "HOU",
+          "batting_player_id": "reddj001",
+          "count": "12",
+          "pitch_sequence": "C*BCB",
+          "play": "WP.1-2"
+        },
+        {
+          "type": "play",
+          "inning": 4,
+          "batting_team_id": "HOU",
+          "batting_player_id": "reddj001",
+          "count": "22",
+          "pitch_sequence": "C*BCB.X",
+          "play": "63/G"
+        },
+        {
+          "type": "play",
+          "inning": 4,
+          "batting_team_id": "HOU",
+          "batting_player_id": "peacb001",
+          "count": "01",
+          "pitch_sequence": "CX",
+          "play": "8/F"
+        },
+        {
+          "type": "play",
+          "inning": 4,
+          "batting_team_id": "LAN",
+          "batting_player_id": "forsl001",
+          "count": "12",
+          "pitch_sequence": "CFFBX",
+          "play": "53/G"
+        },
+        {
+          "type": "play",
+          "inning": 4,
+          "batting_team_id": "LAN",
+          "batting_player_id": "barna001",
+          "count": "10",
+          "pitch_sequence": "BX",
+          "play": "5/P"
+        },
+        {
+          "type": "play",
+          "inning": 4,
+          "batting_team_id": "LAN",
+          "batting_player_id": "kersc001",
+          "count": "22",
+          "pitch_sequence": "BCFBFS",
+          "play": "K"
+        },
+        {
+          "type": "play",
+          "inning": 5,
+          "batting_team_id": "HOU",
+          "batting_player_id": "sprig001",
+          "count": "02",
+          "pitch_sequence": "CFFS",
+          "play": "K"
+        },
+        {
+          "type": "play",
+          "inning": 5,
+          "batting_team_id": "HOU",
+          "batting_player_id": "brega001",
+          "count": "02",
+          "pitch_sequence": "FCFS",
+          "play": "K"
+        },
+        {
+          "type": "play",
+          "inning": 5,
+          "batting_team_id": "HOU",
+          "batting_player_id": "altuj001",
+          "count": "01",
+          "pitch_sequence": "FX",
+          "play": "3/P3F"
+        },
+        {
+          "type": "play",
+          "inning": 5,
+          "batting_team_id": "LAN",
+          "batting_player_id": "taylc001",
+          "count": "00",
+          "pitch_sequence": "X",
+          "play": "7/F"
+        },
+        {
+          "type": "play",
+          "inning": 5,
+          "batting_team_id": "LAN",
+          "batting_player_id": "seagc001",
+          "count": "32",
+          "pitch_sequence": "CBFBFFFBB",
+          "play": "W"
+        },
+        {
+          "type": "play",
+          "inning": 5,
+          "batting_team_id": "LAN",
+          "batting_player_id": "turnj001",
+          "count": "22",
+          "pitch_sequence": "CBFBFX",
+          "play": "S57/G.1-2"
+        },
+        {
+          "type": "play",
+          "inning": 5,
+          "batting_team_id": "LAN",
+          "batting_player_id": "bellc002",
+          "count": "00",
+          "pitch_sequence": "",
+          "play": "NP"
+        },
+        {
+          "type": "substitution",
+          "substitution": {
+            "player": {
+              "player_id": "lirif001",
+              "player_first_name": "Francisco",
+              "player_last_name": "Liriano"
+            },
+            "lineup_position": 9,
+            "fielder_position": 1
+          }
+        },
+        {
+          "type": "play",
+          "inning": 5,
+          "batting_team_id": "LAN",
+          "batting_player_id": "bellc002",
+          "count": "21",
+          "pitch_sequence": ".CBBX",
+          "play": "46(1)/FO/G.2-3"
+        },
+        {
+          "type": "play",
+          "inning": 5,
+          "batting_team_id": "LAN",
+          "batting_player_id": "puigy001",
+          "count": "00",
+          "pitch_sequence": "",
+          "play": "NP"
+        },
+        {
+          "type": "substitution",
+          "substitution": {
+            "player": {
+              "player_id": "devec001",
+              "player_first_name": "Chris",
+              "player_last_name": "Devenski"
+            },
+            "lineup_position": 9,
+            "fielder_position": 1
+          }
+        },
+        {
+          "type": "play",
+          "inning": 5,
+          "batting_team_id": "LAN",
+          "batting_player_id": "puigy001",
+          "count": "12",
+          "pitch_sequence": ".C>FF*B>F>X",
+          "play": "3/L"
+        },
+        {
+          "type": "play",
+          "inning": 6,
+          "batting_team_id": "HOU",
+          "batting_player_id": "corrc001",
+          "count": "22",
+          "pitch_sequence": "CBFBX",
+          "play": "S7/G"
+        },
+        {
+          "type": "play",
+          "inning": 6,
+          "batting_team_id": "HOU",
+          "batting_player_id": "gurry001",
+          "count": "00",
+          "pitch_sequence": "X",
+          "play": "13/G-.1-2"
+        },
+        {
+          "type": "play",
+          "inning": 6,
+          "batting_team_id": "HOU",
+          "batting_player_id": "mccab002",
+          "count": "02",
+          "pitch_sequence": "FFFX",
+          "play": "43/G.2-3"
+        },
+        {
+          "type": "play",
+          "inning": 6,
+          "batting_team_id": "HOU",
+          "batting_player_id": "gonzm002",
+          "count": "30",
+          "pitch_sequence": "VVVV",
+          "play": "IW"
+        },
+        {
+          "type": "play",
+          "inning": 6,
+          "batting_team_id": "HOU",
+          "batting_player_id": "reddj001",
+          "count": "00",
+          "pitch_sequence": "",
+          "play": "NP"
+        },
+        {
+          "type": "substitution",
+          "substitution": {
+            "player": {
+              "player_id": "gatte001",
+              "player_first_name": "Evan",
+              "player_last_name": "Gattis"
+            },
+            "lineup_position": 8,
+            "fielder_position": 11
+          }
+        },
+        {
+          "type": "play",
+          "inning": 6,
+          "batting_team_id": "HOU",
+          "batting_player_id": "gatte001",
+          "count": "30",
+          "pitch_sequence": ".VVVV",
+          "play": "IW.1-2"
+        },
+        {
+          "type": "play",
+          "inning": 6,
+          "batting_team_id": "HOU",
+          "batting_player_id": "devec001",
+          "count": "00",
+          "pitch_sequence": "",
+          "play": "NP"
+        },
+        {
+          "type": "substitution",
+          "substitution": {
+            "player": {
+              "player_id": "maybc001",
+              "player_first_name": "Cameron",
+              "player_last_name": "Maybin"
+            },
+            "lineup_position": 9,
+            "fielder_position": 11
+          }
+        },
+        {
+          "type": "play",
+          "inning": 6,
+          "batting_team_id": "HOU",
+          "batting_player_id": "maybc001",
+          "count": "01",
+          "pitch_sequence": ".CX",
+          "play": "5/P5F"
+        },
+        {
+          "type": "play",
+          "inning": 6,
+          "batting_team_id": "LAN",
+          "batting_player_id": "pedej001",
+          "count": "00",
+          "pitch_sequence": "",
+          "play": "NP"
+        },
+        {
+          "type": "substitution",
+          "substitution": {
+            "player": {
+              "player_id": "sprig001",
+              "player_first_name": "George",
+              "player_last_name": "Springer"
+            },
+            "lineup_position": 1,
+            "fielder_position": 9
+          }
+        },
+        {
+          "type": "play",
+          "inning": 6,
+          "batting_team_id": "LAN",
+          "batting_player_id": "pedej001",
+          "count": "00",
+          "pitch_sequence": "",
+          "play": "NP"
+        },
+        {
+          "type": "substitution",
+          "substitution": {
+            "player": {
+              "player_id": "maybc001",
+              "player_first_name": "Cameron",
+              "player_last_name": "Maybin"
+            },
+            "lineup_position": 9,
+            "fielder_position": 8
+          }
+        },
+        {
+          "type": "play",
+          "inning": 6,
+          "batting_team_id": "LAN",
+          "batting_player_id": "pedej001",
+          "count": "00",
+          "pitch_sequence": "",
+          "play": "NP"
+        },
+        {
+          "type": "substitution",
+          "substitution": {
+            "player": {
+              "player_id": "mortc002",
+              "player_first_name": "Charlie",
+              "player_last_name": "Morton"
+            },
+            "lineup_position": 8,
+            "fielder_position": 1
+          }
+        },
+        {
+          "type": "play",
+          "inning": 6,
+          "batting_team_id": "LAN",
+          "batting_player_id": "pedej001",
+          "count": "00",
+          "pitch_sequence": "...X",
+          "play": "S8/L-"
+        },
+        {
+          "type": "play",
+          "inning": 6,
+          "batting_team_id": "LAN",
+          "batting_player_id": "forsl001",
+          "count": "32",
+          "pitch_sequence": "CBFBBFB",
+          "play": "W.1-2"
+        },
+        {
+          "type": "play",
+          "inning": 6,
+          "batting_team_id": "LAN",
+          "batting_player_id": "barna001",
+          "count": "12",
+          "pitch_sequence": "CFBX",
+          "play": "6/P/IF"
+        },
+        {
+          "type": "play",
+          "inning": 6,
+          "batting_team_id": "LAN",
+          "batting_player_id": "kersc001",
+          "count": "00",
+          "pitch_sequence": "",
+          "play": "NP"
+        },
+        {
+          "type": "substitution",
+          "substitution": {
+            "player": {
+              "player_id": "ethia001",
+              "player_first_name": "Andre",
+              "player_last_name": "Ethier"
+            },
+            "lineup_position": 9,
+            "fielder_position": 11
+          }
+        },
+        {
+          "type": "play",
+          "inning": 6,
+          "batting_team_id": "LAN",
+          "batting_player_id": "ethia001",
+          "count": "11",
+          "pitch_sequence": ".BTX",
+          "play": "S9/G.2-H;1-2"
+        },
+        {
+          "type": "play",
+          "inning": 6,
+          "batting_team_id": "LAN",
+          "batting_player_id": "taylc001",
+          "count": "02",
+          "pitch_sequence": "CSFS",
+          "play": "K"
+        },
+        {
+          "type": "play",
+          "inning": 6,
+          "batting_team_id": "LAN",
+          "batting_player_id": "seagc001",
+          "count": "00",
+          "pitch_sequence": "X",
+          "play": "63/G-"
+        },
+        {
+          "type": "play",
+          "inning": 7,
+          "batting_team_id": "HOU",
+          "batting_player_id": "sprig001",
+          "count": "00",
+          "pitch_sequence": "",
+          "play": "NP"
+        },
+        {
+          "type": "substitution",
+          "substitution": {
+            "player": {
+              "player_id": "jansk001",
+              "player_first_name": "Kenley",
+              "player_last_name": "Jansen"
+            },
+            "lineup_position": 9,
+            "fielder_position": 1
+          }
+        },
+        {
+          "type": "play",
+          "inning": 7,
+          "batting_team_id": "HOU",
+          "batting_player_id": "sprig001",
+          "count": "12",
+          "pitch_sequence": ".BFSFX",
+          "play": "8/L"
+        },
+        {
+          "type": "play",
+          "inning": 7,
+          "batting_team_id": "HOU",
+          "batting_player_id": "brega001",
+          "count": "22",
+          "pitch_sequence": "CFFFBBT",
+          "play": "K"
+        },
+        {
+          "type": "play",
+          "inning": 7,
+          "batting_team_id": "HOU",
+          "batting_player_id": "altuj001",
+          "count": "31",
+          "pitch_sequence": "BFBBB",
+          "play": "W"
+        },
+        {
+          "type": "play",
+          "inning": 7,
+          "batting_team_id": "HOU",
+          "batting_player_id": "corrc001",
+          "count": "00",
+          "pitch_sequence": "1>B",
+          "play": "SB2"
+        },
+        {
+          "type": "play",
+          "inning": 7,
+          "batting_team_id": "HOU",
+          "batting_player_id": "corrc001",
+          "count": "11",
+          "pitch_sequence": "1>B.FX",
+          "play": "6/P"
+        },
+        {
+          "type": "play",
+          "inning": 7,
+          "batting_team_id": "LAN",
+          "batting_player_id": "turnj001",
+          "count": "22",
+          "pitch_sequence": "CBBFX",
+          "play": "3/P-"
+        },
+        {
+          "type": "play",
+          "inning": 7,
+          "batting_team_id": "LAN",
+          "batting_player_id": "bellc002",
+          "count": "02",
+          "pitch_sequence": "CSC",
+          "play": "K"
+        },
+        {
+          "type": "play",
+          "inning": 7,
+          "batting_team_id": "LAN",
+          "batting_player_id": "puigy001",
+          "count": "20",
+          "pitch_sequence": "BBX",
+          "play": "63/G"
+        },
+        {
+          "type": "play",
+          "inning": 8,
+          "batting_team_id": "HOU",
+          "batting_player_id": "gurry001",
+          "count": "00",
+          "pitch_sequence": "",
+          "play": "NP"
+        },
+        {
+          "type": "substitution",
+          "substitution": {
+            "player": {
+              "player_id": "wooda002",
+              "player_first_name": "Alex",
+              "player_last_name": "Wood"
+            },
+            "lineup_position": 9,
+            "fielder_position": 1
+          }
+        },
+        {
+          "type": "play",
+          "inning": 8,
+          "batting_team_id": "HOU",
+          "batting_player_id": "gurry001",
+          "count": "20",
+          "pitch_sequence": ".BBX",
+          "play": "8/L"
+        },
+        {
+          "type": "play",
+          "inning": 8,
+          "batting_team_id": "HOU",
+          "batting_player_id": "mccab002",
+          "count": "12",
+          "pitch_sequence": "CBFC",
+          "play": "K"
+        },
+        {
+          "type": "play",
+          "inning": 8,
+          "batting_team_id": "HOU",
+          "batting_player_id": "gonzm002",
+          "count": "22",
+          "pitch_sequence": "BCFBFFX",
+          "play": "53/G"
+        },
+        {
+          "type": "play",
+          "inning": 8,
+          "batting_team_id": "LAN",
+          "batting_player_id": "pedej001",
+          "count": "02",
+          "pitch_sequence": "CST",
+          "play": "K"
+        },
+        {
+          "type": "play",
+          "inning": 8,
+          "batting_team_id": "LAN",
+          "batting_player_id": "forsl001",
+          "count": "22",
+          "pitch_sequence": "CBBFFX",
+          "play": "9/F"
+        },
+        {
+          "type": "play",
+          "inning": 8,
+          "batting_team_id": "LAN",
+          "batting_player_id": "barna001",
+          "count": "11",
+          "pitch_sequence": "SBX",
+          "play": "8/L"
+        },
+        {
+          "type": "play",
+          "inning": 9,
+          "batting_team_id": "HOU",
+          "batting_player_id": "mortc002",
+          "count": "02",
+          "pitch_sequence": "CCC",
+          "play": "K"
+        },
+        {
+          "type": "play",
+          "inning": 9,
+          "batting_team_id": "HOU",
+          "batting_player_id": "maybc001",
+          "count": "22",
+          "pitch_sequence": "BBSSC",
+          "play": "K"
+        },
+        {
+          "type": "play",
+          "inning": 9,
+          "batting_team_id": "HOU",
+          "batting_player_id": "sprig001",
+          "count": "02",
+          "pitch_sequence": "FSX",
+          "play": "8/L"
+        },
+        {
+          "type": "play",
+          "inning": 9,
+          "batting_team_id": "LAN",
+          "batting_player_id": "wooda002",
+          "count": "00",
+          "pitch_sequence": "",
+          "play": "NP"
+        },
+        {
+          "type": "substitution",
+          "substitution": {
+            "player": {
+              "player_id": "utlec001",
+              "player_first_name": "Chase",
+              "player_last_name": "Utley"
+            },
+            "lineup_position": 9,
+            "fielder_position": 11
+          }
+        },
+        {
+          "type": "play",
+          "inning": 9,
+          "batting_team_id": "LAN",
+          "batting_player_id": "utlec001",
+          "count": "02",
+          "pitch_sequence": ".CFS",
+          "play": "K"
+        },
+        {
+          "type": "play",
+          "inning": 9,
+          "batting_team_id": "LAN",
+          "batting_player_id": "taylc001",
+          "count": "22",
+          "pitch_sequence": "BFBSX",
+          "play": "43/G-"
+        },
+        {
+          "type": "play",
+          "inning": 9,
+          "batting_team_id": "LAN",
+          "batting_player_id": "seagc001",
+          "count": "00",
+          "pitch_sequence": "X",
+          "play": "43/G"
+        }
+      ]
+    }
+  ]
+}

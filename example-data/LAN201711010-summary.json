@@ -1,0 +1,1222 @@
+{
+  "current_play": {
+    "type": "play",
+    "inning": 9,
+    "batting_team_id": "LAN",
+    "batting_player_id": "seagc001",
+    "count": "00",
+    "pitch_sequence": "X",
+    "play": "43/G",
+    "enhanced_play": {
+      "rawEvent": {
+        "advances": [],
+        "basicPlay": "43",
+        "modifiers": [
+          "G"
+        ],
+        "rawText": "43/G",
+        "basicPlayParseError": null,
+        "advancesParseErrors": [],
+        "modifiersParseErrors": []
+      },
+      "playCode": "43",
+      "outs": [
+        {
+          "play": "43",
+          "runnerStartingBase": "B",
+          "runnerId": {
+            "batting_player_id": "seagc001",
+            "responsible_pitcher_player_id": "mortc002"
+          },
+          "putoutFielderPosition": 3,
+          "putoutFielderId": "gurry001",
+          "assistFielders": [
+            {
+              "fielderPosition": "4",
+              "fielderId": "altuj001"
+            }
+          ],
+          "recorded": true
+        }
+      ],
+      "outsRecorded": 1,
+      "outsAfterPlay": 3,
+      "doublePlay": false,
+      "runsScoredBy": [],
+      "runs": 0,
+      "basesOccupiedAfterPlay": [
+        null,
+        null,
+        null
+      ],
+      "baseStealers": [],
+      "ballInPlay": {
+        "bunt": false,
+        "flyBall": false,
+        "groundBall": true,
+        "lineDrive": false,
+        "popup": false,
+        "trajectoryExplicit": true,
+        "location": null,
+        "soft": null,
+        "hard": null
+      },
+      "plateAppearance": true,
+      "atBat": true,
+      "hit": false,
+      "walk": false,
+      "strikeout": false,
+      "sacFly": false,
+      "sacBunt": false,
+      "baserunningPlay": false,
+      "rbi": 0,
+      "errors": [],
+      "risp": false,
+      "valid": true,
+      "pitchCount": {
+        "balls": 0,
+        "swingingStrikes": 0,
+        "calledStrikes": 0,
+        "unknownStrikes": 0,
+        "fouls": 0,
+        "bip": 1,
+        "unknown": 0,
+        "totalPitches": 1,
+        "responsible_pitcher_player_id": "mortc002"
+      },
+      "qab": false,
+      "had11count": false,
+      "win11count": false,
+      "basesOccupiedBeforePlay": [
+        null,
+        null,
+        null
+      ],
+      "lineupPosition": 1
+    }
+  },
+  "prior_play": {
+    "type": "play",
+    "inning": 9,
+    "batting_team_id": "LAN",
+    "batting_player_id": "taylc001",
+    "count": "22",
+    "pitch_sequence": "BFBSX",
+    "play": "43/G-",
+    "enhanced_play": {
+      "rawEvent": {
+        "advances": [],
+        "basicPlay": "43",
+        "modifiers": [
+          "G-"
+        ],
+        "rawText": "43/G-",
+        "basicPlayParseError": null,
+        "advancesParseErrors": [],
+        "modifiersParseErrors": []
+      },
+      "playCode": "43",
+      "outs": [
+        {
+          "play": "43",
+          "runnerStartingBase": "B",
+          "runnerId": {
+            "batting_player_id": "taylc001",
+            "responsible_pitcher_player_id": "mortc002"
+          },
+          "putoutFielderPosition": 3,
+          "putoutFielderId": "gurry001",
+          "assistFielders": [
+            {
+              "fielderPosition": "4",
+              "fielderId": "altuj001"
+            }
+          ],
+          "recorded": true
+        }
+      ],
+      "outsRecorded": 1,
+      "outsAfterPlay": 2,
+      "doublePlay": false,
+      "runsScoredBy": [],
+      "runs": 0,
+      "basesOccupiedAfterPlay": [
+        null,
+        null,
+        null
+      ],
+      "baseStealers": [],
+      "ballInPlay": {
+        "bunt": false,
+        "flyBall": false,
+        "groundBall": true,
+        "lineDrive": false,
+        "popup": false,
+        "trajectoryExplicit": true,
+        "location": null,
+        "soft": true,
+        "hard": false
+      },
+      "plateAppearance": true,
+      "atBat": true,
+      "hit": false,
+      "walk": false,
+      "strikeout": false,
+      "sacFly": false,
+      "sacBunt": false,
+      "baserunningPlay": false,
+      "rbi": 0,
+      "errors": [],
+      "risp": false,
+      "valid": true,
+      "pitchCount": {
+        "balls": 2,
+        "swingingStrikes": 1,
+        "calledStrikes": 0,
+        "unknownStrikes": 0,
+        "fouls": 1,
+        "bip": 1,
+        "unknown": 0,
+        "totalPitches": 5,
+        "responsible_pitcher_player_id": "mortc002"
+      },
+      "qab": false,
+      "had11count": true,
+      "win11count": false,
+      "basesOccupiedBeforePlay": [
+        null,
+        null,
+        null
+      ],
+      "lineupPosition": 0
+    }
+  },
+  "visitor_team_stats": {
+    "score": 5,
+    "hits": 5,
+    "error_count": 0,
+    "runs_per_inning": [
+      2,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "lob": 5,
+    "dp": [
+      [
+        "corrc001",
+        "altuj001"
+      ]
+    ],
+    "doubles": [
+      {
+        "batting_player_id": "sprig001",
+        "pitcher_player_id": "darvy001"
+      },
+      {
+        "batting_player_id": "gonzm002",
+        "pitcher_player_id": "darvy001"
+      }
+    ],
+    "triples": [],
+    "hr": [
+      {
+        "batting_player_id": "sprig001",
+        "pitcher_player_id": "darvy001",
+        "inning": 2,
+        "on": 1,
+        "out": 2
+      }
+    ],
+    "hbp": [],
+    "sb": [
+      {
+        "base": "3d",
+        "runner_player_id": "brega001",
+        "pitcher_player_id": "darvy001",
+        "catcher_player_id": "barna001"
+      },
+      {
+        "base": "2d",
+        "runner_player_id": "altuj001",
+        "pitcher_player_id": "jansk001",
+        "catcher_player_id": "barna001"
+      }
+    ],
+    "cs": [],
+    "errors": [],
+    "wp": [],
+    "pb": [],
+    "ibb": [],
+    "balks": [],
+    "sf": [],
+    "sh": [],
+    "gdp": []
+  },
+  "home_team_stats": {
+    "score": 1,
+    "hits": 6,
+    "error_count": 1,
+    "runs_per_inning": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+    ],
+    "lob": 10,
+    "dp": [],
+    "doubles": [
+      {
+        "batting_player_id": "taylc001",
+        "pitcher_player_id": "mccul002"
+      }
+    ],
+    "triples": [],
+    "hr": [],
+    "hbp": [
+      {
+        "batting_player_id": "turnj001",
+        "pitcher_player_id": "mccul002"
+      },
+      {
+        "batting_player_id": "puigy001",
+        "pitcher_player_id": "mccul002"
+      },
+      {
+        "batting_player_id": "herne001",
+        "pitcher_player_id": "mccul002"
+      },
+      {
+        "batting_player_id": "turnj001",
+        "pitcher_player_id": "mccul002"
+      }
+    ],
+    "sb": [],
+    "cs": [],
+    "errors": [
+      "bellc002"
+    ],
+    "wp": [
+      {
+        "batting_player_id": "reddj001",
+        "pitcher_player_id": "kersc001"
+      }
+    ],
+    "pb": [],
+    "ibb": [
+      {
+        "batting_player_id": "gonzm002",
+        "pitcher_player_id": "kersc001"
+      },
+      {
+        "batting_player_id": "gatte001",
+        "pitcher_player_id": "kersc001"
+      }
+    ],
+    "balks": [],
+    "sf": [],
+    "sh": [],
+    "gdp": []
+  },
+  "box": {
+    "home_team": {
+      "batting": [
+        [
+          [
+            "taylc001",
+            5,
+            0,
+            1,
+            0,
+            0,
+            1,
+            5,
+            0,
+            1,
+            5,
+            null,
+            null
+          ]
+        ],
+        [
+          [
+            "seagc001",
+            4,
+            0,
+            1,
+            0,
+            1,
+            1,
+            1,
+            1,
+            2,
+            5,
+            null,
+            null
+          ]
+        ],
+        [
+          [
+            "turnj001",
+            2,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1,
+            1,
+            3,
+            4,
+            null,
+            null
+          ]
+        ],
+        [
+          [
+            "bellc002",
+            4,
+            0,
+            0,
+            0,
+            0,
+            3,
+            8,
+            1,
+            0,
+            4,
+            null,
+            null
+          ]
+        ],
+        [
+          [
+            "puigy001",
+            3,
+            0,
+            0,
+            0,
+            0,
+            0,
+            2,
+            0,
+            1,
+            4,
+            null,
+            null
+          ]
+        ],
+        [
+          [
+            "pedej001",
+            4,
+            1,
+            1,
+            0,
+            0,
+            2,
+            0,
+            0,
+            1,
+            4,
+            null,
+            null
+          ]
+        ],
+        [
+          [
+            "forsl001",
+            3,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            3,
+            2,
+            4,
+            null,
+            null
+          ]
+        ],
+        [
+          [
+            "barna001",
+            4,
+            0,
+            0,
+            0,
+            0,
+            0,
+            9,
+            0,
+            0,
+            4,
+            null,
+            null
+          ]
+        ],
+        [
+          [
+            "darvy001",
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "morrb001",
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            null,
+            null
+          ],
+          [
+            "herne001",
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            null,
+            null
+          ],
+          [
+            "kersc001",
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            1,
+            null,
+            null
+          ],
+          [
+            "ethia001",
+            1,
+            0,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            null,
+            null
+          ],
+          [
+            "jansk001",
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "wooda002",
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            null,
+            null
+          ],
+          [
+            "utlec001",
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1,
+            null,
+            null
+          ]
+        ]
+      ],
+      "pitching": [
+        [
+          "darvy001",
+          1.2,
+          3,
+          5,
+          4,
+          1,
+          0,
+          1,
+          10,
+          47,
+          30,
+          4,
+          1
+        ],
+        [
+          "morrb001",
+          0.1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          1,
+          3,
+          3,
+          0,
+          0
+        ],
+        [
+          "kersc001",
+          4,
+          2,
+          0,
+          0,
+          2,
+          4,
+          0,
+          16,
+          51,
+          34,
+          1,
+          1
+        ],
+        [
+          "jansk001",
+          1,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          4,
+          20,
+          12,
+          1,
+          0
+        ],
+        [
+          "wooda002",
+          2,
+          0,
+          0,
+          0,
+          0,
+          3,
+          0,
+          6,
+          25,
+          18,
+          2,
+          2
+        ]
+      ]
+    },
+    "visitor_team": {
+      "batting": [
+        [
+          [
+            "sprig001",
+            5,
+            2,
+            2,
+            2,
+            0,
+            1,
+            2,
+            0,
+            2,
+            5,
+            null,
+            null
+          ]
+        ],
+        [
+          [
+            "brega001",
+            4,
+            1,
+            0,
+            0,
+            0,
+            3,
+            1,
+            2,
+            1,
+            4,
+            null,
+            null
+          ]
+        ],
+        [
+          [
+            "altuj001",
+            3,
+            0,
+            0,
+            1,
+            1,
+            0,
+            1,
+            4,
+            2,
+            4,
+            null,
+            null
+          ]
+        ],
+        [
+          [
+            "corrc001",
+            4,
+            0,
+            1,
+            0,
+            0,
+            0,
+            3,
+            3,
+            1,
+            4,
+            null,
+            null
+          ]
+        ],
+        [
+          [
+            "gurry001",
+            4,
+            0,
+            0,
+            0,
+            0,
+            1,
+            10,
+            0,
+            1,
+            4,
+            null,
+            null
+          ]
+        ],
+        [
+          [
+            "mccab002",
+            3,
+            1,
+            0,
+            0,
+            1,
+            2,
+            8,
+            1,
+            1,
+            4,
+            null,
+            null
+          ]
+        ],
+        [
+          [
+            "gonzm002",
+            3,
+            1,
+            2,
+            0,
+            1,
+            0,
+            1,
+            0,
+            3,
+            4,
+            null,
+            null
+          ]
+        ],
+        [
+          [
+            "reddj001",
+            2,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            2,
+            null,
+            null
+          ],
+          [
+            "gatte001",
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1,
+            1,
+            null,
+            null
+          ],
+          [
+            "mortc002",
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1,
+            null,
+            null
+          ]
+        ],
+        [
+          [
+            "mccul002",
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            null,
+            null
+          ],
+          [
+            "peacb001",
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            null,
+            null
+          ],
+          [
+            "lirif001",
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "devec001",
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            null,
+            null
+          ],
+          [
+            "maybc001",
+            2,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            2,
+            null,
+            null
+          ]
+        ]
+      ],
+      "pitching": [
+        [
+          "mccul002",
+          2.1,
+          3,
+          0,
+          0,
+          0,
+          3,
+          0,
+          13,
+          49,
+          27,
+          5,
+          0
+        ],
+        [
+          "peacb001",
+          2,
+          1,
+          0,
+          0,
+          1,
+          2,
+          0,
+          8,
+          37,
+          24,
+          3,
+          3
+        ],
+        [
+          "lirif001",
+          0.1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          4,
+          2,
+          0,
+          0
+        ],
+        [
+          "devec001",
+          0.1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          6,
+          5,
+          0,
+          0
+        ],
+        [
+          "mortc002",
+          4,
+          2,
+          1,
+          1,
+          1,
+          4,
+          0,
+          15,
+          52,
+          37,
+          5,
+          2
+        ]
+      ]
+    }
+  },
+  "date": "2017-11-01",
+  "home_team_name": "Los Angeles Dodgers",
+  "visitor_team_name": "Houston Astros",
+  "players": [
+    {
+      "player_id": "taylc001",
+      "player_last_name": "Taylor",
+      "player_positions": [
+        8
+      ]
+    },
+    {
+      "player_id": "seagc001",
+      "player_last_name": "Seager",
+      "player_positions": [
+        6
+      ]
+    },
+    {
+      "player_id": "turnj001",
+      "player_last_name": "Turner",
+      "player_positions": [
+        5
+      ]
+    },
+    {
+      "player_id": "bellc002",
+      "player_last_name": "Bellinger",
+      "player_positions": [
+        3
+      ]
+    },
+    {
+      "player_id": "puigy001",
+      "player_last_name": "Puig",
+      "player_positions": [
+        9
+      ]
+    },
+    {
+      "player_id": "pedej001",
+      "player_last_name": "Pederson",
+      "player_positions": [
+        7
+      ]
+    },
+    {
+      "player_id": "forsl001",
+      "player_last_name": "Forsythe",
+      "player_positions": [
+        4
+      ]
+    },
+    {
+      "player_id": "barna001",
+      "player_last_name": "Barnes",
+      "player_positions": [
+        2
+      ]
+    },
+    {
+      "player_id": "darvy001",
+      "player_last_name": "Darvish",
+      "player_positions": [
+        1
+      ]
+    },
+    {
+      "player_id": "morrb001",
+      "player_last_name": "Morrow",
+      "player_positions": [
+        1
+      ]
+    },
+    {
+      "player_id": "herne001",
+      "player_last_name": "Hernandez",
+      "player_positions": [
+        11
+      ]
+    },
+    {
+      "player_id": "kersc001",
+      "player_last_name": "Kershaw",
+      "player_positions": [
+        1
+      ]
+    },
+    {
+      "player_id": "ethia001",
+      "player_last_name": "Ethier",
+      "player_positions": [
+        11
+      ]
+    },
+    {
+      "player_id": "jansk001",
+      "player_last_name": "Jansen",
+      "player_positions": [
+        1
+      ]
+    },
+    {
+      "player_id": "wooda002",
+      "player_last_name": "Wood",
+      "player_positions": [
+        1
+      ]
+    },
+    {
+      "player_id": "utlec001",
+      "player_last_name": "Utley",
+      "player_positions": [
+        11
+      ]
+    },
+    {
+      "player_id": "sprig001",
+      "player_last_name": "Springer",
+      "player_positions": [
+        8,
+        9
+      ]
+    },
+    {
+      "player_id": "brega001",
+      "player_last_name": "Bregman",
+      "player_positions": [
+        5
+      ]
+    },
+    {
+      "player_id": "altuj001",
+      "player_last_name": "Altuve",
+      "player_positions": [
+        4
+      ]
+    },
+    {
+      "player_id": "corrc001",
+      "player_last_name": "Correa",
+      "player_positions": [
+        6
+      ]
+    },
+    {
+      "player_id": "gurry001",
+      "player_last_name": "Gurriel",
+      "player_positions": [
+        3
+      ]
+    },
+    {
+      "player_id": "mccab002",
+      "player_last_name": "McCann",
+      "player_positions": [
+        2
+      ]
+    },
+    {
+      "player_id": "gonzm002",
+      "player_last_name": "Gonzalez",
+      "player_positions": [
+        7
+      ]
+    },
+    {
+      "player_id": "reddj001",
+      "player_last_name": "Reddick",
+      "player_positions": [
+        9
+      ]
+    },
+    {
+      "player_id": "mccul002",
+      "player_last_name": "McCullers",
+      "player_positions": [
+        1
+      ]
+    },
+    {
+      "player_id": "peacb001",
+      "player_last_name": "Peacock",
+      "player_positions": [
+        1
+      ]
+    },
+    {
+      "player_id": "lirif001",
+      "player_last_name": "Liriano",
+      "player_positions": [
+        1
+      ]
+    },
+    {
+      "player_id": "devec001",
+      "player_last_name": "Devenski",
+      "player_positions": [
+        1
+      ]
+    },
+    {
+      "player_id": "gatte001",
+      "player_last_name": "Gattis",
+      "player_positions": [
+        11
+      ]
+    },
+    {
+      "player_id": "maybc001",
+      "player_last_name": "Maybin",
+      "player_positions": [
+        11,
+        8
+      ]
+    },
+    {
+      "player_id": "mortc002",
+      "player_last_name": "Morton",
+      "player_positions": [
+        1
+      ]
+    }
+  ],
+  "winning_pitcher": "mortc002",
+  "losing_pitcher": "darvy001"
+}
