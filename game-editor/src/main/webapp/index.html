@@ -68,21 +68,27 @@
       <div class="row">
 
         <!-- left column for game log -->
-        <div class="col-2 col-level1">
-          <div class="card">
-            <h6 class="card-header text-center">Game Log</h6>
-            <div class="card-body">
-              <ul class="list-unstyled">
-                <li>Play 1</li>
-                <li>Play 2</li>
-                <li>Play 3</li>
-              </ul>
+        <div class="col-3 col-level1">
+          <div class="row row-inner">
+            <div class="col-12">
+              <div class="card">
+                <h6 class="card-header text-center">Game Log</h6>
+                <div class="card-body game-log-body">
+                  <div class="list-group" id="divGameLog">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row row-inner">
+            <div class="col-12 text-center">
+              <button class="btn btn-primary" id="btnInsertPlay">Insert Play Above</button>
             </div>
           </div>
         </div>
 
         <!-- middle column for main area -->
-        <div class="col-8 col-level1">
+        <div class="col-7 col-level1">
 
           <div class="row row-inner">
             <div class="col-5">
@@ -110,6 +116,93 @@
 
           <div class="row row-inner">
 
+            <div class="col-2">
+              <div class="card">
+                <h6 class="card-header text-center">Pitches</h6>
+                <div class="card-body pitch-log-body">
+                  <div class="list-group" id="divPitchLog">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-10">
+              <div class="row row-inner">
+                <form>
+                  <div class="form-group row">
+                    <label for="txtPlayTeam" class="col-sm-1 col-form-label font-weight-bold">Team:</label>
+                    <div class="col-sm-2">
+                      <input type="text" class="form-control" id="txtPlayTeam">
+                    </div>
+                    <label for="txtPlayInning" class="col-sm-1 col-form-label font-weight-bold">Inning:</label>
+                    <div class="col-sm-1">
+                      <input type="text" class="form-control" id="txtPlayInning">
+                    </div>
+                    <label for="txtBatter" class="col-sm-1 col-form-label font-weight-bold">Batter:</label>
+                    <div class="col-sm-3">
+                      <input type="text" class="form-control" id="txtBatter" placeholder="Batter">
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-sm-1 col-form-label font-weight-bold">Pitch:</label>
+                    <label for="txtPitchOutcome" class="col-sm-1 col-form-label">Outcome:</label>
+                    <div class="col-sm-1">
+                      <input type="text" class="form-control" id="txtPitchOutcome" >
+                    </div>
+                    <label for="txtPitchType" class="col-sm-1 col-form-label">Type:</label>
+                    <div class="col-sm-1">
+                      <input type="text" class="form-control" id="txtPitchType" >
+                    </div>
+                    <label for="txtPitchVelocity" class="col-sm-1 col-form-label">Velocity:</label>
+                    <div class="col-sm-1">
+                      <input type="text" class="form-control" id="txtPitchVelocity" >
+                    </div>
+                    <label for="txtPitchLocation" class="col-sm-1 col-form-label">Location:</label>
+                    <div class="col-sm-1">
+                      <input type="text" class="form-control" id="txtPitchLocation" >
+                    </div>
+                    <div class="col-sm-2">
+                      <button class="btn btn-primary">Save Pitch</button>
+                    </div>
+                  </div>
+                  <div class="form-group-multirow">
+                    <div class="form-group row form-group-inner">
+                      <label for="txtPlay" class="col-sm-1 col-form-label font-weight-bold">Play:</label>
+                      <div class="col-sm-5">
+                        <input type="text" class="form-control" id="txtPlay" placeholder="Play">
+                      </div>
+                    </div>
+                    <div class="form-group row form-group-inner">
+                      <div class="col-sm-1"></div>
+                      <div class="col-sm-6">
+                        <textarea class="form-control" id="txtNotes" placeholder="Notes" rows="2"></textarea>
+                      </div>
+                      <div class="col-sm-3">
+                        <button class="btn btn-primary">Save Play</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-sm-2 col-form-label font-weight-bold">Substitution:</label>
+                    <label for="txtSubTeam" class="col-sm-1 col-form-label">Team:</label>
+                    <div class="col-sm-2">
+                      <input type="text" class="form-control" id="txtSubTeam" >
+                    </div>
+                    <div class="col-sm-2">
+                      <input type="text" class="form-control" id="txtSub" placeholder="Substitution">
+                    </div>
+                    <div class="col-sm-2">
+                      <input type="text" class="form-control form-control-plaintext" readonly id="txtSubResolved" >
+                    </div>
+                    <div class="col-sm-2">
+                      <button class="btn btn-primary">Save Substitution</button>
+                    </div>
+                  </div>
+                </form>
+                <!-- <input type="text" placeholder="Batter" id="txtBatter"> -->
+              </div>
+            </div>
+
           </div>
 
         </div>
@@ -119,12 +212,9 @@
           <div class="row row-inner">
             <div class="col-12">
               <div class="card">
-                <h6 class="card-header text-center">Visitors</h6>
-                <div class="card-body">
-                  <ul class="list-unstyled">
-                    <li>Player 1</li>
-                    <li>Player 2</li>
-                    <li>Player 3</li>
+                <h6 class="card-header text-center" id="visitorLineupHeader">Visitors</h6>
+                <div class="card-body lineup-card">
+                  <ul class="list-unstyled" id="divVisitorLineup">
                   </ul>
                 </div>
               </div>
@@ -133,12 +223,9 @@
           <div class="row row-inner">
             <div class="col-12">
               <div class="card">
-                <h6 class="card-header text-center">Home</h6>
-                <div class="card-body">
-                  <ul class="list-unstyled">
-                    <li>Player 1</li>
-                    <li>Player 2</li>
-                    <li>Player 3</li>
+                <h6 class="card-header text-center" id="homeLineupHeader">Home</h6>
+                <div class="card-body lineup-card">
+                  <ul class="list-unstyled" id="divHomeLineup">
                   </ul>
                 </div>
               </div>
@@ -149,14 +236,16 @@
       </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
       integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
       integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
-    <script src="js/game-editor.js"></script>
+      <script src="js/baseball-tools.js"></script>
+      <script src="js/HOU201710290.json"></script>
+      <script src="js/game-editor.js"></script>
 
   </body>
 
