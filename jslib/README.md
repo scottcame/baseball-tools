@@ -20,7 +20,7 @@ These functions' behavior is wrapped in a set of Node applications that form a s
 
 To illustrate the processing pipeline, consider the following example of Game 7 of the 2017 World Series.  We could start with the Retrosheet event, roster, and team files (available inside the 2017 postseason zip file
   at http://www.retrosheet.org/events/2017post.zip).  However, it might be a little easier to enter the data into a spreadsheet, where the rows are the same as the lines in the corresponding Retrosheet files, and the columns, separated
-  by commas in the Retrosheet files, are simply separated into columns in the spreadsheet.  We've created the spreadsheet version of this game file [here]("../example-data/LAN201711010.xlsx").
+  by commas in the Retrosheet files, are simply separated into columns in the spreadsheet.  We've created the spreadsheet version of this game file [here](../example-data/LAN201711010.xlsx).
 
 First, we run the `convert-retrosheet-excel.js` application (from the root of the `jslib` directory tree), with the first command-line parameter being the directory into which to write the equivalent Retrosheet files, and the second parameter
 being the year in which the game occurred:
