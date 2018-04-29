@@ -13,5 +13,10 @@
 */
 
 var Game = require("./game.js");
+var Summary = require("./summary.js")
 
 module.exports.parseGame = Game.parseGame;
+module.exports.parseGames = Game.parseGames;
+module.exports.parseGameFile = Game.parseGameFile;
+
+module.exports.getGameSummary = Summary.getGameSummary
