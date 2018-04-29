@@ -1,8 +1,14 @@
 "use strict";
 
 var Event = require("./event.js");
+var fs = require("fs")
 
 const DH_LINEUP_POSITION = 0;
+
+function parseGameFile(gameFile) {
+  let gg = JSON.parse(fs.readFileSync(gameFile, 'utf8'));
+  return parseGames(gg);
+}
 
 function parseGames(games) {
 
@@ -400,6 +406,7 @@ module.exports.initializeDefense = initializeDefense;
 module.exports.applySubstitution = applySubstitution;
 module.exports.parseGames = parseGames;
 module.exports.parseGame = parseGame;
+module.exports.parseGameFile = parseGameFile;
 module.exports.parseGameToPlay = parseGameToPlay;
 module.exports.findPlayer = findPlayer;
 module.exports.getPitchCount = getPitchCount;
