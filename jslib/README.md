@@ -155,3 +155,29 @@ IBB: Kershaw: 2
 
 The `boxscore.js` application also supports a `--latex=true` command-line option, which outputs the boxscore with LaTeX formatting that can be fed into a processor
 like [pandoc](https://pandoc.org/) to create a PDF version of the box score.
+
+#### Running unit tests
+
+The `jslib` codebase includes a suite of unit tests developed with [mocha](https://mochajs.org/).  To run them (from the root `jslib` directory):
+
+```
+$> mocha
+
+rawText
+  ✓ should return input as rawText property
+
+Event.parseRawEvent (No Modifiers or Advances)
+  ✓ should parse S7
+  ✓ should parse 9
+
+Event.parseRawEvent (with modifiers)
+  ✓ should parse D7/G5
+  ✓ should parse D7/E7/TH
+
+Event.parseRawEvent (with advances)
+  ✓ should parse D7.2-H
+  ✓ should parse D7.2-H;3-H
+  ✓ should parse D7/L.2-H;3-H
+  ✓ should parse D7.2-H;3-H
+...
+```
