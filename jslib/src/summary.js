@@ -274,8 +274,8 @@ function getGameSummaryToPlay(game, playIndex) {
         thisPlayerStatsArray[BATTING_STAT_BB] += play.enhanced_play.walk;
         thisPlayerStatsArray[BATTING_STAT_K] += play.enhanced_play.strikeout;
         thisPlayerStatsArray[BATTING_STAT_QAB] += play.enhanced_play.qab;
-        thisPlayerStatsArray[BATTING_STAT_SF] += play.enhanced_play.sf;
-        thisPlayerStatsArray[BATTING_STAT_SH] += play.enhanced_play.sh;
+        thisPlayerStatsArray[BATTING_STAT_SF] += play.enhanced_play.sacFly;
+        thisPlayerStatsArray[BATTING_STAT_SH] += play.enhanced_play.sacBunt;
       }
 
       play.enhanced_play.runsScoredBy.forEach(function(rsby) {
