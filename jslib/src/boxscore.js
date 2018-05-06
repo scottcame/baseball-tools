@@ -86,7 +86,21 @@ if (latex) outStream.write("\\pagenumbering{gobble}" + "\n");
 if (latex) outStream.write("```" + "\n");
 
 outStream.write(teamHead[0] + " " + scoreHead[0] + ", " + teamHead[1] + " " + scoreHead[1] + "\n");
+
+if (gs.tournament) {
+  let ts = gs.tournament;
+  if(gs.tournament_game) {
+    ts += (", " + gs.tournament_game);
+  }
+  outStream.write(ts + "\n");
+}
+
+if (gs.site) {
+  outStream.write(gs.site.site_name + "\n");
+}
+
 outStream.write(moment(gs.date).format('dddd, MMMM Do YYYY') + "\n");
+
 outStream.write("\n");
 
 outStream.write(gs.visitor_team_name + " ".repeat(teamNameSpace - gs.visitor_team_name.length));

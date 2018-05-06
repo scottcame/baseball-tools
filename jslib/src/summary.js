@@ -130,6 +130,9 @@ function getGameSummaryToPlay(game, playIndex) {
   ret.box.visitor_team.batting = [];
 
   ret.date = game.start_date;
+  ret.site = game.site;
+  ret.tournament = game.tournament;
+  ret.tournament_game = game.tournament_game;
 
   ret.home_team_name = game.home_team.team_name;
   ret.visitor_team_name = game.visitor_team.team_name;

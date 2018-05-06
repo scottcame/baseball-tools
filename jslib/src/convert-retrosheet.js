@@ -167,11 +167,16 @@ infoRecs.forEach(function(rec) {
   } else if ("site" === rec[1]) {
     game.site = new Object;
     game.site.site_id = rec[2];
-    parks.forEach(function(park) {
-      if (park[0] === game.site.site_id) {
-        game.site.site_name = park[1];
-      }
-    })
+    if (parks.length > 0) {
+      parks.forEach(function(park) {
+        if (park[0] === game.site.site_id) {
+          game.site.site_name = park[1];
+        }
+      });
+    } else {
+      game.site.site_id = null;
+      game.site.site_name = rec.slice(2).join(",");
+    }
   } else if ("usedh" === rec[1]) {
     game.use_dh = rec[2] === "true";
   } else if ("umphome" === rec[1]) {
@@ -217,6 +222,10 @@ infoRecs.forEach(function(rec) {
     let startTime = moment(game.start_date + " " + game.start_time, "YYYY-MM-DD HH:mm");
     let endTime = startTime.add(Number.parseInt(time), "minutes");
     game.end_time = endTime.format("HH:mm:ss");
+  } else if ("tournament" === rec[1]) {
+    game.tournament = rec[2];
+  } else if ("tournament-game" === rec[1]) {
+    game.tournament_game = rec[2];
   }
 });
 
