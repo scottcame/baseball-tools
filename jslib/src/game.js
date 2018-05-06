@@ -44,6 +44,7 @@ function parseGameToPlay(game, playIndex) {
   ret.site = game.site;
   ret.tournament = game.tournament;
   ret.tournament_game = game.tournament_game;
+  ret.extra_info = game.extra_info;
   ret.start_date = game.start_date;
   ret.start_time = game.start_time;
   ret.daynight = game.daynight;

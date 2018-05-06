@@ -99,6 +99,10 @@ if (gs.site) {
   outStream.write(gs.site.site_name + "\n");
 }
 
+if (gs.extra_info) {
+  outStream.write(gs.extra_info + "\n");
+}
+
 outStream.write(moment(gs.date).format('dddd, MMMM Do YYYY') + "\n");
 
 outStream.write("\n");

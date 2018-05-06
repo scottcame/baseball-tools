@@ -133,6 +133,7 @@ function getGameSummaryToPlay(game, playIndex) {
   ret.site = game.site;
   ret.tournament = game.tournament;
   ret.tournament_game = game.tournament_game;
+  ret.extra_info = game.extra_info;
 
   ret.home_team_name = game.home_team.team_name;
   ret.visitor_team_name = game.visitor_team.team_name;

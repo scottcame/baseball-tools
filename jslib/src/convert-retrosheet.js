@@ -226,6 +226,8 @@ infoRecs.forEach(function(rec) {
     game.tournament = rec[2];
   } else if ("tournament-game" === rec[1]) {
     game.tournament_game = rec[2];
+  } else if ("extra" === rec[1]) {
+    game.extra_info = rec[2];
   }
 });
 
