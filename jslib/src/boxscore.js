@@ -233,12 +233,21 @@ function writeTeamSection(teamStats, team, name) {
     }
   };
 
-  if (teamStats.errors.length || teamStats.pb.length) {
+  if (teamStats.errors.length || teamStats.pb.length || teamStats.dp.length) {
     outStream.write("Fielding:\n");
     outStream.write("---------\n");
     outStream.write("\n");
     writeFieldingStatLine(teamStats.errors, "E: ", null);
     writeFieldingStatLine(teamStats.pb, "PB: ", "catcher_player_id");
+    if (teamStats.dp.length) {
+      let adp = [];
+      outStream.write("DP: ")
+      teamStats.dp.forEach(function(dp) {
+        let dps = dp.map(function(v) { return lookupPlayer(v).player_last_name; });
+        adp.push(dps.join("-"));
+      });
+      outStream.write(adp.join("; ") + "\n");
+    }
   }
 
   outStream.write("\n");
