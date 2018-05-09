@@ -323,8 +323,9 @@ function getGameSummaryToPlay(game, playIndex) {
             thisPlayerStatsArray[BATTING_STAT_A]++;
           }
         });
-        pitcherStatsArray[PITCHING_STAT_IP]++; // this is the IP stat, but we need to express it as outs.  we'll convert it to the conventional .1, .2, .3 later
       });
+
+      pitcherStatsArray[PITCHING_STAT_IP] += play.enhanced_play.outsRecorded; // this is the IP stat, but we need to express it as outs.  we'll convert it to the conventional .1, .2, .3 later
 
       if (play.enhanced_play.outsAfterPlay === 3) {
         let inningLob = play.enhanced_play.basesOccupiedAfterPlay.reduce(function(accumulator, value) { return accumulator += (value != null); }, 0);

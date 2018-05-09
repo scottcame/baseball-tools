@@ -85,6 +85,11 @@ summarizeGames <- function(playDataList, teamID) {
     group_by(PitcherID, PitcherLast, PitcherFirst) %>%
     summarize(R=n(), ER=sum(earned_))
 
+  pitchingOutSummary <- playDataList$PitcherOuts %>%
+    filter(FieldingTeamID==teamID) %>%
+    group_by(PitcherID, PitcherLast, PitcherFirst) %>%
+    summarize(OutsRecorded=sum(OutsRecorded))
+
   pitchingSummary <- playDataList$BatterPlays %>%
     filter(FieldingTeamID==teamID) %>%
     mutate(Strikes=str_count(PitchSequence, 'X|S|C|F|L'), Balls=str_count(PitchSequence, 'B|H'), BIP_AB=AtBat*BIP) %>%
@@ -100,9 +105,9 @@ summarizeGames <- function(playDataList, teamID) {
               KC=sum(KC),
               Strikes=sum(Strikes),
               Balls=sum(Balls),
-              OutsRecorded=sum(OutsRecorded),
               QAB=sum(QAB)) %>%
     full_join(pitchingRunSummary, by=c('PitcherID', 'PitcherLast', 'PitcherFirst')) %>%
+    full_join(pitchingOutSummary, by=c('PitcherID', 'PitcherLast', 'PitcherFirst')) %>%
     mutate_at(vars(R, ER), function(v) {
       case_when(is.na(v) ~ 0L, TRUE ~ v)
     })
@@ -211,6 +216,10 @@ parseGames <- function(sourceDir, filePattern='.+-enhanced.json') {
 
   ret$Defense <- map_df(gameLists, function(gameList) {
     gameList$Defense
+  })
+
+  ret$PitcherOuts <- map_df(gameLists, function(gameList) {
+    gameList$PitcherOuts
   })
 
   ret
@@ -405,6 +414,16 @@ parseGame <- function(enhancedGameJSON, masterRoster=NULL) {
 
   })
 
+  out_df <- map_df(playLists, function(pl) {
+    pl$pdf
+  }) %>%
+    filter(Play != 'NP') %>%
+    mutate(
+      FieldingTeamID=unname(otherTeamLookup[BattingTeamID]),
+      Year_=year(GameDate)
+    ) %>%
+    select(PitcherID, OutsRecorded, Year_, FieldingTeamID, Inning)
+
   odf <- map_df(playLists, function(pl) {
     pl$pdf
   }) %>%
@@ -492,6 +511,9 @@ parseGame <- function(enhancedGameJSON, masterRoster=NULL) {
     ddf <- ddf %>%
       left_join(masterRoster %>% rename(FielderLast=PlayerLast, FielderFirst=PlayerFirst) %>% select(-Throws, -Bats),
                 by=c('Year_'='Year', 'FieldingTeamID'='TeamID', 'PlayerID'))
+    out_df <- out_df %>%
+      left_join(masterRoster %>% rename(PitcherLast=PlayerLast, PitcherFirst=PlayerFirst) %>% select(-Bats),
+                by=c('Year_'='Year', 'FieldingTeamID'='TeamID', 'PitcherID'='PlayerID'))
     if (nrow(bsdf)) {
       bsdf <- bsdf %>%
         left_join(masterRoster %>% rename(RunnerLast=PlayerLast, RunnerFirst=PlayerFirst) %>% select(-Throws, -Bats),
@@ -507,6 +529,7 @@ parseGame <- function(enhancedGameJSON, masterRoster=NULL) {
   }
 
   odf <- odf %>% select(-ends_with('_'))
+  out_df <- out_df %>% select(-ends_with('_'))
   rsdf <- rsdf %>% select(-ends_with('_'))
   ddf <- ddf %>% select(-ends_with('_'))
   bsdf <- bsdf %>% select(-ends_with('_'))
@@ -518,6 +541,7 @@ parseGame <- function(enhancedGameJSON, masterRoster=NULL) {
   ret$Defense <- ddf
   ret$StolenBases <- bsdf
   ret$CaughtStealing <- csdf
+  ret$PitcherOuts <- out_df
 
   ret
 

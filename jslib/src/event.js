@@ -312,7 +312,7 @@ function getPlayCode(rawEvent) {
   let testRegex = outRegex;
   if (!outRegex.test(rawEvent.basicPlay)) {
     let kwPlusRegex = /^([KW])\+.+/;
-    let csWithParamRegex = /^(CS|POCS)[123H].*/;
+    let csWithParamRegex = /^(CS|POCS|PO)[123H].*/;
     if (kwPlusRegex.test(rawEvent.basicPlay)) {
       testRegex = kwPlusRegex;
     } else if (csWithParamRegex.test(rawEvent.basicPlay)) {
