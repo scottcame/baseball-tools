@@ -10,7 +10,7 @@ Description: Analysis of baseball data in the baseball-json format
 License: Apache Software License 2.0
 Encoding: UTF-8
 LazyData: true
-Depends: dplyr,
+Imports: dplyr,
   purrr,
   tidyr,
   openxlsx,

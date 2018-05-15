@@ -4,12 +4,15 @@
 \alias{parseGames}
 \title{Parse a collection of enhanced game files in a directory.}
 \usage{
-parseGames(sourceDir, filePattern = ".+-enhanced.json")
+parseGames(sourceDir, filePattern = ".+-enhanced.json",
+  teamFilterFunction = function(g) {     TRUE })
 }
 \arguments{
 \item{sourceDir}{the directory from which to read source files}
 
 \item{filePattern}{pattern defining files to read}
+
+\item{teamFilterFunction}{a function that takes an enhanced game list and returns true if the game should be parsed, or false otherwise}
 }
 \description{
 Parse a collection of enhanced game files in a directory.

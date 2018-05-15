@@ -4,13 +4,16 @@
 \alias{parseGame}
 \title{Parse an enhanced game json file into tibbles suitable for summarization}
 \usage{
-parseGame(enhancedGameJSON, masterRoster = NULL)
+parseGame(enhancedGameJSON, masterRoster = NULL,
+  teamFilterFunction = function(g) {     TRUE })
 }
 \arguments{
 \item{enhancedGameJSON}{path to JSON file containing enhanced play information}
 
 \item{masterRoster}{data frame containing PlayerID and attributes of each player (generally
 created from a retrosheet .ROS file)}
+
+\item{teamFilterFunction}{a function that takes an enhanced game list and returns true if the game should be parsed, or false otherwise}
 }
 \value{
 A list containing five tibbles:

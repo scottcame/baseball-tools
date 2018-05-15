@@ -90,6 +90,10 @@ summarizeGames <- function(playDataList, teamID) {
     group_by(PitcherID, PitcherLast, PitcherFirst) %>%
     summarize(OutsRecorded=sum(OutsRecorded))
 
+  pitchingRecordSummary <- playDataList$PitcherRecord %>%
+    group_by(PitcherID, PitcherLast, PitcherFirst) %>%
+    summarize(Wins=sum(W), Losses=sum(L), Saves=sum(S))
+
   pitchingSummary <- playDataList$BatterPlays %>%
     filter(FieldingTeamID==teamID) %>%
     mutate(Strikes=str_count(PitchSequence, 'X|S|C|F|L'), Balls=str_count(PitchSequence, 'B|H'), BIP_AB=AtBat*BIP) %>%
@@ -108,7 +112,8 @@ summarizeGames <- function(playDataList, teamID) {
               QAB=sum(QAB)) %>%
     full_join(pitchingRunSummary, by=c('PitcherID', 'PitcherLast', 'PitcherFirst')) %>%
     full_join(pitchingOutSummary, by=c('PitcherID', 'PitcherLast', 'PitcherFirst')) %>%
-    mutate_at(vars(R, ER), function(v) {
+    left_join(pitchingRecordSummary, by=c('PitcherID', 'PitcherLast', 'PitcherFirst')) %>%
+    mutate_at(vars(R, ER, Wins, Losses, Saves), function(v) {
       case_when(is.na(v) ~ 0L, TRUE ~ v)
     })
 
@@ -153,8 +158,8 @@ summarizeGames <- function(playDataList, teamID) {
   sheet <- addWorksheet(wb, "Pitching")
   writeData(wb, "Pitching", pitchingSummary, headerStyle=boldStyle)
   addStyle(wb, "Pitching", boldStyle, cols=1:(ncol(pitchingSummary)), rows=nrow(pitchingSummary)+1, gridExpand = TRUE)
-  addStyle(wb, "Pitching", threePointStyle, cols=c(12, 13, 14, 16, 19), rows=2:(nrow(pitchingSummary)+1), gridExpand = TRUE)
-  addStyle(wb, "Pitching", percentageStyle, cols=c(15, 17), rows=2:(nrow(pitchingSummary)+1), gridExpand = TRUE)
+  addStyle(wb, "Pitching", threePointStyle, cols=c(15, 16, 17, 19, 22), rows=2:(nrow(pitchingSummary)+1), gridExpand = TRUE)
+  addStyle(wb, "Pitching", percentageStyle, cols=c(18, 20), rows=2:(nrow(pitchingSummary)+1), gridExpand = TRUE)
   setColWidths(wb, "Pitching", widths="auto", cols=1:(ncol(pitchingSummary)))
 
   saveWorkbook(wb, 'Stats.xlsx', overwrite = TRUE)
@@ -176,8 +181,9 @@ summarizeGames <- function(playDataList, teamID) {
 #' @importFrom readr read_csv
 #' @param sourceDir the directory from which to read source files
 #' @param filePattern pattern defining files to read
+#' @param teamFilterFunction a function that takes an enhanced game list and returns true if the game should be parsed, or false otherwise
 #' @export
-parseGames <- function(sourceDir, filePattern='.+-enhanced.json') {
+parseGames <- function(sourceDir, filePattern='.+-enhanced.json', teamFilterFunction=function(g) { TRUE }) {
 
   writeLines(paste0('Parsing games from directory: ', sourceDir))
 
@@ -193,7 +199,7 @@ parseGames <- function(sourceDir, filePattern='.+-enhanced.json') {
   sourceFiles <- list.files(sourceDir, full.names = TRUE, pattern=filePattern)
 
   gameLists <- map(sourceFiles, function(f) {
-    parseGame(f, masterRoster)
+    parseGame(f, masterRoster, teamFilterFunction)
   })
 
   ret <- list()
@@ -222,6 +228,10 @@ parseGames <- function(sourceDir, filePattern='.+-enhanced.json') {
     gameList$PitcherOuts
   })
 
+  ret$PitcherRecord <- map_df(gameLists, function(gameList) {
+    gameList$PitcherRecord
+  })
+
   ret
 
 }
@@ -240,6 +250,7 @@ parseGames <- function(sourceDir, filePattern='.+-enhanced.json') {
 #' @param enhancedGameJSON path to JSON file containing enhanced play information
 #' @param masterRoster data frame containing PlayerID and attributes of each player (generally
 #' created from a retrosheet .ROS file)
+#' @param teamFilterFunction a function that takes an enhanced game list and returns true if the game should be parsed, or false otherwise
 #' @return A list containing five tibbles:
 #' \describe{
 #'   \item{BatterPlays}{One record for each play involving a batter}
@@ -249,11 +260,16 @@ parseGames <- function(sourceDir, filePattern='.+-enhanced.json') {
 #'   \item{CaughtStealing}{One record for each caught-stealing}
 #' }
 #' @export
-parseGame <- function(enhancedGameJSON, masterRoster=NULL) {
+parseGame <- function(enhancedGameJSON, masterRoster=NULL, teamFilterFunction=function(g) { TRUE }) {
 
   writeLines(paste0('Parsing game: ', basename(enhancedGameJSON)))
 
   eg <- fromJSON(enhancedGameJSON, simplifyDataFrame = FALSE)
+
+  if (!teamFilterFunction(eg)) {
+    writeLines(paste0('Skipping game ', eg$game_id, ' because it does not satisfy team filter function'))
+    return(NULL)
+  }
 
   gameId <- eg$game_id
   gameDate <- eg$start_date
@@ -447,6 +463,10 @@ parseGame <- function(enhancedGameJSON, masterRoster=NULL) {
       Year_=year(GameDate)
     )
 
+  finalRunTally <- rsdf %>% group_by(BattingTeamID) %>% summarize(Runs=n()) %>% arrange(desc(Runs)) %>% ungroup()
+  winningTeamID <- finalRunTally %>% filter(row_number()==1) %>% .$BattingTeamID
+  losingTeamID <- unname(otherTeamLookup[winningTeamID])
+
   if (nrow(rsdf) > 0) {
 
     playRuns <- rsdf %>%
@@ -497,6 +517,20 @@ parseGame <- function(enhancedGameJSON, masterRoster=NULL) {
       Year_=year(GameDate)
     )
 
+  precDf <- tibble(PitcherID=eg$winning_pitcher, W=1L, L=0L, S=0L, TeamID=winningTeamID) %>%
+    bind_rows(tibble(PitcherID=eg$losing_pitcher, W=0L, L=1L, S=0L, TeamID=losingTeamID))
+
+  if (!is.null(eg$save_pitcher)) {
+    precDf <- precDf %>%
+      bind_rows(tibble(PitcherID=eg$save_pitcher, W=0L, L=0L, S=1L, TeamID=winningTeamID))
+  }
+
+  precDf <- precDf %>%
+    mutate(GameID=gameId,
+           GameDate=ymd(gameDate),
+           Year_=year(GameDate)
+    )
+
   if (!is.null(masterRoster)) {
     odf <- odf %>%
       left_join(masterRoster %>% rename(BatterLast=PlayerLast, BatterFirst=PlayerFirst, BatterHandedness=Bats) %>% select(-Throws),
@@ -514,6 +548,9 @@ parseGame <- function(enhancedGameJSON, masterRoster=NULL) {
     out_df <- out_df %>%
       left_join(masterRoster %>% rename(PitcherLast=PlayerLast, PitcherFirst=PlayerFirst) %>% select(-Bats),
                 by=c('Year_'='Year', 'FieldingTeamID'='TeamID', 'PitcherID'='PlayerID'))
+    precDf <- precDf %>%
+      left_join(masterRoster %>% rename(PitcherLast=PlayerLast, PitcherFirst=PlayerFirst) %>% select(-Bats),
+                by=c('Year_'='Year', 'TeamID'='TeamID', 'PitcherID'='PlayerID'))
     if (nrow(bsdf)) {
       bsdf <- bsdf %>%
         left_join(masterRoster %>% rename(RunnerLast=PlayerLast, RunnerFirst=PlayerFirst) %>% select(-Throws, -Bats),
@@ -534,6 +571,7 @@ parseGame <- function(enhancedGameJSON, masterRoster=NULL) {
   ddf <- ddf %>% select(-ends_with('_'))
   bsdf <- bsdf %>% select(-ends_with('_'))
   csdf <- csdf %>% select(-ends_with('_'))
+  precDf <- precDf %>% select(-ends_with('_'))
 
   ret <- list()
   ret$BatterPlays <- odf
@@ -542,6 +580,7 @@ parseGame <- function(enhancedGameJSON, masterRoster=NULL) {
   ret$StolenBases <- bsdf
   ret$CaughtStealing <- csdf
   ret$PitcherOuts <- out_df
+  ret$PitcherRecord <- precDf
 
   ret
 
