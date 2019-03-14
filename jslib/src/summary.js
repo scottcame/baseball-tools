@@ -147,11 +147,37 @@ function getGameSummaryToPlay(game, playIndex) {
       let po = new Object;
       po.player_id = p.player.player_id;
       po.player_last_name = p.player.player_last_name;
+      po.player_first_name = p.player.player_first_name;
       po.player_positions = [];
       if (p.lineup_position != null) {
         po.player_positions.push(p.fielder_position);
       }
       ret.players.push(po);
+    });
+    ret.players.forEach(function(p) {
+      let commonChars = 0;
+      ret.players.some(function(pp) {
+        if (p.player_last_name === pp.player_last_name && p.player_id !== pp.player_id) {
+          var i = 0;
+          if (p.player_first_name === pp.player_first_name) {
+            commonChars = -1;
+            return true;
+          }
+          i = 1;
+          while (p.player_first_name[i] === pp.player_first_name[i]) i++;
+          if (i > commonChars) {
+            commonChars = i;
+          }
+          return false;
+        }
+      });
+      if (commonChars == 0) {
+        p.player_box_display_name = p.player_last_name;
+      } else if (commonChars == -1) {
+        p.player_box_display_name = p.player_last_name + ", " + p.player_first_name + ' (' + p.player_id + ')';
+      } else {
+        p.player_box_display_name = p.player_last_name + ", " + p.player_first_name.substring(0, commonChars) + ".";
+      }
     });
   });
 

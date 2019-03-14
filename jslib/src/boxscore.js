@@ -159,7 +159,7 @@ function writeTeamSection(teamStats, team, name) {
       pp.player_positions.forEach(function(p) {
         ppp.push(positions[p-1]);
       });
-      let nm = pp.player_last_name + " " + ppp.join(",");
+      let nm = pp.player_box_display_name + " " + ppp.join(",");
       outStream.write(indent);
       outStream.write(nm);
       outStream.write(" ".repeat(playerSpace - nm.length - indent.length));
@@ -230,7 +230,7 @@ function writeTeamSection(teamStats, team, name) {
       }, new Object);
       let ds = [];
       for (let p in m) {
-        ds.push(lookupPlayer(p).player_last_name + ": " + m[p]);
+        ds.push(lookupPlayer(p).player_box_display_name + ": " + m[p]);
       }
       outStream.write(label + ds.join("; "));
       outStream.write("\n");
@@ -247,7 +247,7 @@ function writeTeamSection(teamStats, team, name) {
       let adp = [];
       outStream.write("DP: ")
       teamStats.dp.forEach(function(dp) {
-        let dps = dp.map(function(v) { return lookupPlayer(v).player_last_name; });
+        let dps = dp.map(function(v) { return lookupPlayer(v).player_box_display_name; });
         adp.push(dps.join("-"));
       });
       outStream.write(adp.join("; ") + "\n");
@@ -283,7 +283,7 @@ function writeTeamSection(teamStats, team, name) {
     let playerId = pitcherArray[0];
     let pp = lookupPlayer(playerId);
     if (pp != null) {
-      let nm = pp.player_last_name;
+      let nm = pp.player_box_display_name;
       if (pp.player_id == gs.winning_pitcher) {
         nm += " (W)";
       }
@@ -361,9 +361,9 @@ function writeCumulativeStat(stat, label, offenseProperty, defenseProperty, conn
       for (let op in m[b]) {
         let ddds = [];
         for (let dp in m[b][op]) {
-          ddds.push(m[b][op][dp] + (defenseProperty === "0000" ? "" : (" " + connector + " " + lookupPlayer(dp).player_last_name)));
+          ddds.push(m[b][op][dp] + (defenseProperty === "0000" ? "" : (" " + connector + " " + lookupPlayer(dp).player_box_display_name)));
         }
-        dds.push(lookupPlayer(op).player_last_name + ": " + ddds.join(", "));
+        dds.push(lookupPlayer(op).player_box_display_name + ": " + ddds.join(", "));
       }
       ds.push(b + dds.join("; "))
     }
