@@ -1,5 +1,6 @@
 #' Produce summary stats from a list of parsed game data
 #' @import dplyr
+#' @import tidyr
 #' @import openxlsx
 #' @importFrom stringr str_count
 #' @param playDataList list of parsed game data
