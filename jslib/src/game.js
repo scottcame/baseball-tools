@@ -145,23 +145,25 @@ function enhancePlay(play, baseStatePrior, outs, defensivePlayers) {
 
 function determineQualityAtBat(enhanced_play) {
   let ret = false;
-  ret |= enhanced_play.hit;
-  ret |= enhanced_play.walk;
-  ret |= ['E','HP'].includes(enhanced_play.playCode);
-  ret |= enhanced_play.rawEvent.modifiers.includes('SH');
-  ret |= enhanced_play.rawEvent.modifiers.includes('SF');
-  if (enhanced_play.outsAfterPlay === enhanced_play.outsRecorded && enhanced_play.outsAfterPlay < 3 && !enhanced_play.rawEvent.modifiers.includes("GDP")) {
-    enhanced_play.rawEvent.advances.some(function(a) {
-      if (a.startingBase === "2") {
-        ret |= ["3","H"].includes(a.endingBase);
-        return true;
-      }
-      return false;
-    });
+  if (enhanced_play.plateAppearance) {
+    ret |= enhanced_play.hit;
+    ret |= enhanced_play.walk;
+    ret |= ['E','HP'].includes(enhanced_play.playCode);
+    ret |= enhanced_play.rawEvent.modifiers.includes('SH');
+    ret |= enhanced_play.rawEvent.modifiers.includes('SF');
+    if (enhanced_play.outsAfterPlay === enhanced_play.outsRecorded && enhanced_play.outsAfterPlay < 3 && !enhanced_play.rawEvent.modifiers.includes("GDP")) {
+      enhanced_play.rawEvent.advances.some(function(a) {
+        if (a.startingBase === "2") {
+          ret |= ["3","H"].includes(a.endingBase);
+          return true;
+        }
+        return false;
+      });
+    }
+    ret |= enhanced_play.ballInPlay != null && enhanced_play.runs > 0;
+    ret |= enhanced_play.ballInPlay != null && enhanced_play.ballInPlay.hard;
+    ret |= enhanced_play.pitchCount.totalPitches >= 8;
   }
-  ret |= enhanced_play.ballInPlay != null && enhanced_play.runs > 0;
-  ret |= enhanced_play.ballInPlay != null && enhanced_play.ballInPlay.hard;
-  ret |= enhanced_play.pitchCount.totalPitches >= 8;
   return ret != 0;
 }
 
