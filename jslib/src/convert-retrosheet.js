@@ -85,10 +85,12 @@ var startRecs = [];
 var playRecs = [];
 var subRecs = [];
 var inGame = false;
+var gameIdNeverFound = true;
 lines.forEach(function(line, lineNum) {
 
   if (RegExp("^id," + gameId).test(line)) {
     inGame = true;
+    gameIdNeverFound = false;
   } else if (inGame && /^id/.test(line)) {
     inGame = false;
   }
@@ -109,6 +111,10 @@ lines.forEach(function(line, lineNum) {
   }
 
 });
+
+if (gameIdNeverFound) {
+  console.error("No game data found for specified ID, check ID parameter to make sure it matches one in the event file.")
+}
 
 let o = new Object;
 

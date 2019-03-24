@@ -319,6 +319,19 @@ describe('Event.determineOuts (Batter)', function() {
     assert.equal("SS", out.assistFielders[0].fielderId);
   });
 
+  it('Unknown out', function() {
+    let o = Event.parseRawEvent("2/UNK");
+    let outs = Event.determineOuts(o, ["batter", "first", "second", null], defense);
+    assert.equal(1, outs.length);
+    let out = outs[0];
+    assert.equal("2", out.play);
+    assert.equal("B", out.runnerStartingBase);
+    assert.equal("batter", out.runnerId);
+    assert.equal("2", out.putoutFielderPosition);
+    assert.equal("C", out.putoutFielderId);
+    assert.equal(0, out.assistFielders.length);
+  });
+
 });
 
 describe('Event.determineOuts (baserunning)', function() {
