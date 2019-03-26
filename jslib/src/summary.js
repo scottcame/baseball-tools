@@ -85,6 +85,8 @@ function getGameSummaryToPlay(game, playIndex) {
   ret.visitor_team_stats.error_count = 0;
   ret.visitor_team_stats.runs_per_inning = [];
   ret.visitor_team_stats.lob = 0;
+  ret.visitor_team_stats.qab = 0;
+  ret.visitor_team_stats.plateAppearance = 0;
   ret.visitor_team_stats.dp = [];
   ret.visitor_team_stats.doubles = [];
   ret.visitor_team_stats.triples = [];
@@ -107,6 +109,8 @@ function getGameSummaryToPlay(game, playIndex) {
   ret.home_team_stats.error_count = 0;
   ret.home_team_stats.runs_per_inning = [];
   ret.home_team_stats.lob = 0;
+  ret.home_team_stats.qab = 0;
+  ret.home_team_stats.plateAppearance = 0;
   ret.home_team_stats.dp = [];
   ret.home_team_stats.doubles = [];
   ret.home_team_stats.triples = [];
@@ -259,6 +263,8 @@ function getGameSummaryToPlay(game, playIndex) {
       offenseTeamStats.runs_per_inning[play.inning-1] = offenseTeamStats.runs_per_inning[play.inning-1] == null ? 0 : offenseTeamStats.runs_per_inning[play.inning-1] + play.enhanced_play.runs;
       offenseTeamStats.score += play.enhanced_play.runs;
       offenseTeamStats.hits += (["S","D","T","H","HR"].includes(play.enhanced_play.playCode));
+      offenseTeamStats.qab += play.enhanced_play.qab;
+      offenseTeamStats.plateAppearance += (play.enhanced_play.plateAppearance ? 1 : 0);
       defenseTeamStats.error_count += play.enhanced_play.errors.length;
 
       let findPlayerStatsArray = function(playerToFind, lineup) {

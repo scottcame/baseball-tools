@@ -204,6 +204,8 @@ function writeTeamSection(teamStats, team, name) {
     writeCumulativeStat(teamStats.sf, "Sac Fly:", 'batting_player_id', 'pitcher_player_id');
     writeCumulativeStat(teamStats.sh, "Sac Bunt:", 'batting_player_id', 'pitcher_player_id');
     writeCumulativeStat(teamStats.gdp, "GDP:", 'batting_player_id', null);
+    let teamQabPct = Math.round(100*teamStats.qab / teamStats.plateAppearance);
+    outStream.write('Team QAB%: ' + teamQabPct + "\n");
     outStream.write("\n");
   }
 
