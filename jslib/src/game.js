@@ -334,10 +334,10 @@ function getPitchCount(pitch_sequence, defensivePlayers) {
       if (['B','H','P','I','V'].includes(c)) {
         ret.balls++;
         ret.totalPitches++;
-      } else if (['C','M'].includes(c)) {
+      } else if (['C'].includes(c)) {
         ret.calledStrikes++;
         ret.totalPitches++;
-      } else if (['S','Q'].includes(c)) {
+      } else if (['S','Q','M'].includes(c)) {
         ret.swingingStrikes++;
         ret.totalPitches++;
       } else if ('K' === c) {

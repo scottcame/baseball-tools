@@ -260,7 +260,8 @@ function getGameSummaryToPlay(game, playIndex) {
         console.error("Unrecognized team: " + play.batting_team_id);
       }
 
-      offenseTeamStats.runs_per_inning[play.inning-1] = offenseTeamStats.runs_per_inning[play.inning-1] == null ? 0 : offenseTeamStats.runs_per_inning[play.inning-1] + play.enhanced_play.runs;
+      offenseTeamStats.runs_per_inning[play.inning-1] = offenseTeamStats.runs_per_inning[play.inning-1] == null ? 0 : offenseTeamStats.runs_per_inning[play.inning-1];
+      offenseTeamStats.runs_per_inning[play.inning-1] += play.enhanced_play.runs;
       offenseTeamStats.score += play.enhanced_play.runs;
       offenseTeamStats.hits += (["S","D","T","H","HR"].includes(play.enhanced_play.playCode));
       offenseTeamStats.qab += play.enhanced_play.qab;

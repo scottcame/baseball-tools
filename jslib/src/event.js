@@ -70,7 +70,9 @@ function parseEvent(eventText, baseStateBeforePlay, outsBeforePlay, defensivePla
 }
 
 function isDoublePlay(rawEvent) {
-  return rawEvent.modifiers.reduce(function(accumulator, value) { return accumulator || ["GDP","LDP","DP"].includes(value); }, false);
+  return rawEvent.modifiers.reduce(function(accumulator, value) {
+    return accumulator || /^(GDP|LDP|DP)/.test(value);
+  }, false);
 }
 
 function isAtBat(parsedEvent) {
@@ -260,6 +262,7 @@ function getBallInPlay(rawEvent) {
   }
 
   rawEvent.modifiers.forEach(function(modifier, index) {
+    let originalModifier = modifier;
     if (modifier === "LDP") {
       modifier = "L";
     } else if (modifier === "GDP") {
@@ -268,7 +271,7 @@ function getBallInPlay(rawEvent) {
     let components = modifier.match(BATTED_BALL_LOCATION_REGEX);
     if (components != null) {
       if (ret != null) {
-        if (components[1] != null && trajectoryModifierFound) {
+        if (components[1] != null && trajectoryModifierFound  && !((originalModifier=='LDP' && components[1]=='L') || (originalModifier=='GDP' && components[1]=='G'))) {
           throw new Error("Duplicate trajectory modifiers in play: " + rawEvent.rawText);
         } else if (components[2] != null && locationModifierFound) {
           throw new Error("Duplicate location modifiers in play: " + rawEvent.rawText);

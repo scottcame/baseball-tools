@@ -78,7 +78,7 @@ let teamNameSpace = Math.max(gs.home_team_name.length, gs.visitor_team_name.leng
 var playerSpace = 25;
 
 if (latex) outStream.write("---" + "\n");
-if (latex) outStream.write("geometry: margin=.5in" + "\n");
+if (latex) outStream.write("geometry: margin=.25in" + "\n");
 if (latex) outStream.write("---" + "\n");
 if (latex) outStream.write("\\setmonofont[Scale=1]{LetterGothic}" + "\n");
 if (latex) outStream.write("\\pagenumbering{gobble}" + "\n");
@@ -199,7 +199,21 @@ function writeTeamSection(teamStats, team, name) {
     outStream.write("\n");
     writeCumulativeStat(teamStats.doubles, "2B:", 'batting_player_id', 'pitcher_player_id');
     writeCumulativeStat(teamStats.triples, "3B:", 'batting_player_id', 'pitcher_player_id');
-    writeCumulativeStat(teamStats.hr, "HR:", 'batting_player_id', 'pitcher_player_id');
+
+    let hrs = teamStats.hr.map(function(hr) {
+      let suffixLookup = ['st','nd','rd'];
+      return " " +
+        lookupPlayer(hr.batting_player_id).player_box_display_name +
+        " off " +
+        lookupPlayer(hr.pitcher_player_id).player_box_display_name +
+        ", " + hr.inning + (hr.inning < 4 ? suffixLookup[hr.inning-1] : 'th') + " inning, " +
+        hr.on + " on, " + hr.out + " out";
+    });
+
+    if (teamStats.hr.length) {
+      outStream.write("HR: " + hrs.join(";") + "\n");
+    }
+
     writeCumulativeStat(teamStats.hbp, "HBP:", 'batting_player_id', 'pitcher_player_id', "by");
     writeCumulativeStat(teamStats.sf, "Sac Fly:", 'batting_player_id', 'pitcher_player_id');
     writeCumulativeStat(teamStats.sh, "Sac Bunt:", 'batting_player_id', 'pitcher_player_id');
