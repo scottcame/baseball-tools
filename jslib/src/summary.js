@@ -525,10 +525,10 @@ function getGameSummaryToPlay(game, playIndex) {
 
       }
 
-      if (play.enhanced_play.playCode === "CS") {
+      if (play.enhanced_play.playCode === "CS" || play.enhanced_play.playCode === "POCS") {
         play.enhanced_play.outs.forEach(function(out) {
           if (out.recorded) {
-            let base = play.enhanced_play.rawEvent.basicPlay.replace(/^CS([23H]).*/, "$1");
+            let base = play.enhanced_play.rawEvent.basicPlay.replace(/^(?:PO)?CS([23H]).*/, "$1");
             if (base === "H") {
               base = "Home";
             } else {
