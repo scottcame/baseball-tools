@@ -211,7 +211,8 @@ function writeTeamSection(teamStats, team, name) {
     });
 
     if (teamStats.hr.length) {
-      outStream.write("HR: " + hrs.join(";") + "\n");
+      outStream.write("HR:\n" + hrs.join("\n"));
+      outStream.write("\n");
     }
 
     writeCumulativeStat(teamStats.hbp, "HBP:", 'batting_player_id', 'pitcher_player_id', "by");
