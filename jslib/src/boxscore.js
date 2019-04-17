@@ -382,7 +382,18 @@ function writeCumulativeStat(stat, label, offenseProperty, defenseProperty, conn
         }
         dds.push(lookupPlayer(op).player_box_display_name + ": " + ddds.join(", "));
       }
-      ds.push(b + dds.join("; "))
+      let statLine = "";
+      let currentLineLength = 0;
+      for (let i=0;i < dds.length;i++) {
+        let delim = (i === dds.length-1 ? "" : "; ");
+        statLine = statLine + dds[i] + delim;
+        currentLineLength += (dds[i].length + delim.length);
+        if (currentLineLength >= 80) {
+          currentLineLength = 0;
+          statLine = statLine + "\n    ";
+        }
+      }
+      ds.push(b + statLine); // dds.join("; "))
     }
     outStream.write(label + (baseStat ? "\n" : " ") + ds.join("\n") + "\n");
   }
