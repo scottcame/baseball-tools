@@ -8,7 +8,7 @@
 #' @export
 #' @examples
 #' parseGames('~/my-scoresheet-data-dir') %>% summarizeGames()
-summarizeGames <- function(playDataList, teamID) {
+summarizeGames <- function(playDataList, teamID, outputDir) {
 
   countVars <- c('PlateAppearance', 'AtBat', 'Hit', 'Walk', 'Strikeout', 'HBP', 'Hit2B', 'Hit3B', 'HR', 'RBI',
                  'QAB', 'SacFly', 'SacBunt', 'GroundBall', 'FlyBall', 'Popup', 'Pitches', 'KS', 'KC', 'AtBatRISP', 'HitRISP')
@@ -110,6 +110,9 @@ summarizeGames <- function(playDataList, teamID) {
               KC=sum(KC),
               Strikes=sum(Strikes),
               Balls=sum(Balls),
+              HBP=sum(HBP),
+              HR=sum(HR),
+              SacFly=sum(SacFly),
               QAB=sum(QAB)) %>%
     full_join(pitchingRunSummary, by=c('PitcherID', 'PitcherLast', 'PitcherFirst')) %>%
     full_join(pitchingOutSummary, by=c('PitcherID', 'PitcherLast', 'PitcherFirst')) %>%
@@ -127,6 +130,7 @@ summarizeGames <- function(playDataList, teamID) {
     bind_rows(pitchingTotals) %>%
     mutate(
       BAA=Hits/AtBat,
+      OBP=(Hits+Walks+HBP)/(AtBat+Walks+HBP+SacFly),
       BABIP=Hits/BIPAtBat,
       PctStrikes=Strikes/Pitches,
       `Pitches/Batter`=Pitches/BF,
@@ -137,7 +141,14 @@ summarizeGames <- function(playDataList, teamID) {
       WHIP=(Walks+Hits)/Innings
       ) %>%
     ungroup() %>%
-    select(-PitcherID, -AtBat, -Strikes, -Balls, -QAB, -OutsRecorded, -BIPAtBat)
+    select(-PitcherID, -Strikes, -Balls, -QAB, -BIPAtBat, -SacFly)
+
+  ret <- list()
+  ret$offenseSummary <- offenseSummary
+  ret$defenseSummary <- defenseSummary
+  ret$pitchingSummary <- pitchingSummary
+
+  pitchingSummary <- pitchingSummary %>% select(-OutsRecorded, -AtBat, -HR)
 
   boldStyle <- createStyle(textDecoration = "bold")
   threePointStyle <- createStyle(numFmt = "0.000")
@@ -163,12 +174,8 @@ summarizeGames <- function(playDataList, teamID) {
   addStyle(wb, "Pitching", percentageStyle, cols=c(18, 20), rows=2:(nrow(pitchingSummary)+1), gridExpand = TRUE)
   setColWidths(wb, "Pitching", widths="auto", cols=1:(ncol(pitchingSummary)))
 
-  saveWorkbook(wb, 'Stats.xlsx', overwrite = TRUE)
-
-  ret <- list()
-  ret$offenseSummary <- offenseSummary
-  ret$defenseSummary <- defenseSummary
-  ret$pitchingSummary <- pitchingSummary
+  saveWorkbook(wb, file.path(outputDir, 'Stats.xlsx'), overwrite = TRUE)
+  saveRDS(ret, file.path(outputDir, 'Stats.rds'))
 
   ret
 

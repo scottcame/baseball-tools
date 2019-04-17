@@ -4,7 +4,7 @@
 \alias{summarizeGames}
 \title{Produce summary stats from a list of parsed game data}
 \usage{
-summarizeGames(playDataList, teamID)
+summarizeGames(playDataList, teamID, outputDir)
 }
 \arguments{
 \item{playDataList}{list of parsed game data}
