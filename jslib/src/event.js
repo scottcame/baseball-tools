@@ -316,10 +316,13 @@ function getPlayCode(rawEvent) {
   if (!outRegex.test(rawEvent.basicPlay)) {
     let kwPlusRegex = /^([KW])\+.+/;
     let csWithParamRegex = /^(CS|POCS|PO)[123H].*/;
+    let doubleStealParamRegex = /^(SB)[23H];SB[23H]$/;
     if (kwPlusRegex.test(rawEvent.basicPlay)) {
       testRegex = kwPlusRegex;
     } else if (csWithParamRegex.test(rawEvent.basicPlay)) {
       testRegex = csWithParamRegex;
+    } else if (doubleStealParamRegex.test(rawEvent.basicPlay)) {
+      testRegex = doubleStealParamRegex;
     } else {
       testRegex = /^([A-Z]+)[\/\.0-9$]+/;
     }
@@ -500,7 +503,7 @@ function determineOuts(rawEvent, baseStateBeforePlay, defensivePlayers) {
 
   // strikeout
   let kk = rawEvent.basicPlay.match(/^K([0-9]+)?/);
-  if (kk != null && !rawEvent.advances.reduce(function(accumulator, advance) { return accumulator |= (advance.startingBase === "B" && advance.endingBase === "1" ? true : false); }, false)) {
+  if (kk != null && !rawEvent.advances.reduce(function(accumulator, advance) { return accumulator |= (advance.startingBase === "B" ? true : false); }, false)) {
     out = new Object;
     let fielders = kk[1];
     out.play = rawEvent.basicPlay;
