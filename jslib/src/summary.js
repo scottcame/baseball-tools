@@ -438,7 +438,7 @@ function getGameSummaryToPlay(game, playIndex) {
         offenseTeamStats.gdp.push(dpo);
       }
 
-      if (play.enhanced_play.playCode === "WP") {
+      if (play.enhanced_play.playCode === "WP" || play.enhanced_play.rawEvent.basicPlay === "W+WP") {
         let dpo = new Object;
         dpo.batting_player_id = play.batting_player_id;
         dpo.pitcher_player_id = defensePositionPlayers[0];
@@ -459,7 +459,7 @@ function getGameSummaryToPlay(game, playIndex) {
         defenseTeamStats.balks.push(dpo);
       }
 
-      if (play.enhanced_play.playCode === "PB") {
+      if (play.enhanced_play.playCode === "PB" || play.enhanced_play.rawEvent.basicPlay === "K+PB") {
         let dpo = new Object;
         dpo.batting_player_id = play.batting_player_id;
         dpo.catcher_player_id = defensePositionPlayers[1];
@@ -525,10 +525,10 @@ function getGameSummaryToPlay(game, playIndex) {
 
       }
 
-      if (play.enhanced_play.playCode === "CS" || play.enhanced_play.playCode === "POCS") {
+      if (play.enhanced_play.playCode === "CS" || play.enhanced_play.playCode === "POCS" || /^K\+CS[23H]/.test(play.enhanced_play.rawEvent.basicPlay)) {
         play.enhanced_play.outs.forEach(function(out) {
           if (out.recorded) {
-            let base = play.enhanced_play.rawEvent.basicPlay.replace(/^(?:PO)?CS([23H]).*/, "$1");
+            let base = play.enhanced_play.rawEvent.basicPlay.replace(/^(?:PO|K\+)?CS([23H]).*/, "$1");
             if (base === "H") {
               base = "Home";
             } else {
