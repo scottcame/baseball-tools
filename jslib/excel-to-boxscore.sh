@@ -14,6 +14,7 @@ node src/convert-retrosheet-excel.js $SRCDIR/$GAME.xlsx $SRCDIR $YEAR
 node src/convert-retrosheet.js $SRCDIR/$GAME.EVE $GAME --merge-pitch-fx=false
 
 BASE="node src/boxscore.js $SRCDIR/$GAME.json --intermediate-files=true --include-11=true"
+#BASE="node src/boxscore.js $SRCDIR/$GAME.json --intermediate-files=true"
 
 if [ "$PDF" = "" ]; then
   $BASE
