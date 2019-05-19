@@ -430,6 +430,16 @@ function determineOuts(rawEvent, baseStateBeforePlay, defensivePlayers) {
         outs.push(out);
       }
     }
+  } else if (rawEvent.basicPlay.match(/^BINT$/)) {
+    let out = new Object;
+    out.play = "BINT";
+    out.runnerStartingBase = "B";
+    out.runnerId = baseStateBeforePlay[0]; // batter
+    out.putoutFielderPosition = 2; // catcher gets the putout
+    out.putoutFielderId = defensivePlayers[2 - 1]; // catcher gets the putout
+    out.assistFielders = [];
+    out.recorded = true;
+    outs.push(out);
   }
 
   // baserunning (advances) outs
